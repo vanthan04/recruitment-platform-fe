@@ -113,7 +113,7 @@ class Api {
 
     // 204 (delete) has no body at all — nothing to parse either way.
     if (response.status === 204) {
-      return { success: true, message: "", code: "SUCCESS", data: undefined as T, timestamp: "" };
+      return { success: true, message: "", data: undefined as T, timestamp: new Date().toISOString() };
     }
 
     const envelope = (await response.json().catch(() => undefined)) as ApiEnvelope<T, M> | undefined;

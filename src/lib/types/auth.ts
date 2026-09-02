@@ -80,20 +80,16 @@ export interface ChangePasswordInput {
   newPassword: string;
 }
 
-export interface AuthActionResult {
-  error?: string;
-}
-
 // Describes the shape of the auth service module — useful for mocking in
 // tests and for keeping the service and its consumers in sync.
 export type AuthOperation = {
-  register: (input: RegisterInput) => Promise<AuthActionResult>;
-  verifyEmail: (input: VerifyEmailInput) => Promise<AuthActionResult>;
-  login: (input: LoginInput) => Promise<AuthActionResult>;
+  register: (input: RegisterInput) => Promise<void>;
+  verifyEmail: (input: VerifyEmailInput) => Promise<void>;
+  login: (input: LoginInput) => Promise<void>;
   logout: () => Promise<void>;
-  forgotPassword: (input: ForgotPasswordInput) => Promise<AuthActionResult>;
-  resetPassword: (input: ResetPasswordInput) => Promise<AuthActionResult>;
-  updateProfile: (input: UpdateProfileInput) => Promise<AuthActionResult>;
-  changePassword: (input: ChangePasswordInput) => Promise<AuthActionResult>;
+  forgotPassword: (input: ForgotPasswordInput) => Promise<void>;
+  resetPassword: (input: ResetPasswordInput) => Promise<void>;
+  updateProfile: (input: UpdateProfileInput) => Promise<void>;
+  changePassword: (input: ChangePasswordInput) => Promise<void>;
   getCurrentUser: () => Promise<AuthUser | null>;
 };

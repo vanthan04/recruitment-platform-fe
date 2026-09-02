@@ -1,35 +1,80 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { toast } from "sonner";
-
-interface ActionResult {
-  error?: string;
-}
+import { ApiError } from "@/lib/api";
 
 interface UseApiToastOptions<T> {
   successMessage?: string;
   onSuccess?: (result: T) => void;
+  /** Called after the error toast — useful for reverting optimistic UI updates. */
+  onError?: (error: unknown) => void;
 }
 
-// Wraps a Server Action call in a transition and turns its result into a
-// toast — {error} shows toast.error, anything else (including a redirect()
-// thrown by the action, which is intentionally left uncaught here so Next
-// can still perform the navigation) is treated as success.
+function handleError(error: unknown, onError?: (e: unknown) => void) {
+  // `redirect()` và `notFound()` của Next.js throw một special error —
+  // phải re-throw để framework xử lý navigation / 404.
+  if (isRedirectError(error)) throw error;
+
+  if (error instanceof ApiError) {
+    toast.error(error.message);
+  } else {
+    toast.error("Đã có lỗi xảy ra, vui lòng thử lại.");
+  }
+  onError?.(error);
+}
+
 export function useApiToast() {
   const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
 
-  function run<T extends ActionResult | void>(action: () => Promise<T>, options?: UseApiToastOptions<T>) {
+  /**
+   * Dành cho **Server Action** có thể gọi `redirect()` bên trong.
+   * Fire-and-forget — không trả Promise, dùng `useTransition` nên không block UI.
+   *
+   * ```ts
+   * run(() => login(values));
+   * run(() => deleteCv(id), { successMessage: "Đã xoá." });
+   * ```
+   */
+  function run<T>(action: () => Promise<T>, options?: UseApiToastOptions<T>) {
     startTransition(async () => {
-      const result = await action();
-      if (result && typeof result === "object" && "error" in result && result.error) {
-        toast.error(result.error);
-        return;
+      try {
+        const result = await action();
+        if (options?.successMessage) toast.success(options.successMessage);
+        options?.onSuccess?.(result);
+      } catch (error) {
+        handleError(error, options?.onError);
       }
-      if (options?.successMessage) toast.success(options.successMessage);
-      options?.onSuccess?.(result as T);
     });
   }
 
-  return { run, isPending };
+  /**
+   * Dành cho **Promise thông thường** khi cần `await` kết quả để làm tiếp.
+   * Có `isLoading` state riêng. Trả `T` nếu thành công, `undefined` nếu lỗi.
+   *
+   * ```ts
+   * const data = await callApi(api.get<Job[]>("/jobs"), {
+   *   successMessage: "Tải thành công.",
+   * });
+   * if (data) setJobs(data);
+   * ```
+   */
+  async function callApi<T>(promise: Promise<T>, options?: UseApiToastOptions<T>): Promise<T | undefined> {
+    setIsLoading(true);
+    try {
+      const result = await promise;
+      if (options?.successMessage) toast.success(options.successMessage);
+      options?.onSuccess?.(result);
+      return result;
+    } catch (error) {
+      handleError(error, options?.onError);
+      return undefined;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return { run, callApi, isPending, isLoading };
 }

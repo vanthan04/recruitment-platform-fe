@@ -33,15 +33,15 @@ export function ChangePasswordForm() {
 
   const onSubmit = handleSubmit((values) => {
     run(
-      async () => {
-        const result = await changePassword({
+      () =>
+        changePassword({
           oldPassword: values.oldPassword,
           newPassword: values.newPassword,
-        });
-        if (!result.error) reset();
-        return result;
+        }),
+      {
+        successMessage: "Đổi mật khẩu thành công.",
+        onSuccess: () => reset(),
       },
-      { successMessage: "Đổi mật khẩu thành công." },
     );
   });
 

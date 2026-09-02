@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Bookmark, BookmarkCheck } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useApiToast } from "@/hooks/use-api-toast";
 import { toggleBookmark } from "@/lib/services/bookmark.service";
 import { cn } from "@/lib/utils";
 
@@ -15,20 +15,19 @@ interface SaveJobButtonProps {
 
 export function SaveJobButton({ jobId, initialBookmarked = false, className }: SaveJobButtonProps) {
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
-  const [isPending, startTransition] = useTransition();
+  const { run, isPending } = useApiToast();
 
   function handleClick(event: React.MouseEvent) {
     // JobCard renders this inside a Link — don't navigate on click.
     event.preventDefault();
     event.stopPropagation();
 
-    startTransition(async () => {
-      const result = await toggleBookmark(jobId);
-      if ("error" in result) {
-        toast.error(result.error);
-        return;
-      }
-      setIsBookmarked(result.bookmarked);
+    const next = !isBookmarked;
+    setIsBookmarked(next); // optimistic update
+
+    run(() => toggleBookmark(jobId), {
+      successMessage: next ? "Đã lưu tin." : "Đã bỏ lưu tin.",
+      onError: () => setIsBookmarked(isBookmarked), // revert on failure
     });
   }
 

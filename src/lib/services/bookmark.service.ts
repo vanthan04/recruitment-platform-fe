@@ -1,21 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { api, ApiError } from "@/lib/api";
+import { api } from "@/lib/api";
 import { BOOKMARK_ENDPOINT } from "@/lib/constants/endpoint";
 import { PATH } from "@/lib/constants/path";
 import { getJobById } from "@/lib/services/job.service";
 import type { Bookmark } from "@/lib/types/bookmark";
 import type { Job } from "@/lib/types/job";
 
-export async function toggleBookmark(jobId: string): Promise<{ bookmarked: boolean } | { error: string }> {
-  try {
-    const result = await api.post<{ bookmarked: boolean }>(BOOKMARK_ENDPOINT.TOGGLE(jobId));
-    revalidatePath(PATH.SAVED_JOBS);
-    return result;
-  } catch (error) {
-    return { error: error instanceof ApiError ? error.message : "Lưu tin thất bại, vui lòng thử lại." };
-  }
+export async function toggleBookmark(jobId: string): Promise<void> {
+  await api.post(BOOKMARK_ENDPOINT.TOGGLE(jobId));
+  revalidatePath(PATH.SAVED_JOBS);
 }
 
 // GET /bookmarks doesn't include job details (per API guide) — this just
@@ -25,6 +20,7 @@ export async function getMyBookmarkedJobIds(): Promise<Set<string>> {
     const bookmarks = await api.get<Bookmark[]>(BOOKMARK_ENDPOINT.LIST);
     return new Set(bookmarks.map((bookmark) => bookmark.jobId));
   } catch {
+    // Used in sidebars/headers — fail silently so it doesn't crash unrelated pages.
     return new Set();
   }
 }
