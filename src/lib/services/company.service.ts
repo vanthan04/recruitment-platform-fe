@@ -9,7 +9,7 @@ import type { Company, CompanyDetail, CompanyListParams } from "@/lib/types/comp
 export async function getCompanies(
   params: CompanyListParams = {},
 ): Promise<{ items: Company[]; meta?: ListMeta }> {
-  const { items, metadata } = await api.companies.getPaginated<Company[]>(COMPANY_ENDPOINT.LIST, {
+  const { items, metadata } = await api.getPaginated<Company[]>(COMPANY_ENDPOINT.LIST, {
     searchParams: params,
     skipAuth: true,
     next: { tags: [CACHE_TAG.COMPANIES_LIST] },
@@ -18,7 +18,7 @@ export async function getCompanies(
 }
 
 export async function getCompanyById(id: string): Promise<CompanyDetail> {
-  return api.companies.get<CompanyDetail>(COMPANY_ENDPOINT.DETAIL(id), {
+  return api.get<CompanyDetail>(COMPANY_ENDPOINT.DETAIL(id), {
     skipAuth: true,
     next: { tags: [CACHE_TAG.COMPANY_DETAIL(id)] },
   });

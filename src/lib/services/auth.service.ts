@@ -16,7 +16,7 @@ async function persistSession(tokens: AuthTokens): Promise<void> {
 
 export async function login(input: LoginInput): Promise<AuthActionResult> {
   try {
-    const payload = await api.auth.post<{ user: AuthUser } & AuthTokens>(AUTH_ENDPOINT.LOGIN, input, {
+    const payload = await api.post<{ user: AuthUser } & AuthTokens>(AUTH_ENDPOINT.LOGIN, input, {
       skipAuth: true,
     });
     await persistSession(payload);
@@ -30,7 +30,7 @@ export async function login(input: LoginInput): Promise<AuthActionResult> {
 
 export async function register(input: RegisterInput): Promise<AuthActionResult> {
   try {
-    const payload = await api.auth.post<{ user: AuthUser } & AuthTokens>(AUTH_ENDPOINT.REGISTER, input, {
+    const payload = await api.post<{ user: AuthUser } & AuthTokens>(AUTH_ENDPOINT.REGISTER, input, {
       skipAuth: true,
     });
     await persistSession(payload);
@@ -51,7 +51,7 @@ export async function logout(): Promise<void> {
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
-    return await api.users.get<AuthUser>(USER_ENDPOINT.ME);
+    return await api.get<AuthUser>(USER_ENDPOINT.ME);
   } catch {
     return null;
   }

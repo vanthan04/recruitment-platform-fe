@@ -1,17 +1,7 @@
-export type ServiceName = "auth" | "users" | "companies" | "categories" | "jobs";
+// Single backend origin. If this ever becomes real microservices, the plan
+// is a gateway (e.g. nginx) unifying them back into one origin for the
+// frontend to call — so there's no per-resource origin to configure here.
+export const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8080";
 
-const DEFAULT_ORIGIN = process.env.BACKEND_URL ?? "http://localhost:8080";
-
-// Every route is versioned under this prefix on the real backend.
+// Every route is versioned under this prefix on the backend.
 export const API_PREFIX = "/api/v1";
-
-// Each backend domain can live on its own origin (microservices). Falls back
-// to BACKEND_URL, then to a local-dev default, so a single monolith backend
-// (the current case) works with zero extra env vars.
-export const SERVICE_BASE_URL: Record<ServiceName, string> = {
-  auth: process.env.AUTH_SERVICE_URL ?? DEFAULT_ORIGIN,
-  users: process.env.USERS_SERVICE_URL ?? DEFAULT_ORIGIN,
-  companies: process.env.COMPANIES_SERVICE_URL ?? DEFAULT_ORIGIN,
-  categories: process.env.CATEGORIES_SERVICE_URL ?? DEFAULT_ORIGIN,
-  jobs: process.env.JOBS_SERVICE_URL ?? DEFAULT_ORIGIN,
-};

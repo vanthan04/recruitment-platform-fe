@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useApiToast } from "@/hooks/use-api-toast";
 import { login } from "@/lib/services/auth.service";
 
 const loginSchema = z.object({
@@ -17,8 +17,7 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const { run, isPending } = useApiToast();
   const {
     register,
     handleSubmit,
@@ -26,11 +25,7 @@ export function LoginForm() {
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = handleSubmit((values) => {
-    setServerError(null);
-    startTransition(async () => {
-      const result = await login(values);
-      if (result?.error) setServerError(result.error);
-    });
+    run(() => login(values));
   });
 
   return (
@@ -45,7 +40,6 @@ export function LoginForm() {
         <Input id="password" type="password" autoComplete="current-password" {...register("password")} />
         {errors.password && <p className="text-destructive text-sm">{errors.password.message}</p>}
       </div>
-      {serverError && <p className="text-destructive text-sm">{serverError}</p>}
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending ? "Đang đăng nhập..." : "Đăng nhập"}
       </Button>

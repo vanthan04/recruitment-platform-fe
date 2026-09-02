@@ -2,7 +2,7 @@ import type { NextRequest, NextResponse } from "next/server";
 import { parse as parseSetCookie } from "set-cookie-parser";
 import { ACCESS_TOKEN_COOKIE, AUTH_COOKIE_OPTIONS, REFRESH_TOKEN_COOKIE } from "@/lib/constants/auth";
 import { AUTH_ENDPOINT } from "@/lib/constants/endpoint";
-import { SERVICE_BASE_URL } from "@/lib/constants/service";
+import { API_PREFIX, BACKEND_URL } from "@/lib/constants/service";
 
 interface RefreshTokenPayload {
   accessToken: string;
@@ -21,7 +21,7 @@ export async function withSession(request: NextRequest, response: NextResponse):
   if (accessToken || !refreshTokenValue) return;
 
   try {
-    const backendResponse = await fetch(`${SERVICE_BASE_URL.auth}${AUTH_ENDPOINT.REFRESH}`, {
+    const backendResponse = await fetch(`${BACKEND_URL}${API_PREFIX}${AUTH_ENDPOINT.REFRESH}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken: refreshTokenValue }),

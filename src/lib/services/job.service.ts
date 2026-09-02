@@ -7,7 +7,7 @@ import type { Job, JobListParams } from "@/lib/types/job";
 import type { ListMeta } from "@/lib/types/common";
 
 export async function getJobs(params: JobListParams = {}): Promise<{ items: Job[]; meta?: ListMeta }> {
-  const { items, metadata } = await api.jobs.getPaginated<Job[]>(JOB_ENDPOINT.LIST, {
+  const { items, metadata } = await api.getPaginated<Job[]>(JOB_ENDPOINT.LIST, {
     searchParams: params,
     skipAuth: true,
     next: { tags: [CACHE_TAG.JOBS_LIST] },
@@ -16,7 +16,7 @@ export async function getJobs(params: JobListParams = {}): Promise<{ items: Job[
 }
 
 export async function getJobById(id: string): Promise<Job> {
-  return api.jobs.get<Job>(JOB_ENDPOINT.DETAIL(id), {
+  return api.get<Job>(JOB_ENDPOINT.DETAIL(id), {
     skipAuth: true,
     next: { tags: [CACHE_TAG.JOB_DETAIL(id)] },
   });

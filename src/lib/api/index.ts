@@ -2,7 +2,7 @@ import "server-only";
 import qs from "qs";
 import { ACCESS_TOKEN_COOKIE, AUTH_COOKIE_OPTIONS, REFRESH_TOKEN_COOKIE } from "@/lib/constants/auth";
 import { AUTH_ENDPOINT } from "@/lib/constants/endpoint";
-import { API_PREFIX, SERVICE_BASE_URL, type ServiceName } from "@/lib/constants/service";
+import { API_PREFIX, BACKEND_URL } from "@/lib/constants/service";
 import type { ApiEnvelope, ListMeta } from "@/lib/types/common";
 import { getCookies, getForwardedHeaders } from "@/lib/utils/http";
 
@@ -35,8 +35,6 @@ interface RefreshTokenPayload {
 }
 
 class Api {
-  constructor(private readonly service: ServiceName) {}
-
   get<T>(endpoint: string, options: ApiRequestOptions = {}) {
     return this.request<T>("GET", endpoint, options);
   }
@@ -123,7 +121,7 @@ class Api {
   }
 
   private buildUrl(endpoint: string, searchParams?: object): string {
-    const base = SERVICE_BASE_URL[this.service].replace(/\/$/, "");
+    const base = BACKEND_URL.replace(/\/$/, "");
     const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
     const query = searchParams
       ? qs.stringify(searchParams as Record<string, unknown>, {
@@ -164,8 +162,7 @@ class Api {
     if (!refreshTokenValue) return false;
 
     try {
-      const authApi = new Api("auth");
-      const payload = await authApi.post<RefreshTokenPayload>(
+      const payload = await this.post<RefreshTokenPayload>(
         AUTH_ENDPOINT.REFRESH,
         { refreshToken: refreshTokenValue },
         { skipAuth: true },
@@ -191,10 +188,4 @@ class Api {
   }
 }
 
-export const api: Record<ServiceName, Api> = {
-  auth: new Api("auth"),
-  users: new Api("users"),
-  companies: new Api("companies"),
-  categories: new Api("categories"),
-  jobs: new Api("jobs"),
-};
+export const api = new Api();
