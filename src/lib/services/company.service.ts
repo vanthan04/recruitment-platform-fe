@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 import { CACHE_TAG } from "@/lib/constants/cache-tag";
 import { COMPANY_ENDPOINT } from "@/lib/constants/endpoint";
 import type { ListMeta } from "@/lib/types/common";
-import type { Company, CompanyDetail, CompanyListParams } from "@/lib/types/company";
+import type { Company, CompanyListParams } from "@/lib/types/company";
 
 export async function getCompanies(
   params: CompanyListParams = {},
@@ -17,8 +17,8 @@ export async function getCompanies(
   return { items, meta: metadata };
 }
 
-export async function getCompanyById(id: string): Promise<CompanyDetail> {
-  return api.get<CompanyDetail>(COMPANY_ENDPOINT.DETAIL(id), {
+export async function getCompanyById(id: string): Promise<Company> {
+  return api.get<Company>(COMPANY_ENDPOINT.DETAIL(id), {
     skipAuth: true,
     next: { tags: [CACHE_TAG.COMPANY_DETAIL(id)] },
   });

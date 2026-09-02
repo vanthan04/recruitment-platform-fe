@@ -7,6 +7,7 @@ import { COMPANY_SIZE_LABEL } from "@/lib/constants/enum-label";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
 import { getCompanyById } from "@/lib/services/company.service";
+import { getJobs } from "@/lib/services/job.service";
 
 interface CompanyDetailPageProps {
   params: Promise<{ id: string }>;
@@ -14,7 +15,15 @@ interface CompanyDetailPageProps {
 
 export default async function CompanyDetailPage({ params }: CompanyDetailPageProps) {
   const { id } = await params;
-  const [company, user] = await Promise.all([fetchCompanyOr404(id), getCurrentUser()]);
+  // Company and its open jobs are two independent resources/services (see
+  // MICROSERVICES_MIGRATION_PLAN.md — the dependency only ever runs
+  // Jobs -> Companies, never the reverse), composed here on the page rather
+  // than the backend bundling job data into the company response.
+  const [company, user, { items: openJobs }] = await Promise.all([
+    fetchCompanyOr404(id),
+    getCurrentUser(),
+    getJobs({ companyId: id, limit: 50 }),
+  ]);
   const bookmarkedJobIds = user ? await getMyBookmarkedJobIds() : undefined;
 
   return (
@@ -59,10 +68,10 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
       </dl>
 
       <div>
-        <h2 className="mb-3 text-lg font-semibold">Việc làm đang tuyển ({company.openJobs.length})</h2>
-        {company.openJobs.length > 0 ? (
+        <h2 className="mb-3 text-lg font-semibold">Việc làm đang tuyển ({openJobs.length})</h2>
+        {openJobs.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2">
-            {company.openJobs.map((job) => (
+            {openJobs.map((job) => (
               <JobCard key={job.id} job={job} bookmarkedJobIds={bookmarkedJobIds} />
             ))}
           </div>

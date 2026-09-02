@@ -1,5 +1,3 @@
-import type { Job } from "@/lib/types/job";
-
 export type CompanySize = "SIZE_1_10" | "SIZE_11_50" | "SIZE_51_200" | "SIZE_201_500" | "SIZE_500_PLUS";
 
 export interface Company {
@@ -14,10 +12,6 @@ export interface Company {
   address: string | null;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface CompanyDetail extends Company {
-  openJobs: Job[];
 }
 
 export interface CompanyListParams {
