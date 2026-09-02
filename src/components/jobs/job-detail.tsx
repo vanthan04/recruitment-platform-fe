@@ -2,13 +2,24 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { ApplyDialog } from "@/components/jobs/apply-dialog";
 import { CompanyLogo } from "@/components/companies/company-logo";
+import { SaveJobButton } from "@/components/jobs/save-job-button";
 import { JOB_LEVEL_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
+import type { Cv } from "@/lib/types/cv";
 import type { Job } from "@/lib/types/job";
 import { formatRelativeDate, formatSalaryRange } from "@/lib/utils";
 
-export function JobDetail({ job }: { job: Job }) {
+interface JobDetailProps {
+  job: Job;
+  isLoggedIn: boolean;
+  isBookmarked?: boolean;
+  publishedCvs?: Cv[];
+  hasApplied?: boolean;
+}
+
+export function JobDetail({ job, isLoggedIn, isBookmarked, publishedCvs, hasApplied }: JobDetailProps) {
   return (
     <div className="space-y-5">
       <div className="flex items-start gap-3">
@@ -28,6 +39,7 @@ export function JobDetail({ job }: { job: Job }) {
           )}
           <p className="text-muted-foreground text-sm">{job.location}</p>
         </div>
+        {isLoggedIn && <SaveJobButton jobId={job.id} initialBookmarked={isBookmarked} />}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -43,9 +55,7 @@ export function JobDetail({ job }: { job: Job }) {
         <span className="text-muted-foreground">Đăng {formatRelativeDate(job.createdAt)}</span>
       </div>
 
-      <Button asChild className="w-full">
-        <Link href={PATH.LOGIN}>Ứng tuyển ngay</Link>
-      </Button>
+      <ApplyCta isLoggedIn={isLoggedIn} publishedCvs={publishedCvs} hasApplied={hasApplied} jobId={job.id} />
 
       <Separator />
 
@@ -69,4 +79,42 @@ export function JobDetail({ job }: { job: Job }) {
       </div>
     </div>
   );
+}
+
+function ApplyCta({
+  isLoggedIn,
+  publishedCvs,
+  hasApplied,
+  jobId,
+}: {
+  isLoggedIn: boolean;
+  publishedCvs?: Cv[];
+  hasApplied?: boolean;
+  jobId: string;
+}) {
+  if (!isLoggedIn) {
+    return (
+      <Button asChild className="w-full">
+        <Link href={PATH.LOGIN}>Ứng tuyển ngay</Link>
+      </Button>
+    );
+  }
+
+  if (hasApplied) {
+    return (
+      <Button className="w-full" disabled>
+        Đã ứng tuyển
+      </Button>
+    );
+  }
+
+  if (!publishedCvs || publishedCvs.length === 0) {
+    return (
+      <Button asChild variant="outline" className="w-full">
+        <Link href={PATH.CV_LIST}>Tạo và xuất bản CV để ứng tuyển</Link>
+      </Button>
+    );
+  }
+
+  return <ApplyDialog jobId={jobId} cvs={publishedCvs} />;
 }

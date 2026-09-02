@@ -1,4 +1,6 @@
 import type { CompanySize } from "@/lib/types/company";
+import type { Gender } from "@/lib/types/auth";
+import type { ApplicationStatus } from "@/lib/types/job-application";
 import type { JobLevel, JobType } from "@/lib/types/job";
 
 export const JOB_TYPE_LABEL: Record<JobType, string> = {
@@ -16,6 +18,19 @@ export const JOB_LEVEL_LABEL: Record<JobLevel, string> = {
   MIDDLE: "Middle",
   SENIOR: "Senior",
   MANAGER: "Quản lý",
+};
+
+export const GENDER_LABEL: Record<Gender, string> = {
+  MALE: "Nam",
+  FEMALE: "Nữ",
+  OTHER: "Khác",
+};
+
+export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
+  PENDING: "Đang chờ duyệt",
+  ACCEPTED: "Đã chấp nhận",
+  REJECTED: "Đã từ chối",
+  WITHDRAWN: "Đã rút đơn",
 };
 
 export const COMPANY_SIZE_LABEL: Record<CompanySize, string> = {

@@ -55,6 +55,13 @@ class Api {
     return this.request<T>("POST", endpoint, { ...options, body });
   }
 
+  // Multipart upload — body is FormData (a File under it), never
+  // JSON-stringified, and Content-Type is left for fetch to set itself
+  // (it needs to include the multipart boundary).
+  postForm<T>(endpoint: string, formData: FormData, options: ApiRequestOptions = {}) {
+    return this.request<T>("POST", endpoint, { ...options, body: formData });
+  }
+
   put<T>(endpoint: string, body?: unknown, options: ApiRequestOptions = {}) {
     return this.request<T>("PUT", endpoint, { ...options, body });
   }
@@ -84,14 +91,15 @@ class Api {
     isRetry = false,
   ): Promise<ApiEnvelope<T, M>> {
     const { body, searchParams, skipAuth, headers: customHeaders, next, cache, ...rest } = options;
+    const isFormData = body instanceof FormData;
     const url = this.buildUrl(endpoint, searchParams);
-    const requestHeaders = await this.buildHeaders(customHeaders, skipAuth);
+    const requestHeaders = await this.buildHeaders(customHeaders, skipAuth, isFormData);
 
     const response = await fetch(url, {
       ...rest,
       method,
       headers: requestHeaders,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isFormData ? body : JSON.stringify(body),
       // A GET is only cacheable when the caller opts in via `next.tags` (or
       // `next.revalidate`) — everything else stays dynamic by default.
       cache: next ? cache : (cache ?? "no-store"),
@@ -137,9 +145,10 @@ class Api {
   private async buildHeaders(
     custom: Record<string, string> | undefined,
     skipAuth?: boolean,
+    isFormData?: boolean,
   ): Promise<Headers> {
     const requestHeaders = new Headers(custom);
-    if (!requestHeaders.has("Content-Type")) {
+    if (!isFormData && !requestHeaders.has("Content-Type")) {
       requestHeaders.set("Content-Type", "application/json");
     }
 

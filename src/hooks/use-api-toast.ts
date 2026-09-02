@@ -7,8 +7,9 @@ interface ActionResult {
   error?: string;
 }
 
-interface UseApiToastOptions {
+interface UseApiToastOptions<T> {
   successMessage?: string;
+  onSuccess?: (result: T) => void;
 }
 
 // Wraps a Server Action call in a transition and turns its result into a
@@ -18,7 +19,7 @@ interface UseApiToastOptions {
 export function useApiToast() {
   const [isPending, startTransition] = useTransition();
 
-  function run<T extends ActionResult | void>(action: () => Promise<T>, options?: UseApiToastOptions) {
+  function run<T extends ActionResult | void>(action: () => Promise<T>, options?: UseApiToastOptions<T>) {
     startTransition(async () => {
       const result = await action();
       if (result && typeof result === "object" && "error" in result && result.error) {
@@ -26,6 +27,7 @@ export function useApiToast() {
         return;
       }
       if (options?.successMessage) toast.success(options.successMessage);
+      options?.onSuccess?.(result as T);
     });
   }
 

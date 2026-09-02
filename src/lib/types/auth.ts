@@ -67,6 +67,19 @@ export interface ResetPasswordInput {
   newPassword: string;
 }
 
+export interface UpdateProfileInput {
+  fullName?: string;
+  phoneNumber?: string;
+  gender?: Gender;
+  birthDate?: string;
+  avatarUrl?: string;
+}
+
+export interface ChangePasswordInput {
+  oldPassword: string;
+  newPassword: string;
+}
+
 export interface AuthActionResult {
   error?: string;
 }
@@ -80,5 +93,7 @@ export type AuthOperation = {
   logout: () => Promise<void>;
   forgotPassword: (input: ForgotPasswordInput) => Promise<AuthActionResult>;
   resetPassword: (input: ResetPasswordInput) => Promise<AuthActionResult>;
+  updateProfile: (input: UpdateProfileInput) => Promise<AuthActionResult>;
+  changePassword: (input: ChangePasswordInput) => Promise<AuthActionResult>;
   getCurrentUser: () => Promise<AuthUser | null>;
 };

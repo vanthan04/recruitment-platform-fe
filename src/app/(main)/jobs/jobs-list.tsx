@@ -21,6 +21,7 @@ interface JobsListProps {
   items: Job[];
   meta?: ListMeta;
   categories: Category[];
+  bookmarkedJobIds?: Set<string>;
   initialKeyword: string;
   initialLocation: string;
   initialJobType: string;
@@ -32,6 +33,7 @@ export function JobsList({
   items,
   meta,
   categories,
+  bookmarkedJobIds,
   initialKeyword,
   initialLocation,
   initialJobType,
@@ -147,7 +149,7 @@ export function JobsList({
 
       <div className={cn("grid gap-4 sm:grid-cols-2", isPending && "opacity-60")}>
         {items.map((job) => (
-          <JobCard key={job.id} job={job} />
+          <JobCard key={job.id} job={job} bookmarkedJobIds={bookmarkedJobIds} />
         ))}
         {items.length === 0 && (
           <p className="text-muted-foreground col-span-full py-10 text-center text-sm">

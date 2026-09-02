@@ -20,6 +20,13 @@ export function Header({ user }: { user: AuthUser | null }) {
         <nav className="hidden items-center gap-4 text-sm md:flex">
           <Link href={PATH.JOBS}>Việc làm</Link>
           <Link href={PATH.COMPANIES}>Công ty</Link>
+          {user && (
+            <>
+              <Link href={PATH.CV_LIST}>CV của tôi</Link>
+              <Link href={PATH.APPLICATIONS}>Đơn ứng tuyển</Link>
+              <Link href={PATH.SAVED_JOBS}>Việc đã lưu</Link>
+            </>
+          )}
         </nav>
         <div className="flex items-center gap-2">
           {user ? (

@@ -17,6 +17,7 @@ const config: Config = {
     "^.+\\.(css|sass|scss)$": "<rootDir>/jest/style-mock.ts",
     "^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$": "<rootDir>/jest/file-mock.ts",
     "^server-only$": "<rootDir>/jest/empty-mock.ts",
+    "^next/cache$": "<rootDir>/jest/next-cache-mock.ts",
   },
 };
 

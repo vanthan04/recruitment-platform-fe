@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import {
@@ -8,17 +9,19 @@ import {
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from "@/lib/constants/auth";
-import { AUTH_ENDPOINT, USER_ENDPOINT } from "@/lib/constants/endpoint";
+import { AUTH_ENDPOINT, FILE_ENDPOINT, USER_ENDPOINT } from "@/lib/constants/endpoint";
 import { PATH } from "@/lib/constants/path";
 import {
   toAuthTokens,
   type AuthActionResult,
   type AuthTokensWire,
   type AuthUser,
+  type ChangePasswordInput,
   type ForgotPasswordInput,
   type LoginInput,
   type RegisterInput,
   type ResetPasswordInput,
+  type UpdateProfileInput,
   type VerifyEmailInput,
 } from "@/lib/types/auth";
 import { getCookies } from "@/lib/utils/http";
@@ -98,6 +101,42 @@ export async function resetPassword(input: ResetPasswordInput): Promise<AuthActi
   }
 
   redirect(PATH.LOGIN);
+}
+
+export async function updateProfile(input: UpdateProfileInput): Promise<AuthActionResult> {
+  try {
+    // Returns only {message}, not the updated user — revalidate so the
+    // Server Component re-fetches via getCurrentUser() instead.
+    await api.patch(USER_ENDPOINT.PROFILE, input);
+  } catch (error) {
+    return { error: actionErrorMessage(error, "Cập nhật hồ sơ thất bại, vui lòng thử lại.") };
+  }
+
+  revalidatePath(PATH.PROFILE);
+  return {};
+}
+
+export async function updateAvatar(formData: FormData): Promise<AuthActionResult> {
+  try {
+    formData.set("folder", "avatars");
+    const upload = await api.postForm<{ url: string }>(FILE_ENDPOINT.UPLOAD, formData);
+    await api.patch(USER_ENDPOINT.PROFILE, { avatarUrl: upload.url });
+  } catch (error) {
+    return { error: actionErrorMessage(error, "Cập nhật ảnh đại diện thất bại, vui lòng thử lại.") };
+  }
+
+  revalidatePath(PATH.PROFILE);
+  return {};
+}
+
+export async function changePassword(input: ChangePasswordInput): Promise<AuthActionResult> {
+  try {
+    await api.post(AUTH_ENDPOINT.CHANGE_PASSWORD, input);
+  } catch (error) {
+    return { error: actionErrorMessage(error, "Đổi mật khẩu thất bại, vui lòng thử lại.") };
+  }
+
+  return {};
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {

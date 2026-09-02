@@ -4,18 +4,23 @@ import { CompanyCard } from "@/components/companies/company-card";
 import { JobCard } from "@/components/jobs/job-card";
 import { Badge } from "@/components/ui/badge";
 import { PATH } from "@/lib/constants/path";
+import { getCurrentUser } from "@/lib/services/auth.service";
+import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
 import { getCategories } from "@/lib/services/category.service";
 import { getCompanies } from "@/lib/services/company.service";
 import { getJobs } from "@/lib/services/job.service";
 
 export default async function HomePage() {
-  // Three independent data sources — fetched in parallel instead of
-  // awaited one after another.
-  const [{ items: jobs }, { items: companies }, categories] = await Promise.all([
+  // Independent data sources — fetched in parallel instead of awaited one
+  // after another.
+  const [{ items: jobs }, { items: companies }, categories, user] = await Promise.all([
     getJobs({ limit: 6 }),
     getCompanies({ limit: 6 }),
     getCategories(),
+    getCurrentUser(),
   ]);
+
+  const bookmarkedJobIds = user ? await getMyBookmarkedJobIds() : undefined;
 
   return (
     <div>
@@ -53,7 +58,7 @@ export default async function HomePage() {
         {jobs.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <JobCard key={job.id} job={job} bookmarkedJobIds={bookmarkedJobIds} />
             ))}
           </div>
         ) : (

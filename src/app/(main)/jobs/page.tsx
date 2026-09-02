@@ -1,4 +1,6 @@
 import { JobsList } from "@/app/(main)/jobs/jobs-list";
+import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
+import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCategories } from "@/lib/services/category.service";
 import { getJobs } from "@/lib/services/job.service";
 import type { JobLevel, JobType } from "@/lib/types/job";
@@ -18,9 +20,9 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const sp = await searchParams;
   const page = Number(sp.page ?? 1);
 
-  // Two independent data sources for this route — fetched in parallel
-  // instead of awaited one after another.
-  const [{ items, meta }, categories] = await Promise.all([
+  // Independent data sources for this route — fetched in parallel instead
+  // of awaited one after another.
+  const [{ items, meta }, categories, user] = await Promise.all([
     getJobs({
       page,
       keyword: sp.keyword,
@@ -30,7 +32,10 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
       categoryId: sp.categoryId,
     }),
     getCategories(),
+    getCurrentUser(),
   ]);
+
+  const bookmarkedJobIds = user ? await getMyBookmarkedJobIds() : undefined;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -39,6 +44,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         items={items}
         meta={meta}
         categories={categories}
+        bookmarkedJobIds={bookmarkedJobIds}
         initialKeyword={sp.keyword ?? ""}
         initialLocation={sp.location ?? ""}
         initialJobType={sp.jobType ?? ""}

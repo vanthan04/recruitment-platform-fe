@@ -4,6 +4,8 @@ import { CompanyLogo } from "@/components/companies/company-logo";
 import { JobCard } from "@/components/jobs/job-card";
 import { Badge } from "@/components/ui/badge";
 import { COMPANY_SIZE_LABEL } from "@/lib/constants/enum-label";
+import { getCurrentUser } from "@/lib/services/auth.service";
+import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
 import { getCompanyById } from "@/lib/services/company.service";
 
 interface CompanyDetailPageProps {
@@ -12,7 +14,8 @@ interface CompanyDetailPageProps {
 
 export default async function CompanyDetailPage({ params }: CompanyDetailPageProps) {
   const { id } = await params;
-  const company = await fetchCompanyOr404(id);
+  const [company, user] = await Promise.all([fetchCompanyOr404(id), getCurrentUser()]);
+  const bookmarkedJobIds = user ? await getMyBookmarkedJobIds() : undefined;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
@@ -60,7 +63,7 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
         {company.openJobs.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2">
             {company.openJobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+              <JobCard key={job.id} job={job} bookmarkedJobIds={bookmarkedJobIds} />
             ))}
           </div>
         ) : (
