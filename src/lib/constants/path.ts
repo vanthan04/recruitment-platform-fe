@@ -15,4 +15,6 @@ export const PATH = {
   CV_EDIT: (id: string) => `/cv/${id}/edit`,
   APPLICATIONS: "/applications",
   SAVED_JOBS: "/saved-jobs",
+  MESSAGES: "/messages",
+  RECRUITER_JOB_APPLICATIONS: (jobId: string) => `/recruiter/jobs/${jobId}/applications`,
 } as const;

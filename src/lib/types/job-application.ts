@@ -1,5 +1,11 @@
 export type ApplicationStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "WITHDRAWN";
 
+export interface ApplicationCandidateSummary {
+  id: string;
+  fullName: string;
+  avatarUrl: string | null;
+}
+
 export interface JobApplication {
   id: string;
   status: ApplicationStatus;
@@ -9,6 +15,8 @@ export interface JobApplication {
   cvId: string;
   createdAt: string;
   updatedAt: string;
+  /** Only populated by GET /job-applications/job/:jobId (recruiter view). */
+  candidate?: ApplicationCandidateSummary;
 }
 
 export interface CreateApplicationInput {

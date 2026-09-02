@@ -15,7 +15,7 @@ export function Header({ user }: { user: AuthUser | null }) {
     <header className="border-b">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <Link href={PATH.HOME} className="font-semibold">
-          TopCV Clone
+          Recruitment Platform
         </Link>
         <nav className="hidden items-center gap-4 text-sm md:flex">
           <Link href={PATH.JOBS}>Việc làm</Link>
@@ -25,6 +25,7 @@ export function Header({ user }: { user: AuthUser | null }) {
               <Link href={PATH.CV_LIST}>CV của tôi</Link>
               <Link href={PATH.APPLICATIONS}>Đơn ứng tuyển</Link>
               <Link href={PATH.SAVED_JOBS}>Việc đã lưu</Link>
+              <Link href={PATH.MESSAGES}>Tin nhắn</Link>
             </>
           )}
         </nav>

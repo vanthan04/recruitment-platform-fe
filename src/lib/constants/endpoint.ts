@@ -53,3 +53,11 @@ export const BOOKMARK_ENDPOINT = {
   TOGGLE: (jobId: string) => `/bookmarks/toggle/${jobId}`,
   LIST: "/bookmarks",
 } as const;
+
+export const CHAT_ENDPOINT = {
+  CONVERSATIONS: "/conversations",
+  CONVERSATION_DETAIL: (id: string) => `/conversations/${id}`,
+  MESSAGES: (conversationId: string) => `/conversations/${conversationId}/messages`,
+  READ: (conversationId: string) => `/conversations/${conversationId}/read`,
+  MESSAGE_DETAIL: (id: string) => `/messages/${id}`,
+} as const;

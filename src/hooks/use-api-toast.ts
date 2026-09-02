@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { toast } from "sonner";
-import { ApiError } from "@/lib/api";
+import { ApiError } from "@/lib/api/error";
 
 interface UseApiToastOptions<T> {
   successMessage?: string;

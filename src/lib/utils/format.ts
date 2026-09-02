@@ -24,3 +24,16 @@ export function formatRelativeDate(iso: string): string {
   if (diffDays < 30) return `${diffDays} ngày trước`;
   return date.toLocaleDateString("vi-VN");
 }
+
+/** Finer-grained than formatRelativeDate — minutes/hours today, then day-relative. */
+export function formatMessageTime(iso: string): string {
+  const date = new Date(iso);
+  const diffMs = Date.now() - date.getTime();
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+  if (diffMinutes < 1) return "Vừa xong";
+  if (diffMinutes < 60) return `${diffMinutes} phút trước`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  return formatRelativeDate(iso);
+}

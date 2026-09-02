@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TopCV Clone",
+  title: "Recruitment Platform",
   description: "Nền tảng tìm việc làm",
 };
 

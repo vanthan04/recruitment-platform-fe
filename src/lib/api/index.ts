@@ -11,18 +11,12 @@ import { API_PREFIX, BACKEND_URL } from "@/lib/constants/service";
 import { toAuthTokens, type AuthTokens, type AuthTokensWire } from "@/lib/types/auth";
 import type { ApiEnvelope, ListMeta } from "@/lib/types/common";
 import { getCookies, getForwardedHeaders } from "@/lib/utils/http";
+import { ApiError } from "@/lib/api/error";
 
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly code?: string,
-    public readonly data?: unknown,
-  ) {
-    super(message);
-    this.name = "ApiError";
-  }
-}
+// Re-exported for server-side call sites that already import it from here —
+// client components must import from "@/lib/api/error" directly instead
+// (see that file for why).
+export { ApiError };
 
 interface ApiRequestOptions extends Omit<RequestInit, "body" | "headers"> {
   body?: unknown;
