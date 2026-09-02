@@ -1,8 +1,14 @@
 import "server-only";
 import qs from "qs";
-import { ACCESS_TOKEN_COOKIE, AUTH_COOKIE_OPTIONS, REFRESH_TOKEN_COOKIE } from "@/lib/constants/auth";
+import {
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_COOKIE_OPTIONS,
+  REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE_OPTIONS,
+} from "@/lib/constants/auth";
 import { AUTH_ENDPOINT } from "@/lib/constants/endpoint";
 import { API_PREFIX, BACKEND_URL } from "@/lib/constants/service";
+import { toAuthTokens, type AuthTokens, type AuthTokensWire } from "@/lib/types/auth";
 import type { ApiEnvelope, ListMeta } from "@/lib/types/common";
 import { getCookies, getForwardedHeaders } from "@/lib/utils/http";
 
@@ -27,11 +33,6 @@ interface ApiRequestOptions extends Omit<RequestInit, "body" | "headers"> {
   searchParams?: object;
   /** Skip attaching the access token cookie, e.g. for login/register/refresh. */
   skipAuth?: boolean;
-}
-
-interface RefreshTokenPayload {
-  accessToken: string;
-  refreshToken: string;
 }
 
 class Api {
@@ -162,23 +163,23 @@ class Api {
     if (!refreshTokenValue) return false;
 
     try {
-      const payload = await this.post<RefreshTokenPayload>(
+      const wire = await this.post<AuthTokensWire>(
         AUTH_ENDPOINT.REFRESH,
         { refreshToken: refreshTokenValue },
         { skipAuth: true },
       );
-      await this.persistTokens(payload);
+      await this.persistTokens(toAuthTokens(wire));
       return true;
     } catch {
       return false;
     }
   }
 
-  private async persistTokens({ accessToken, refreshToken }: RefreshTokenPayload): Promise<void> {
+  private async persistTokens({ accessToken, refreshToken }: AuthTokens): Promise<void> {
     try {
       const cookieStore = await getCookies();
-      cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, AUTH_COOKIE_OPTIONS);
-      cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, AUTH_COOKIE_OPTIONS);
+      cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+      cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
     } catch {
       // cookies() is read-only during a Server Component render (e.g. a plain
       // GET fetch from page.tsx). The refreshed token above is still used for

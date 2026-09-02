@@ -11,6 +11,11 @@ export default function LoginPage() {
       </div>
       <LoginForm />
       <p className="text-muted-foreground text-center text-sm">
+        <Link href={PATH.FORGOT_PASSWORD} className="text-foreground font-medium underline">
+          Quên mật khẩu?
+        </Link>
+      </p>
+      <p className="text-muted-foreground text-center text-sm">
         Chưa có tài khoản?{" "}
         <Link href={PATH.REGISTER} className="text-foreground font-medium underline">
           Đăng ký

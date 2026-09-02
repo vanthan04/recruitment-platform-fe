@@ -1,12 +1,18 @@
 import type { NextRequest, NextResponse } from "next/server";
 import { parse as parseSetCookie } from "set-cookie-parser";
-import { ACCESS_TOKEN_COOKIE, AUTH_COOKIE_OPTIONS, REFRESH_TOKEN_COOKIE } from "@/lib/constants/auth";
+import {
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_COOKIE_OPTIONS,
+  REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE_OPTIONS,
+} from "@/lib/constants/auth";
 import { AUTH_ENDPOINT } from "@/lib/constants/endpoint";
 import { API_PREFIX, BACKEND_URL } from "@/lib/constants/service";
+import { toAuthTokens, type AuthTokensWire } from "@/lib/types/auth";
+import type { ApiEnvelope } from "@/lib/types/common";
 
-interface RefreshTokenPayload {
-  accessToken: string;
-  refreshToken: string;
+function cookieOptionsFor(name: string) {
+  return name === ACCESS_TOKEN_COOKIE ? ACCESS_TOKEN_COOKIE_OPTIONS : REFRESH_TOKEN_COOKIE_OPTIONS;
 }
 
 /**
@@ -35,18 +41,20 @@ export async function withSession(request: NextRequest, response: NextResponse):
     const rawSetCookies = backendResponse.headers.getSetCookie?.() ?? [];
     if (rawSetCookies.length > 0) {
       for (const cookie of parseSetCookie(rawSetCookies)) {
+        const defaults = cookieOptionsFor(cookie.name);
         response.cookies.set(cookie.name, cookie.value, {
-          ...AUTH_COOKIE_OPTIONS,
-          path: cookie.path ?? AUTH_COOKIE_OPTIONS.path,
-          maxAge: cookie.maxAge ?? AUTH_COOKIE_OPTIONS.maxAge,
+          ...defaults,
+          path: cookie.path ?? defaults.path,
+          maxAge: cookie.maxAge ?? defaults.maxAge,
         });
       }
       return;
     }
 
-    const payload = (await backendResponse.json()) as RefreshTokenPayload;
-    response.cookies.set(ACCESS_TOKEN_COOKIE, payload.accessToken, AUTH_COOKIE_OPTIONS);
-    response.cookies.set(REFRESH_TOKEN_COOKIE, payload.refreshToken, AUTH_COOKIE_OPTIONS);
+    const envelope = (await backendResponse.json()) as ApiEnvelope<AuthTokensWire>;
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } = toAuthTokens(envelope.data);
+    response.cookies.set(ACCESS_TOKEN_COOKIE, newAccessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+    response.cookies.set(REFRESH_TOKEN_COOKIE, newRefreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
   } catch {
     // Backend unreachable — proceed unauthenticated; auth.middleware decides
     // whether the requested route requires a redirect.

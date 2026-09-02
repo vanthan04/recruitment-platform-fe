@@ -1,7 +1,11 @@
 export const AUTH_ENDPOINT = {
   LOGIN: "/auth/login",
   REGISTER: "/auth/register",
+  VERIFY: "/auth/verify",
   REFRESH: "/auth/refresh",
+  LOGOUT: "/auth/logout",
+  FORGOT_PASSWORD: "/auth/forgot-password",
+  RESET_PASSWORD: "/auth/reset-password",
 } as const;
 
 export const USER_ENDPOINT = {

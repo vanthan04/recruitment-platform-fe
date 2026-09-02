@@ -12,7 +12,7 @@ export default async function ProfilePage() {
       <dl className="mt-4 space-y-2 text-sm">
         <div>
           <dt className="text-muted-foreground">Họ tên</dt>
-          <dd>{user.name}</dd>
+          <dd>{user.profile.fullName}</dd>
         </div>
         <div>
           <dt className="text-muted-foreground">Email</dt>

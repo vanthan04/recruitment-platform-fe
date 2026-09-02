@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/contexts/sidebar-context";
 import { PATH } from "@/lib/constants/path";
+import { logout } from "@/lib/services/auth.service";
 import type { AuthUser } from "@/lib/types/auth";
 
 export function Header({ user }: { user: AuthUser | null }) {
@@ -22,9 +23,16 @@ export function Header({ user }: { user: AuthUser | null }) {
         </nav>
         <div className="flex items-center gap-2">
           {user ? (
-            <Link href={PATH.PROFILE} className="text-sm font-medium">
-              {user.name}
-            </Link>
+            <>
+              <Link href={PATH.PROFILE} className="text-sm font-medium">
+                {user.profile.fullName}
+              </Link>
+              <form action={logout}>
+                <Button type="submit" variant="ghost" size="sm">
+                  Đăng xuất
+                </Button>
+              </form>
+            </>
           ) : (
             <Link href={PATH.LOGIN}>
               <Button size="sm">Đăng nhập</Button>

@@ -3,7 +3,13 @@ import { ACCESS_TOKEN_COOKIE } from "@/lib/constants/auth";
 import { PATH } from "@/lib/constants/path";
 
 const PROTECTED_PREFIXES = [PATH.PROFILE];
-const GUEST_ONLY_PATHS = [PATH.LOGIN, PATH.REGISTER];
+const GUEST_ONLY_PATHS = [
+  PATH.LOGIN,
+  PATH.REGISTER,
+  PATH.VERIFY_EMAIL,
+  PATH.FORGOT_PASSWORD,
+  PATH.RESET_PASSWORD,
+];
 
 // Cookie-presence check only — fast, edge-safe, no backend round trip.
 // Pages that need the token to actually be *valid* (e.g. profile/page.tsx)
