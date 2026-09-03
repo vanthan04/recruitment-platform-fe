@@ -31,6 +31,20 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This app deploys to [Vercel](https://vercel.com) — connect this repo as a
+Vercel project (Vercel auto-detects Next.js, no config needed) and every
+push to `main` deploys automatically. Almost every route here is
+server-rendered, so it needs a Node runtime (not a static export); Vercel
+provides that on its free Hobby plan.
+
+Set these as Vercel project env vars (Project Settings → Environment
+Variables), pointing at the backend's EC2 Elastic IP (or a domain once
+one exists — see `recruitment-platform-be/DEPLOY.md` and the
+`recruitment-platform-infra` repo for how that's provisioned):
+
+- `BACKEND_URL` — server-side origin for API calls.
+- `NEXT_PUBLIC_BACKEND_URL` — same origin, exposed to the browser (the
+  realtime chat socket is opened client-side, so it needs this rather
+  than the server-only `BACKEND_URL`).
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
