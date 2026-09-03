@@ -50,6 +50,29 @@ export interface JobListParams {
   salaryMax?: number;
 }
 
+export interface JobMineListParams {
+  page?: number;
+  limit?: number;
+  status?: JobStatus;
+}
+
+export interface CreateJobInput {
+  title: string;
+  description: string;
+  location: string;
+  jobType?: JobType;
+  level?: JobLevel;
+  categoryId?: string;
+  salaryMin?: number;
+  salaryMax?: number;
+  currency?: string;
+  requirements?: string;
+  benefits?: string;
+  expiresAt?: string;
+}
+
+export type UpdateJobInput = Partial<CreateJobInput>;
+
 export type JobOperation = {
   list: (params?: JobListParams) => Promise<{ items: Job[]; total: number; page: number; limit: number }>;
   detail: (id: string) => Promise<Job>;

@@ -1,7 +1,9 @@
 import type { CompanySize } from "@/lib/types/company";
 import type { Gender } from "@/lib/types/auth";
+import type { InterviewStatus } from "@/lib/types/interview";
 import type { ApplicationStatus } from "@/lib/types/job-application";
-import type { JobLevel, JobType } from "@/lib/types/job";
+import type { JobLevel, JobStatus, JobType } from "@/lib/types/job";
+import type { NotificationType } from "@/lib/types/notification";
 
 export const JOB_TYPE_LABEL: Record<JobType, string> = {
   FULL_TIME: "Toàn thời gian",
@@ -39,4 +41,22 @@ export const COMPANY_SIZE_LABEL: Record<CompanySize, string> = {
   SIZE_51_200: "51 - 200 nhân viên",
   SIZE_201_500: "201 - 500 nhân viên",
   SIZE_500_PLUS: "Trên 500 nhân viên",
+};
+
+export const JOB_STATUS_LABEL: Record<JobStatus, string> = {
+  DRAFT: "Nháp",
+  OPEN: "Đang tuyển",
+  CLOSED: "Đã đóng",
+};
+
+export const NOTIFICATION_TYPE_LABEL: Record<NotificationType, string> = {
+  NEW_APPLICATION: "Ứng viên mới",
+  APPLICATION_STATUS_CHANGED: "Cập nhật đơn ứng tuyển",
+  NEW_MESSAGE: "Tin nhắn mới",
+};
+
+export const INTERVIEW_STATUS_LABEL: Record<InterviewStatus, string> = {
+  SCHEDULED: "Đã lên lịch",
+  RESCHEDULED: "Đã dời lịch",
+  CANCELLED: "Đã huỷ",
 };

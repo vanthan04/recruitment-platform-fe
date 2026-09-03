@@ -50,6 +50,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         initialJobType={sp.jobType ?? ""}
         initialLevel={sp.level ?? ""}
         initialCategoryId={sp.categoryId ?? ""}
+        isCandidate={user?.role === "CANDIDATE"}
       />
     </div>
   );

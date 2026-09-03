@@ -20,3 +20,15 @@ export interface CompanyListParams {
   keyword?: string;
   industry?: string;
 }
+
+export interface CreateCompanyInput {
+  name: string;
+  logoUrl?: string;
+  description?: string;
+  website?: string;
+  industry?: string;
+  size?: CompanySize;
+  address?: string;
+}
+
+export type UpdateCompanyInput = Partial<CreateCompanyInput>;

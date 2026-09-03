@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { JobCard } from "@/components/jobs/job-card";
+import { SaveSearchButton } from "@/components/jobs/save-search-button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PaginationBar } from "@/components/shared/pagination-bar";
@@ -27,6 +28,7 @@ interface JobsListProps {
   initialJobType: string;
   initialLevel: string;
   initialCategoryId: string;
+  isCandidate?: boolean;
 }
 
 export function JobsList({
@@ -39,6 +41,7 @@ export function JobsList({
   initialJobType,
   initialLevel,
   initialCategoryId,
+  isCandidate,
 }: JobsListProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -126,26 +129,29 @@ export function JobsList({
         </Select>
       </div>
 
-      {categories.length > 0 && (
-        <Select
-          value={initialCategoryId || ALL}
-          onValueChange={(value) =>
-            pushParams({ categoryId: value === ALL ? undefined : value, page: undefined })
-          }
-        >
-          <SelectTrigger className="sm:w-64">
-            <SelectValue placeholder="Ngành nghề" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>Tất cả ngành nghề</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )}
+      <div className="flex flex-wrap items-center gap-3">
+        {categories.length > 0 && (
+          <Select
+            value={initialCategoryId || ALL}
+            onValueChange={(value) =>
+              pushParams({ categoryId: value === ALL ? undefined : value, page: undefined })
+            }
+          >
+            <SelectTrigger className="sm:w-64">
+              <SelectValue placeholder="Ngành nghề" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Tất cả ngành nghề</SelectItem>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        {isCandidate && <SaveSearchButton />}
+      </div>
 
       <div className={cn("grid gap-4 sm:grid-cols-2", isPending && "opacity-60")}>
         {items.map((job) => (

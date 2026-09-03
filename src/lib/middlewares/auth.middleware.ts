@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ACCESS_TOKEN_COOKIE } from "@/lib/constants/auth";
 import { PATH } from "@/lib/constants/path";
 
-const PROTECTED_PREFIXES = [PATH.PROFILE];
+const PROTECTED_PREFIXES = [PATH.PROFILE, "/recruiter"];
 const GUEST_ONLY_PATHS = [
   PATH.LOGIN,
   PATH.REGISTER,

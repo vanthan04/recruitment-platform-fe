@@ -4,10 +4,26 @@ import { Badge } from "@/components/ui/badge";
 import { APPLICATION_STATUS_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
-import { getApplicationsForJob } from "@/lib/services/job-application.service";
+import { getApplicationsForJob, getApplicationStats } from "@/lib/services/job-application.service";
 import { getJobById } from "@/lib/services/job.service";
+import { getInterviewsForApplication } from "@/lib/services/interview.service";
+import type { Interview } from "@/lib/types/interview";
+import type { JobApplication } from "@/lib/types/job-application";
 import { formatRelativeDate } from "@/lib/utils";
 import { ApplicationActions } from "./application-actions";
+import { InterviewPanel } from "./interview-panel";
+import { JobStatsPanel } from "./job-stats-panel";
+
+async function resolveInterviews(applications: JobApplication[]): Promise<Map<string, Interview>> {
+  const acceptedIds = applications.filter((a) => a.status === "ACCEPTED").map((a) => a.id);
+  const lists = await Promise.all(
+    acceptedIds.map((id) => getInterviewsForApplication(id).catch(() => [] as Interview[])),
+  );
+  const entries = acceptedIds
+    .map((id, index) => [id, lists[index].find((interview) => interview.status !== "CANCELLED")] as const)
+    .filter((entry): entry is [string, Interview] => Boolean(entry[1]));
+  return new Map(entries);
+}
 
 function initials(name: string): string {
   return name
@@ -30,36 +46,53 @@ export default async function RecruiterJobApplicationsPage({
   const { jobId } = await params;
   // The backend rejects this for non-owners (403) — surfaced via the route's
   // error boundary, same as every other data-loading page in this app.
-  const [job, applications] = await Promise.all([getJobById(jobId), getApplicationsForJob(jobId)]);
+  const [job, applications, stats] = await Promise.all([
+    getJobById(jobId),
+    getApplicationsForJob(jobId),
+    getApplicationStats(jobId),
+  ]);
+  // Interviews only make sense once an application is ACCEPTED — skip the
+  // extra round trips for the rest.
+  const interviewByApplicationId = await resolveInterviews(applications);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="mb-1 text-2xl font-semibold">Ứng viên</h1>
       <p className="text-muted-foreground mb-6 text-sm">{job.title}</p>
 
+      <JobStatsPanel stats={stats} />
+
       <div className="space-y-4">
         {applications.map((application) => (
-          <div key={application.id} className="flex items-start justify-between gap-3 rounded-lg border p-4">
-            <div className="flex items-start gap-3">
-              <Avatar>
-                {application.candidate?.avatarUrl && (
-                  <AvatarImage src={application.candidate.avatarUrl} alt={application.candidate.fullName} />
-                )}
-                <AvatarFallback>{initials(application.candidate?.fullName ?? "?")}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium">{application.candidate?.fullName ?? "Ứng viên"}</p>
-                <div className="mt-1 flex items-center gap-2">
-                  <Badge variant={application.status === "PENDING" ? "secondary" : "outline"}>
-                    {APPLICATION_STATUS_LABEL[application.status]}
-                  </Badge>
-                  <span className="text-muted-foreground text-xs">
-                    Ứng tuyển {formatRelativeDate(application.createdAt)}
-                  </span>
+          <div key={application.id} className="rounded-lg border p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <Avatar>
+                  {application.candidate?.avatarUrl && (
+                    <AvatarImage src={application.candidate.avatarUrl} alt={application.candidate.fullName} />
+                  )}
+                  <AvatarFallback>{initials(application.candidate?.fullName ?? "?")}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{application.candidate?.fullName ?? "Ứng viên"}</p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <Badge variant={application.status === "PENDING" ? "secondary" : "outline"}>
+                      {APPLICATION_STATUS_LABEL[application.status]}
+                    </Badge>
+                    <span className="text-muted-foreground text-xs">
+                      Ứng tuyển {formatRelativeDate(application.createdAt)}
+                    </span>
+                  </div>
                 </div>
               </div>
+              <ApplicationActions application={application} />
             </div>
-            <ApplicationActions application={application} />
+            {application.status === "ACCEPTED" && (
+              <InterviewPanel
+                applicationId={application.id}
+                interview={interviewByApplicationId.get(application.id)}
+              />
+            )}
           </div>
         ))}
         {applications.length === 0 && (

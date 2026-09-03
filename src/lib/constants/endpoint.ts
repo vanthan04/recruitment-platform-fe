@@ -20,7 +20,10 @@ export const FILE_ENDPOINT = {
 
 export const JOB_ENDPOINT = {
   LIST: "/jobs",
+  MINE: "/jobs/mine",
   DETAIL: (id: string) => `/jobs/${id}`,
+  CLOSE: (id: string) => `/jobs/${id}/close`,
+  REOPEN: (id: string) => `/jobs/${id}/reopen`,
 } as const;
 
 export const COMPANY_ENDPOINT = {
@@ -52,6 +55,24 @@ export const JOB_APPLICATION_ENDPOINT = {
 export const BOOKMARK_ENDPOINT = {
   TOGGLE: (jobId: string) => `/bookmarks/toggle/${jobId}`,
   LIST: "/bookmarks",
+} as const;
+
+export const NOTIFICATION_ENDPOINT = {
+  LIST: "/notifications",
+  MARK_READ: (id: string) => `/notifications/${id}/read`,
+  MARK_ALL_READ: "/notifications/read-all",
+} as const;
+
+export const SAVED_SEARCH_ENDPOINT = {
+  LIST: "/saved-searches",
+  DETAIL: (id: string) => `/saved-searches/${id}`,
+} as const;
+
+export const INTERVIEW_ENDPOINT = {
+  LIST: "/interviews",
+  DETAIL: (id: string) => `/interviews/${id}`,
+  CANCEL: (id: string) => `/interviews/${id}/cancel`,
+  FOR_APPLICATION: (applicationId: string) => `/interviews/application/${applicationId}`,
 } as const;
 
 export const CHAT_ENDPOINT = {
