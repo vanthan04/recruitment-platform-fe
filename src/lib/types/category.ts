@@ -3,3 +3,9 @@ export interface Category {
   name: string;
   slug: string;
 }
+
+export interface CreateCategoryInput {
+  name: string;
+}
+
+export type UpdateCategoryInput = CreateCategoryInput;

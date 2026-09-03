@@ -26,4 +26,5 @@ export const PATH = {
   ADMIN_USERS: "/admin/users",
   ADMIN_ROLES: "/admin/roles",
   ADMIN_ROLE_DETAIL: (id: string) => `/admin/roles/${id}`,
+  ADMIN_CATEGORIES: "/admin/categories",
 } as const;

@@ -46,6 +46,7 @@ export const COMPANY_ENDPOINT = {
 
 export const CATEGORY_ENDPOINT = {
   LIST: "/categories",
+  DETAIL: (id: string) => `/categories/${id}`,
 } as const;
 
 export const CV_ENDPOINT = {

@@ -41,6 +41,7 @@ export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unrea
             <>
               <Link href={PATH.ADMIN_USERS}>Người dùng</Link>
               <Link href={PATH.ADMIN_ROLES}>Vai trò & Quyền hạn</Link>
+              <Link href={PATH.ADMIN_CATEGORIES}>Danh mục</Link>
             </>
           )}
         </nav>
