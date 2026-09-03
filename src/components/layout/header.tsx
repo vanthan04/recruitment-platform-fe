@@ -37,7 +37,12 @@ export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unrea
               <Link href={PATH.MESSAGES}>Tin nhắn</Link>
             </>
           )}
-          {user && user.role === "ADMIN" && <Link href={PATH.ADMIN_USERS}>Quản trị</Link>}
+          {user && user.role === "ADMIN" && (
+            <>
+              <Link href={PATH.ADMIN_USERS}>Người dùng</Link>
+              <Link href={PATH.ADMIN_ROLES}>Vai trò & Quyền hạn</Link>
+            </>
+          )}
         </nav>
         <div className="flex items-center gap-2">
           {user ? (

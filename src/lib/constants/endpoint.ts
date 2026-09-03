@@ -20,6 +20,13 @@ export const ADMIN_USER_ENDPOINT = {
   DETAIL: (id: string) => `/admin/users/${id}`,
 } as const;
 
+export const ADMIN_RBAC_ENDPOINT = {
+  ROLES: "/admin/roles",
+  ROLE_DETAIL: (id: string) => `/admin/roles/${id}`,
+  PERMISSIONS: "/admin/permissions",
+  ROLE_PERMISSIONS: (id: string) => `/admin/roles/${id}/permissions`,
+} as const;
+
 export const FILE_ENDPOINT = {
   UPLOAD: "/files/upload",
 } as const;
