@@ -1,5 +1,5 @@
 import type { CompanySize } from "@/lib/types/company";
-import type { Gender } from "@/lib/types/auth";
+import type { Gender, UserRole, UserStatus } from "@/lib/types/auth";
 import type { InterviewStatus } from "@/lib/types/interview";
 import type { ApplicationStatus } from "@/lib/types/job-application";
 import type { JobLevel, JobStatus, JobType } from "@/lib/types/job";
@@ -26,6 +26,18 @@ export const GENDER_LABEL: Record<Gender, string> = {
   MALE: "Nam",
   FEMALE: "Nữ",
   OTHER: "Khác",
+};
+
+export const USER_ROLE_LABEL: Record<UserRole, string> = {
+  CANDIDATE: "Người tìm việc",
+  RECRUITER: "Nhà tuyển dụng",
+  ADMIN: "Quản trị viên",
+};
+
+export const USER_STATUS_LABEL: Record<UserStatus, string> = {
+  PENDING: "Chưa xác thực",
+  ACTIVE: "Đang hoạt động",
+  BLOCKED: "Đã khoá",
 };
 
 export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {

@@ -60,6 +60,17 @@ export async function logout(): Promise<void> {
   redirect(PATH.LOGIN);
 }
 
+export async function logoutAll(): Promise<void> {
+  // Revokes every refresh token for this user server-side — best-effort,
+  // same reasoning as logout() above.
+  await api.post(AUTH_ENDPOINT.LOGOUT_ALL).catch(() => undefined);
+
+  const cookieStore = await getCookies();
+  cookieStore.delete(ACCESS_TOKEN_COOKIE);
+  cookieStore.delete(REFRESH_TOKEN_COOKIE);
+  redirect(PATH.LOGIN);
+}
+
 export async function forgotPassword(input: ForgotPasswordInput): Promise<void> {
   await api.post(AUTH_ENDPOINT.FORGOT_PASSWORD, input, { skipAuth: true });
   redirect(PATH.RESET_PASSWORD);

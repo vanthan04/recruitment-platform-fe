@@ -44,3 +44,10 @@ export async function uploadCompanyLogo(id: string, formData: FormData): Promise
   const upload = await api.postForm<{ url: string }>(FILE_ENDPOINT.UPLOAD, formData);
   await updateCompany(id, { logoUrl: upload.url });
 }
+
+export async function deleteCompany(id: string): Promise<void> {
+  await api.delete(COMPANY_ENDPOINT.DETAIL(id));
+  revalidatePath(PATH.RECRUITER_COMPANY);
+  revalidateTag(CACHE_TAG.COMPANY_DETAIL(id));
+  revalidateTag(CACHE_TAG.COMPANIES_LIST);
+}

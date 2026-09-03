@@ -4,6 +4,7 @@ import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { AvatarUpload } from "./avatar-upload";
 import { ChangePasswordForm } from "./change-password-form";
+import { LogoutAllButton } from "./logout-all-button";
 import { ProfileForm } from "./profile-form";
 
 export default async function ProfilePage() {
@@ -26,6 +27,16 @@ export default async function ProfilePage() {
       <div>
         <h2 className="mb-4 text-lg font-semibold">Đổi mật khẩu</h2>
         <ChangePasswordForm />
+      </div>
+
+      <Separator />
+
+      <div>
+        <h2 className="mb-1 text-lg font-semibold">Phiên đăng nhập</h2>
+        <p className="text-muted-foreground mb-4 text-sm">
+          Đăng xuất khỏi tất cả thiết bị đang đăng nhập vào tài khoản này, kể cả thiết bị hiện tại.
+        </p>
+        <LogoutAllButton />
       </div>
     </div>
   );

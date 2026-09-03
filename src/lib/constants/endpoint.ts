@@ -4,6 +4,7 @@ export const AUTH_ENDPOINT = {
   VERIFY: "/auth/verify",
   REFRESH: "/auth/refresh",
   LOGOUT: "/auth/logout",
+  LOGOUT_ALL: "/auth/logout-all",
   FORGOT_PASSWORD: "/auth/forgot-password",
   RESET_PASSWORD: "/auth/reset-password",
   CHANGE_PASSWORD: "/auth/change-password",
@@ -12,6 +13,11 @@ export const AUTH_ENDPOINT = {
 export const USER_ENDPOINT = {
   ME: "/users/me",
   PROFILE: "/users/profile",
+} as const;
+
+export const ADMIN_USER_ENDPOINT = {
+  LIST: "/admin/users",
+  DETAIL: (id: string) => `/admin/users/${id}`,
 } as const;
 
 export const FILE_ENDPOINT = {
