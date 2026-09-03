@@ -16,6 +16,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      # `next build` writes ambient route types (e.g. LayoutProps) to
+      # .next/types/ — tsc needs that to exist first, so build runs before
+      # typecheck. A fresh checkout has no .next/ at all otherwise, and
+      # `tsc --noEmit` fails on every layout.tsx/page.tsx with "Cannot find
+      # name 'LayoutProps'"/"'PageProps'" even though the code is correct.
+      - run: npm run build
       - run: npm run typecheck
       - run: npm test
-      - run: npm run build
