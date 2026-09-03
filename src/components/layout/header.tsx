@@ -1,17 +1,12 @@
-"use client";
-
 import Link from "next/link";
-import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MobileMenuToggle } from "@/components/layout/mobile-menu-toggle";
 import { NotificationBell } from "@/components/layout/notification-bell";
-import { useSidebar } from "@/contexts/sidebar-context";
 import { PATH } from "@/lib/constants/path";
 import { logout } from "@/lib/services/auth.service";
 import type { AuthUser } from "@/lib/types/auth";
 
 export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unreadCount?: number }) {
-  const { toggle } = useSidebar();
-
   return (
     <header className="border-b">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
@@ -63,9 +58,7 @@ export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unrea
               <Button size="sm">Đăng nhập</Button>
             </Link>
           )}
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={toggle} aria-label="Mở menu">
-            <Menu className="size-5" />
-          </Button>
+          <MobileMenuToggle />
         </div>
       </div>
     </header>

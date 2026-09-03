@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
+import { unstable_rethrow } from "next/navigation";
 import { toast } from "sonner";
 import { ApiError } from "@/lib/api/error";
 
@@ -15,7 +15,7 @@ interface UseApiToastOptions<T> {
 function handleError(error: unknown, onError?: (e: unknown) => void) {
   // `redirect()` và `notFound()` của Next.js throw một special error —
   // phải re-throw để framework xử lý navigation / 404.
-  if (isRedirectError(error)) throw error;
+  unstable_rethrow(error);
 
   if (error instanceof ApiError) {
     toast.error(error.message);

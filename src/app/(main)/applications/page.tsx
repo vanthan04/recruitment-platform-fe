@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ApiError } from "@/lib/api";
 import { APPLICATION_STATUS_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
@@ -87,16 +88,36 @@ export default async function ApplicationsPage() {
 
 async function resolveJobs(applications: JobApplication[]): Promise<Map<string, Job>> {
   const uniqueJobIds = [...new Set(applications.map((application) => application.jobId))];
-  const jobs = await Promise.all(uniqueJobIds.map((jobId) => getJobById(jobId).catch(() => null)));
+  const jobs = await Promise.all(uniqueJobIds.map((jobId) => getJobOr404(jobId)));
   return new Map(jobs.filter((job): job is Job => job !== null).map((job) => [job.id, job]));
+}
+
+async function getJobOr404(id: string): Promise<Job | null> {
+  try {
+    return await getJobById(id);
+  } catch (error) {
+    // 404 is expected here (job may have been deleted since the application
+    // was made — rendered as "Tin tuyển dụng không còn tồn tại"). Anything
+    // else is a real failure and should bubble to the error boundary
+    // instead of silently rendering as "job not found".
+    if (error instanceof ApiError && error.status === 404) return null;
+    throw error;
+  }
+}
+
+async function getInterviewsOrEmpty(applicationId: string): Promise<Interview[]> {
+  try {
+    return await getInterviewsForApplication(applicationId);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return [];
+    throw error;
+  }
 }
 
 // Interviews only ever exist for ACCEPTED applications — skip the rest.
 async function resolveInterviews(applications: JobApplication[]): Promise<Map<string, Interview>> {
   const acceptedIds = applications.filter((a) => a.status === "ACCEPTED").map((a) => a.id);
-  const lists = await Promise.all(
-    acceptedIds.map((id) => getInterviewsForApplication(id).catch(() => [] as Interview[])),
-  );
+  const lists = await Promise.all(acceptedIds.map((id) => getInterviewsOrEmpty(id)));
   const entries = acceptedIds
     .map((id, index) => [id, lists[index].find((interview) => interview.status !== "CANCELLED")] as const)
     .filter((entry): entry is [string, Interview] => Boolean(entry[1]));

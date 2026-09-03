@@ -1,16 +1,10 @@
-import { redirect } from "next/navigation";
-import { PATH } from "@/lib/constants/path";
-import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCategories } from "@/lib/services/category.service";
 import { CreateCategoryForm } from "./create-category-form";
 import { DeleteCategoryButton } from "./delete-category-button";
 import { EditCategoryDialog } from "./edit-category-dialog";
 
+// ADMIN-only guard lives in admin/layout.tsx.
 export default async function AdminCategoriesPage() {
-  const user = await getCurrentUser();
-  if (!user) redirect(PATH.LOGIN);
-  if (user.role !== "ADMIN") redirect(PATH.JOBS);
-
   const categories = await getCategories();
 
   return (

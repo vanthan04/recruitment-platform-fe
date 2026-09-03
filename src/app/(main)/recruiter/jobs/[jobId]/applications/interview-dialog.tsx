@@ -96,11 +96,11 @@ export function InterviewDialog({ applicationId, interview }: InterviewDialogPro
           <div className="space-y-1.5">
             <Label htmlFor="location">Địa điểm</Label>
             <Input id="location" placeholder="Địa chỉ phỏng vấn trực tiếp" {...register("location")} />
+            {errors.location && <p className="text-destructive text-sm">{errors.location.message}</p>}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="meetingLink">Link phỏng vấn online</Label>
             <Input id="meetingLink" placeholder="https://meet.google.com/..." {...register("meetingLink")} />
-            {errors.location && <p className="text-destructive text-sm">{errors.location.message}</p>}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="note">Ghi chú</Label>

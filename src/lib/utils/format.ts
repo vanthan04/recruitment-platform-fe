@@ -11,7 +11,8 @@ export function formatSalaryRange(
   const formatter = currencyFormatter(currency);
   if (min && max) return `${formatter.format(min)} - ${formatter.format(max)}`;
   if (min) return `Từ ${formatter.format(min)}`;
-  return `Lên đến ${formatter.format(max as number)}`;
+  if (max) return `Lên đến ${formatter.format(max)}`;
+  return "Thỏa thuận";
 }
 
 export function formatRelativeDate(iso: string): string {

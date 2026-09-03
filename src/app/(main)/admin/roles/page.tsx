@@ -1,14 +1,9 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { PATH } from "@/lib/constants/path";
-import { getCurrentUser } from "@/lib/services/auth.service";
 import { getRoles } from "@/lib/services/admin-role.service";
 
+// ADMIN-only guard lives in admin/layout.tsx.
 export default async function AdminRolesPage() {
-  const user = await getCurrentUser();
-  if (!user) redirect(PATH.LOGIN);
-  if (user.role !== "ADMIN") redirect(PATH.JOBS);
-
   const roles = await getRoles();
 
   return (

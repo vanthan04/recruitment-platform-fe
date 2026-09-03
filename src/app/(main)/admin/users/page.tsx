@@ -4,10 +4,11 @@ import { getCurrentUser } from "@/lib/services/auth.service";
 import { getAdminUsers } from "@/lib/services/admin-user.service";
 import { UserList } from "./user-list";
 
+// Role check lives in admin/layout.tsx — still need the user here for
+// currentUserId below, so keep the null-check for type narrowing.
 export default async function AdminUsersPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const user = await getCurrentUser();
   if (!user) redirect(PATH.LOGIN);
-  if (user.role !== "ADMIN") redirect(PATH.JOBS);
 
   const sp = await searchParams;
   const page = Number(sp.page ?? 1);

@@ -3,7 +3,9 @@ import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCategories } from "@/lib/services/category.service";
 import { getJobs } from "@/lib/services/job.service";
+import { JOB_LEVEL_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
 import type { JobLevel, JobType } from "@/lib/types/job";
+import { parseEnumParam } from "@/lib/utils";
 
 interface JobsPageProps {
   searchParams: Promise<{
@@ -27,8 +29,8 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
       page,
       keyword: sp.keyword,
       location: sp.location,
-      jobType: sp.jobType as JobType | undefined,
-      level: sp.level as JobLevel | undefined,
+      jobType: parseEnumParam<JobType>(sp.jobType, Object.keys(JOB_TYPE_LABEL) as JobType[]),
+      level: parseEnumParam<JobLevel>(sp.level, Object.keys(JOB_LEVEL_LABEL) as JobLevel[]),
       categoryId: sp.categoryId,
     }),
     getCategories(),

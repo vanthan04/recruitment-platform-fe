@@ -7,10 +7,11 @@ import { CompanyForm } from "./company-form";
 import { CompanyLogoUpload } from "./company-logo-upload";
 import { DeleteCompanyButton } from "./delete-company-button";
 
+// Role check lives in recruiter/layout.tsx — still need the user here for
+// companyId below, so keep the null-check for type narrowing.
 export default async function RecruiterCompanyPage() {
   const user = await getCurrentUser();
   if (!user) redirect(PATH.LOGIN);
-  if (user.role !== "RECRUITER") redirect(PATH.JOBS);
 
   // user.companyId can point at a company the recruiter just deleted —
   // deleting only soft-deletes the Company row, it doesn't clear

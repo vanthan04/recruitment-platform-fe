@@ -5,10 +5,11 @@ import { getCategories } from "@/lib/services/category.service";
 import { getJobById } from "@/lib/services/job.service";
 import { JobForm } from "../../job-form";
 
+// Role check lives in recruiter/layout.tsx — still need the user here for
+// the ownership check below.
 export default async function EditJobPage({ params }: { params: Promise<{ jobId: string }> }) {
   const user = await getCurrentUser();
   if (!user) redirect(PATH.LOGIN);
-  if (user.role !== "RECRUITER") redirect(PATH.JOBS);
 
   const { jobId } = await params;
   const [job, categories] = await Promise.all([getJobById(jobId), getCategories()]);

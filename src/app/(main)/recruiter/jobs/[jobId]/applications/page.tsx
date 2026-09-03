@@ -1,9 +1,7 @@
-import { redirect } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { ApiError } from "@/lib/api";
 import { APPLICATION_STATUS_LABEL } from "@/lib/constants/enum-label";
-import { PATH } from "@/lib/constants/path";
-import { getCurrentUser } from "@/lib/services/auth.service";
 import { getApplicationsForJob, getApplicationStats } from "@/lib/services/job-application.service";
 import { getJobById } from "@/lib/services/job.service";
 import { getInterviewsForApplication } from "@/lib/services/interview.service";
@@ -16,13 +14,20 @@ import { JobStatsPanel } from "./job-stats-panel";
 
 async function resolveInterviews(applications: JobApplication[]): Promise<Map<string, Interview>> {
   const acceptedIds = applications.filter((a) => a.status === "ACCEPTED").map((a) => a.id);
-  const lists = await Promise.all(
-    acceptedIds.map((id) => getInterviewsForApplication(id).catch(() => [] as Interview[])),
-  );
+  const lists = await Promise.all(acceptedIds.map((id) => getInterviewsOrEmpty(id)));
   const entries = acceptedIds
     .map((id, index) => [id, lists[index].find((interview) => interview.status !== "CANCELLED")] as const)
     .filter((entry): entry is [string, Interview] => Boolean(entry[1]));
   return new Map(entries);
+}
+
+async function getInterviewsOrEmpty(applicationId: string): Promise<Interview[]> {
+  try {
+    return await getInterviewsForApplication(applicationId);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) return [];
+    throw error;
+  }
 }
 
 function initials(name: string): string {
@@ -34,15 +39,12 @@ function initials(name: string): string {
     .join("");
 }
 
+// Role check lives in recruiter/layout.tsx.
 export default async function RecruiterJobApplicationsPage({
   params,
 }: {
   params: Promise<{ jobId: string }>;
 }) {
-  const user = await getCurrentUser();
-  if (!user) redirect(PATH.LOGIN);
-  if (user.role !== "RECRUITER") redirect(PATH.JOBS);
-
   const { jobId } = await params;
   // The backend rejects this for non-owners (403) — surfaced via the route's
   // error boundary, same as every other data-loading page in this app.

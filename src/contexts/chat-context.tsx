@@ -1,6 +1,15 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useReducer, useRef, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  type ReactNode,
+} from "react";
 import { getChatSocket } from "@/lib/realtime/socket";
 import {
   sendMessageFallback,
@@ -51,10 +60,31 @@ function reducer(state: ChatState, action: Action): ChatState {
 
     case "hydrate": {
       const existing = state.messagesByConversation[action.conversationId] ?? [];
-      const messages = action.mode === "replace" ? action.messages : [...action.messages, ...existing];
+
+      if (action.mode === "prepend") {
+        return {
+          ...state,
+          messagesByConversation: {
+            ...state.messagesByConversation,
+            [action.conversationId]: [...action.messages, ...existing],
+          },
+        };
+      }
+
+      // "replace": the server payload is authoritative for anything it
+      // contains, but fold in any messages that only exist locally — e.g.
+      // delivered over the socket in the gap between the server fetch and
+      // this hydrate call, or still-pending optimistic sends — instead of
+      // silently discarding them.
+      const serverClientIds = new Set(action.messages.map((m) => m.clientMessageId));
+      const localOnly = existing.filter((m) => !serverClientIds.has(m.clientMessageId));
+      const merged = [...action.messages, ...localOnly].sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
+
       return {
         ...state,
-        messagesByConversation: { ...state.messagesByConversation, [action.conversationId]: messages },
+        messagesByConversation: { ...state.messagesByConversation, [action.conversationId]: merged },
       };
     }
 
@@ -201,6 +231,13 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
       socket.off("user:online", onPresenceOnline);
       socket.off("user:offline", onPresenceOffline);
       socket.disconnect();
+
+      // Drop any pending typing-stop timers (see setTyping below) so they
+      // don't fire after this provider — and the socket — are gone.
+      for (const timeout of Object.values(typingTimeoutRef.current)) {
+        clearTimeout(timeout);
+      }
+      typingTimeoutRef.current = {};
     };
   }, []);
 
@@ -305,16 +342,28 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
     }
   }, []);
 
-  const value: ChatContextValue = {
-    ...state,
-    hydrateMessages,
-    subscribeToConversation,
-    unsubscribeFromConversation,
-    sendMessage,
-    retryMessage,
-    markRead,
-    setTyping,
-  };
+  const value: ChatContextValue = useMemo(
+    () => ({
+      ...state,
+      hydrateMessages,
+      subscribeToConversation,
+      unsubscribeFromConversation,
+      sendMessage,
+      retryMessage,
+      markRead,
+      setTyping,
+    }),
+    [
+      state,
+      hydrateMessages,
+      subscribeToConversation,
+      unsubscribeFromConversation,
+      sendMessage,
+      retryMessage,
+      markRead,
+      setTyping,
+    ],
+  );
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 }
