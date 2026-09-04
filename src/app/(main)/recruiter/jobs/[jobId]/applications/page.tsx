@@ -14,9 +14,9 @@ import { InterviewPanel } from "./interview-panel";
 import { JobStatsPanel } from "./job-stats-panel";
 
 async function resolveInterviews(applications: JobApplication[]): Promise<Map<string, Interview>> {
-  const acceptedIds = applications.filter((a) => a.status === "ACCEPTED").map((a) => a.id);
-  const lists = await Promise.all(acceptedIds.map((id) => getInterviewsOrEmpty(id)));
-  const entries = acceptedIds
+  const hiredIds = applications.filter((a) => a.status === "HIRED").map((a) => a.id);
+  const lists = await Promise.all(hiredIds.map((id) => getInterviewsOrEmpty(id)));
+  const entries = hiredIds
     .map((id, index) => [id, lists[index].find((interview) => interview.status !== "CANCELLED")] as const)
     .filter((entry): entry is [string, Interview] => Boolean(entry[1]));
   return new Map(entries);
@@ -79,7 +79,7 @@ export default async function RecruiterJobApplicationsPage({
                 <div>
                   <p className="font-medium">{application.candidate?.fullName ?? "Ứng viên"}</p>
                   <div className="mt-1 flex items-center gap-2">
-                    <Badge variant={application.status === "PENDING" ? "secondary" : "outline"}>
+                    <Badge variant={application.status === "APPLIED" ? "secondary" : "outline"}>
                       {APPLICATION_STATUS_LABEL[application.status]}
                     </Badge>
                     <span className="text-muted-foreground text-xs">
@@ -93,7 +93,7 @@ export default async function RecruiterJobApplicationsPage({
                 <ApplicationActions application={application} />
               </div>
             </div>
-            {application.status === "ACCEPTED" && (
+            {application.status === "HIRED" && (
               <InterviewPanel
                 applicationId={application.id}
                 interview={interviewByApplicationId.get(application.id)}

@@ -41,8 +41,12 @@ export const USER_STATUS_LABEL: Record<UserStatus, string> = {
 };
 
 export const APPLICATION_STATUS_LABEL: Record<ApplicationStatus, string> = {
-  PENDING: "Đang chờ duyệt",
-  ACCEPTED: "Đã chấp nhận",
+  APPLIED: "Đã ứng tuyển",
+  SCREENING: "Đang sàng lọc",
+  SHORTLISTED: "Vào danh sách rút gọn",
+  INTERVIEW: "Phỏng vấn",
+  OFFER: "Đề nghị (Offer)",
+  HIRED: "Đã tuyển",
   REJECTED: "Đã từ chối",
   WITHDRAWN: "Đã rút đơn",
 };

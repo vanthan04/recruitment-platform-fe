@@ -1,4 +1,13 @@
-export type ApplicationStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "WITHDRAWN";
+export type ApplicationStatus =
+  "APPLIED" | "SCREENING" | "SHORTLISTED" | "INTERVIEW" | "OFFER" | "HIRED" | "REJECTED" | "WITHDRAWN";
+
+export const NON_TERMINAL_APPLICATION_STATUSES: ApplicationStatus[] = [
+  "APPLIED",
+  "SCREENING",
+  "SHORTLISTED",
+  "INTERVIEW",
+  "OFFER",
+];
 
 export interface ApplicationCandidateSummary {
   id: string;
@@ -29,8 +38,12 @@ export interface ApplicationStats {
   jobId: string;
   viewCount: number;
   totalApplications: number;
-  pending: number;
-  accepted: number;
+  applied: number;
+  screening: number;
+  shortlisted: number;
+  interview: number;
+  offer: number;
+  hired: number;
   rejected: number;
   withdrawn: number;
 }

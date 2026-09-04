@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { api } from "@/lib/api";
 import { JOB_APPLICATION_ENDPOINT } from "@/lib/constants/endpoint";
 import { PATH } from "@/lib/constants/path";
-import type { ApplicationStats, CreateApplicationInput, JobApplication } from "@/lib/types/job-application";
+import type {
+  ApplicationStatus,
+  ApplicationStats,
+  CreateApplicationInput,
+  JobApplication,
+} from "@/lib/types/job-application";
 
 export async function applyToJob(input: CreateApplicationInput): Promise<void> {
   await api.post(JOB_APPLICATION_ENDPOINT.LIST, input);
@@ -28,6 +33,10 @@ export async function getApplicationStats(jobId: string): Promise<ApplicationSta
   return api.get<ApplicationStats>(JOB_APPLICATION_ENDPOINT.STATS(jobId));
 }
 
-export async function updateApplicationStatus(id: string, status: "ACCEPTED" | "REJECTED"): Promise<void> {
-  await api.patch(JOB_APPLICATION_ENDPOINT.STATUS(id), { status });
+export async function updateApplicationStatus(
+  id: string,
+  status: ApplicationStatus,
+  note?: string,
+): Promise<void> {
+  await api.patch(JOB_APPLICATION_ENDPOINT.STATUS(id), { status, note });
 }

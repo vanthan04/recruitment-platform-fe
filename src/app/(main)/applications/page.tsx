@@ -12,7 +12,7 @@ import { getMyApplications } from "@/lib/services/job-application.service";
 import { getJobById } from "@/lib/services/job.service";
 import type { Interview } from "@/lib/types/interview";
 import type { Job } from "@/lib/types/job";
-import type { JobApplication } from "@/lib/types/job-application";
+import { NON_TERMINAL_APPLICATION_STATUSES, type JobApplication } from "@/lib/types/job-application";
 import { formatRelativeDate } from "@/lib/utils";
 import { DownloadCvButton } from "@/app/(main)/cv/cv-actions";
 import { InterviewInfo } from "./interview-info";
@@ -54,7 +54,7 @@ export default async function ApplicationsPage() {
                     <span className="font-medium">Tin tuyển dụng không còn tồn tại</span>
                   )}
                   <div className="mt-1 flex items-center gap-2">
-                    <Badge variant={application.status === "PENDING" ? "secondary" : "outline"}>
+                    <Badge variant={application.status === "APPLIED" ? "secondary" : "outline"}>
                       {APPLICATION_STATUS_LABEL[application.status]}
                     </Badge>
                     <span className="text-muted-foreground text-xs">
@@ -64,7 +64,9 @@ export default async function ApplicationsPage() {
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <DownloadCvButton cvId={application.cvId} />
-                  {application.status === "PENDING" && <WithdrawButton applicationId={application.id} />}
+                  {NON_TERMINAL_APPLICATION_STATUSES.includes(application.status) && (
+                    <WithdrawButton applicationId={application.id} />
+                  )}
                   {conversationIdByApplicationId.has(application.id) && (
                     <Link
                       href={`${PATH.MESSAGES}?conversationId=${conversationIdByApplicationId.get(application.id)}`}
@@ -116,11 +118,11 @@ async function getInterviewsOrEmpty(applicationId: string): Promise<Interview[]>
   }
 }
 
-// Interviews only ever exist for ACCEPTED applications — skip the rest.
+// Interviews only ever exist for HIRED applications — skip the rest.
 async function resolveInterviews(applications: JobApplication[]): Promise<Map<string, Interview>> {
-  const acceptedIds = applications.filter((a) => a.status === "ACCEPTED").map((a) => a.id);
-  const lists = await Promise.all(acceptedIds.map((id) => getInterviewsOrEmpty(id)));
-  const entries = acceptedIds
+  const hiredIds = applications.filter((a) => a.status === "HIRED").map((a) => a.id);
+  const lists = await Promise.all(hiredIds.map((id) => getInterviewsOrEmpty(id)));
+  const entries = hiredIds
     .map((id, index) => [id, lists[index].find((interview) => interview.status !== "CANCELLED")] as const)
     .filter((entry): entry is [string, Interview] => Boolean(entry[1]));
   return new Map(entries);
