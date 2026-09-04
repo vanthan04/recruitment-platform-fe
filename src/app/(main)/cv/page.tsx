@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getMyCvs } from "@/lib/services/cv.service";
-import { DeleteCvButton, PublishCvButton, UploadCvFileButton } from "./cv-actions";
+import { DeleteCvButton, DownloadCvButton, PublishCvButton } from "./cv-actions";
 
 export default async function CvListPage() {
   const user = await getCurrentUser();
@@ -39,10 +39,7 @@ export default async function CvListPage() {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <a href={`/api/cvs/${cv.id}/export`} download className="text-primary text-sm hover:underline">
-                Tải PDF
-              </a>
-              <UploadCvFileButton cvId={cv.id} />
+              <DownloadCvButton cvId={cv.id} />
               {cv.status === "DRAFT" && <PublishCvButton cvId={cv.id} />}
               <DeleteCvButton cvId={cv.id} />
             </div>

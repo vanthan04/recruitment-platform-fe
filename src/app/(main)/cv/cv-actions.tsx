@@ -1,9 +1,8 @@
 "use client";
 
-import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useApiToast } from "@/hooks/use-api-toast";
-import { deleteCv, publishCv, uploadCvFile } from "@/lib/services/cv.service";
+import { deleteCv, getCvDownloadUrl, publishCv } from "@/lib/services/cv.service";
 
 export function PublishCvButton({ cvId }: { cvId: string }) {
   const { run, isPending } = useApiToast();
@@ -39,38 +38,18 @@ export function DeleteCvButton({ cvId }: { cvId: string }) {
   );
 }
 
-export function UploadCvFileButton({ cvId }: { cvId: string }) {
-  const { run, isPending } = useApiToast();
-  const inputRef = useRef<HTMLInputElement>(null);
+/** Fetches a short-lived presigned URL then opens it — the actual file bytes come straight from S3. */
+export function DownloadCvButton({ cvId }: { cvId: string }) {
+  const { callApi, isLoading } = useApiToast();
 
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.set("file", file);
-    run(() => uploadCvFile(cvId, formData), { successMessage: "Đã tải file CV lên." });
-    event.target.value = "";
+  async function handleDownload() {
+    const result = await callApi(getCvDownloadUrl(cvId));
+    if (result) window.open(result.url, "_blank", "noopener,noreferrer");
   }
 
   return (
-    <>
-      <Button
-        type="button"
-        size="sm"
-        variant="outline"
-        disabled={isPending}
-        onClick={() => inputRef.current?.click()}
-      >
-        {isPending ? "Đang tải lên..." : "Tải file CV"}
-      </Button>
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".pdf,.doc,.docx"
-        className="hidden"
-        onChange={handleFileChange}
-      />
-    </>
+    <Button type="button" size="sm" variant="outline" disabled={isLoading} onClick={handleDownload}>
+      {isLoading ? "Đang tải..." : "Tải xuống"}
+    </Button>
   );
 }

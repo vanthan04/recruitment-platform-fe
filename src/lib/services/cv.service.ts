@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { api, ApiError } from "@/lib/api";
 import { CV_ENDPOINT } from "@/lib/constants/endpoint";
 import { PATH } from "@/lib/constants/path";
-import type { Cv, CvInput } from "@/lib/types/cv";
+import type { Cv, CvDownload } from "@/lib/types/cv";
 
 // Every CV endpoint requires a Bearer token — none are skipAuth.
 
@@ -24,18 +24,16 @@ export async function getCvById(id: string): Promise<Cv | null> {
   }
 }
 
-export async function createCv(input: CvInput): Promise<void> {
-  const cv = await api.post<Cv>(CV_ENDPOINT.LIST, input);
+// CV creation IS the upload — title + file arrive together as multipart.
+export async function createCv(formData: FormData): Promise<void> {
+  await api.postForm<Cv>(CV_ENDPOINT.LIST, formData);
   revalidatePath(PATH.CV_LIST);
-  redirect(PATH.CV_EDIT(cv.id));
+  redirect(PATH.CV_LIST);
 }
 
-export async function updateCv(id: string, input: CvInput): Promise<void> {
-  // Full-array-replace: experiences/educations/skills are always sent in
-  // full, never partially — the backend replaces, not merges.
-  await api.patch(CV_ENDPOINT.DETAIL(id), input);
+export async function updateCvTitle(id: string, title: string): Promise<void> {
+  await api.patch(CV_ENDPOINT.DETAIL(id), { title });
   revalidatePath(PATH.CV_LIST);
-  revalidatePath(PATH.CV_EDIT(id));
 }
 
 export async function publishCv(id: string): Promise<void> {
@@ -48,7 +46,9 @@ export async function deleteCv(id: string): Promise<void> {
   revalidatePath(PATH.CV_LIST);
 }
 
-export async function uploadCvFile(id: string, formData: FormData): Promise<void> {
-  await api.postForm(CV_ENDPOINT.UPLOAD(id), formData);
-  revalidatePath(PATH.CV_LIST);
+// Returns a short-lived presigned S3 URL — the browser downloads directly
+// from S3, this call only needs the Bearer cookie to authorize *getting*
+// that URL (mirrors the CV's own owner-or-recruiter-via-application check).
+export async function getCvDownloadUrl(id: string): Promise<CvDownload> {
+  return api.get<CvDownload>(CV_ENDPOINT.DOWNLOAD(id));
 }

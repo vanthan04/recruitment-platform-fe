@@ -14,6 +14,7 @@ import type { Interview } from "@/lib/types/interview";
 import type { Job } from "@/lib/types/job";
 import type { JobApplication } from "@/lib/types/job-application";
 import { formatRelativeDate } from "@/lib/utils";
+import { DownloadCvButton } from "@/app/(main)/cv/cv-actions";
 import { InterviewInfo } from "./interview-info";
 import { WithdrawButton } from "./withdraw-button";
 
@@ -62,6 +63,7 @@ export default async function ApplicationsPage() {
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
+                  <DownloadCvButton cvId={application.cvId} />
                   {application.status === "PENDING" && <WithdrawButton applicationId={application.id} />}
                   {conversationIdByApplicationId.has(application.id) && (
                     <Link

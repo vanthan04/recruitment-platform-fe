@@ -8,6 +8,7 @@ import { getInterviewsForApplication } from "@/lib/services/interview.service";
 import type { Interview } from "@/lib/types/interview";
 import type { JobApplication } from "@/lib/types/job-application";
 import { formatRelativeDate } from "@/lib/utils";
+import { DownloadCvButton } from "@/app/(main)/cv/cv-actions";
 import { ApplicationActions } from "./application-actions";
 import { InterviewPanel } from "./interview-panel";
 import { JobStatsPanel } from "./job-stats-panel";
@@ -87,7 +88,10 @@ export default async function RecruiterJobApplicationsPage({
                   </div>
                 </div>
               </div>
-              <ApplicationActions application={application} />
+              <div className="flex shrink-0 items-center gap-2">
+                <DownloadCvButton cvId={application.cvId} />
+                <ApplicationActions application={application} />
+              </div>
             </div>
             {application.status === "ACCEPTED" && (
               <InterviewPanel

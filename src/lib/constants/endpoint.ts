@@ -53,8 +53,7 @@ export const CV_ENDPOINT = {
   LIST: "/cvs",
   DETAIL: (id: string) => `/cvs/${id}`,
   PUBLISH: (id: string) => `/cvs/${id}/publish`,
-  UPLOAD: (id: string) => `/cvs/${id}/upload`,
-  EXPORT: (id: string) => `/cvs/${id}/export`,
+  DOWNLOAD: (id: string) => `/cvs/${id}/download`,
 } as const;
 
 export const JOB_APPLICATION_ENDPOINT = {
