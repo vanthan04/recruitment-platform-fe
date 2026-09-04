@@ -4,7 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PATH } from "@/lib/constants/path";
 
-const POPULAR_KEYWORDS = ["Frontend Developer", "Kế toán", "Marketing", "Nhân sự", "Kinh doanh", "Thiết kế"];
+const POPULAR_KEYWORDS = [
+  "Frontend Developer",
+  "Backend Developer",
+  "DevOps",
+  "QA/Tester",
+  "Mobile Developer",
+  "Data Engineer",
+];
 
 // Plain GET form — navigates to /jobs?keyword=&location= with zero client
 // JS. No need for a client component just to submit a search.

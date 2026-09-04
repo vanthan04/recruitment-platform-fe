@@ -91,7 +91,11 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="industry">Lĩnh vực</Label>
-          <Input id="industry" {...register("industry")} />
+          <Input
+            id="industry"
+            placeholder="VD: Fintech, E-commerce, SaaS, Gaming..."
+            {...register("industry")}
+          />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

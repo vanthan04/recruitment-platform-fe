@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Recruitment Platform",
-  description: "Nền tảng tìm việc làm",
+  description: "Nền tảng tuyển dụng ngành IT",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

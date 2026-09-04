@@ -2,16 +2,23 @@ import Link from "next/link";
 import {
   Banknote,
   Briefcase,
+  Bug,
   Building2,
   Calculator,
+  ClipboardList,
   Code2,
+  Database,
   GraduationCap,
   HardHat,
   Headset,
   Landmark,
+  LifeBuoy,
   Megaphone,
   Palette,
   Scale,
+  Server,
+  Shield,
+  Smartphone,
   Stethoscope,
   Truck,
   UsersRound,
@@ -23,8 +30,19 @@ import type { Category } from "@/lib/types/category";
 
 // Categories only carry a name — this maps common Vietnamese job-category
 // keywords to a representative icon, falling back to a generic briefcase.
+// IT-specific rules come first since the platform is currently IT-only;
+// the rest stay in place so re-adding other industries later (see
+// docs/industry-expansion.md) needs no code changes here.
 const ICON_RULES: [RegExp, LucideIcon][] = [
+  [/mobile|di động/i, Smartphone],
+  [/kiểm thử|qa\/tester|\btester\b/i, Bug],
+  [/devops|\bsre\b|hạ tầng/i, Server],
+  [/dữ liệu|\bdata\b|\bai\b|trí tuệ nhân tạo/i, Database],
+  [/an ninh mạng|bảo mật|security/i, Shield],
+  [/business analyst|^ba\b|product|sản phẩm/i, ClipboardList],
+  [/hỗ trợ kỹ thuật|it support/i, LifeBuoy],
   [/công nghệ|^it\b|phần mềm|lập trình/i, Code2],
+  [/ui\/ux|thiết kế|sáng tạo|đồ họa/i, Palette],
   [/kinh doanh|bán hàng|sales/i, Briefcase],
   [/marketing|quảng cáo|\bpr\b/i, Megaphone],
   [/chăm sóc khách hàng|customer/i, Headset],
@@ -32,7 +50,6 @@ const ICON_RULES: [RegExp, LucideIcon][] = [
   [/nhân sự|hành chính/i, UsersRound],
   [/kế toán|kiểm toán/i, Calculator],
   [/tài chính|ngân hàng|đầu tư/i, Landmark],
-  [/thiết kế|sáng tạo|đồ họa/i, Palette],
   [/giáo dục|đào tạo/i, GraduationCap],
   [/y tế|dược|bệnh viện/i, Stethoscope],
   [/xây dựng|kiến trúc|bất động sản/i, Building2],
