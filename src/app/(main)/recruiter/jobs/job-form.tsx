@@ -9,18 +9,20 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useApiToast } from "@/hooks/use-api-toast";
-import { JOB_LEVEL_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
+import { EMPLOYMENT_TYPE_LABEL, JOB_LEVEL_LABEL, WORK_MODE_LABEL } from "@/lib/constants/enum-label";
 import { createJob, updateJob } from "@/lib/services/job.service";
 import type { Category } from "@/lib/types/category";
 import {
   JOB_EXTRA_INFO_KEY,
   type CreateJobInput,
+  type EmploymentType,
   type Job,
   type JobLevel,
-  type JobType,
+  type WorkMode,
 } from "@/lib/types/job";
 
-const JOB_TYPES = Object.keys(JOB_TYPE_LABEL) as JobType[];
+const EMPLOYMENT_TYPES = Object.keys(EMPLOYMENT_TYPE_LABEL) as EmploymentType[];
+const WORK_MODES = Object.keys(WORK_MODE_LABEL) as WorkMode[];
 const JOB_LEVELS = Object.keys(JOB_LEVEL_LABEL) as JobLevel[];
 const NONE = "none";
 
@@ -29,7 +31,8 @@ const jobSchema = z
     title: z.string().min(2, "Vui lòng nhập tiêu đề tin tuyển dụng"),
     description: z.string().min(1, "Vui lòng nhập mô tả công việc"),
     location: z.string().min(1, "Vui lòng nhập địa điểm làm việc"),
-    jobType: z.string().min(1),
+    employmentType: z.string().min(1),
+    workMode: z.string().min(1),
     level: z.string().optional(),
     categoryId: z.string().optional(),
     salaryMin: z.string().optional(),
@@ -70,7 +73,8 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       title: job?.title ?? "",
       description: job?.description ?? "",
       location: job?.location ?? "",
-      jobType: job?.jobType ?? "FULL_TIME",
+      employmentType: job?.employmentType ?? "FULL_TIME",
+      workMode: job?.workMode ?? "ONSITE",
       level: job?.level ?? NONE,
       categoryId: job?.categoryId ?? NONE,
       salaryMin: job?.salaryMin != null ? String(job.salaryMin) : "",
@@ -93,7 +97,8 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       title: values.title,
       description: values.description,
       location: values.location,
-      jobType: values.jobType as JobType,
+      employmentType: values.employmentType as EmploymentType,
+      workMode: values.workMode as WorkMode,
       level: values.level && values.level !== NONE ? (values.level as JobLevel) : undefined,
       categoryId: values.categoryId && values.categoryId !== NONE ? values.categoryId : undefined,
       salaryMin: values.salaryMin ? Number(values.salaryMin) : undefined,
@@ -130,21 +135,42 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
         {errors.location && <p className="text-destructive text-sm">{errors.location.message}</p>}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
-          <Label>Hình thức</Label>
+          <Label>Hình thức làm việc</Label>
           <Controller
             control={control}
-            name="jobType"
+            name="employmentType"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Chọn hình thức" />
                 </SelectTrigger>
                 <SelectContent>
-                  {JOB_TYPES.map((type) => (
+                  {EMPLOYMENT_TYPES.map((type) => (
                     <SelectItem key={type} value={type}>
-                      {JOB_TYPE_LABEL[type]}
+                      {EMPLOYMENT_TYPE_LABEL[type]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Hình thức làm việc từ xa</Label>
+          <Controller
+            control={control}
+            name="workMode"
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Chọn địa điểm làm việc" />
+                </SelectTrigger>
+                <SelectContent>
+                  {WORK_MODES.map((mode) => (
+                    <SelectItem key={mode} value={mode}>
+                      {WORK_MODE_LABEL[mode]}
                     </SelectItem>
                   ))}
                 </SelectContent>

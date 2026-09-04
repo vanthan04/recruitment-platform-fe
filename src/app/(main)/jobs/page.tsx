@@ -3,8 +3,13 @@ import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCategories } from "@/lib/services/category.service";
 import { getJobs } from "@/lib/services/job.service";
-import { JOB_LEVEL_LABEL, JOB_SORT_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
-import type { JobLevel, JobSortOption, JobType } from "@/lib/types/job";
+import {
+  EMPLOYMENT_TYPE_LABEL,
+  JOB_LEVEL_LABEL,
+  JOB_SORT_LABEL,
+  WORK_MODE_LABEL,
+} from "@/lib/constants/enum-label";
+import type { EmploymentType, JobLevel, JobSortOption, WorkMode } from "@/lib/types/job";
 import { parseEnumParam } from "@/lib/utils";
 
 interface JobsPageProps {
@@ -12,7 +17,8 @@ interface JobsPageProps {
     page?: string;
     keyword?: string;
     location?: string;
-    jobType?: string;
+    employmentType?: string;
+    workMode?: string;
     level?: string;
     categoryId?: string;
     sort?: string;
@@ -30,7 +36,11 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
       page,
       keyword: sp.keyword,
       location: sp.location,
-      jobType: parseEnumParam<JobType>(sp.jobType, Object.keys(JOB_TYPE_LABEL) as JobType[]),
+      employmentType: parseEnumParam<EmploymentType>(
+        sp.employmentType,
+        Object.keys(EMPLOYMENT_TYPE_LABEL) as EmploymentType[],
+      ),
+      workMode: parseEnumParam<WorkMode>(sp.workMode, Object.keys(WORK_MODE_LABEL) as WorkMode[]),
       level: parseEnumParam<JobLevel>(sp.level, Object.keys(JOB_LEVEL_LABEL) as JobLevel[]),
       categoryId: sp.categoryId,
       sort: parseEnumParam<JobSortOption>(sp.sort, Object.keys(JOB_SORT_LABEL) as JobSortOption[]),
@@ -59,7 +69,8 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
           bookmarkedJobIds={bookmarkedJobIds}
           initialKeyword={sp.keyword ?? ""}
           initialLocation={sp.location ?? ""}
-          initialJobType={sp.jobType ?? ""}
+          initialEmploymentType={sp.employmentType ?? ""}
+          initialWorkMode={sp.workMode ?? ""}
           initialLevel={sp.level ?? ""}
           initialCategoryId={sp.categoryId ?? ""}
           initialSort={sp.sort ?? ""}

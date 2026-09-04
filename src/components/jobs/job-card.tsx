@@ -4,10 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CompanyLogo } from "@/components/companies/company-logo";
 import { SaveJobButton } from "@/components/jobs/save-job-button";
-import { JOB_LEVEL_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
+import { EMPLOYMENT_TYPE_LABEL, JOB_LEVEL_LABEL, WORK_MODE_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
 import type { Job } from "@/lib/types/job";
-import { formatRelativeDate, formatSalaryRange } from "@/lib/utils";
+import { daysUntil, formatRelativeDate, formatSalaryRange } from "@/lib/utils";
 
 interface JobCardProps {
   job: Job;
@@ -17,6 +17,8 @@ interface JobCardProps {
 }
 
 export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
+  const daysLeft = job.expiresAt ? daysUntil(job.expiresAt) : null;
+
   return (
     <Card className="hover:border-primary/60 relative gap-3 rounded-2xl transition-all hover:-translate-y-0.5 hover:shadow-lg">
       {bookmarkedJobIds && (
@@ -46,7 +48,10 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-1.5">
           <Badge variant="secondary" className="rounded-full">
-            {JOB_TYPE_LABEL[job.jobType]}
+            {EMPLOYMENT_TYPE_LABEL[job.employmentType]}
+          </Badge>
+          <Badge variant="secondary" className="rounded-full">
+            {WORK_MODE_LABEL[job.workMode]}
           </Badge>
           {job.level && (
             <Badge variant="secondary" className="rounded-full">
@@ -56,6 +61,11 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
           {job.category && (
             <Badge variant="outline" className="rounded-full">
               {job.category.name}
+            </Badge>
+          )}
+          {daysLeft !== null && daysLeft >= 0 && daysLeft <= 7 && (
+            <Badge className="rounded-full border-transparent bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400">
+              {daysLeft === 0 ? "Hết hạn hôm nay" : `Còn ${daysLeft} ngày`}
             </Badge>
           )}
         </CardContent>

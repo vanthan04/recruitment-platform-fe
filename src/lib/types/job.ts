@@ -1,4 +1,5 @@
-export type JobType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERNSHIP" | "REMOTE";
+export type EmploymentType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERNSHIP";
+export type WorkMode = "ONSITE" | "HYBRID" | "REMOTE";
 export type JobLevel = "INTERN" | "FRESHER" | "JUNIOR" | "MIDDLE" | "SENIOR" | "MANAGER";
 export type JobStatus = "DRAFT" | "OPEN" | "CLOSED";
 export type JobSortOption = "newest" | "salary_desc" | "views_desc";
@@ -22,12 +23,19 @@ export interface JobCategorySummary {
   slug: string;
 }
 
+export interface JobSkillSummary {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export interface Job {
   id: string;
   title: string;
   description: string;
   location: string;
-  jobType: JobType;
+  employmentType: EmploymentType;
+  workMode: WorkMode;
   level: JobLevel | null;
   status: JobStatus;
   viewCount: number;
@@ -35,6 +43,7 @@ export interface Job {
   company: JobCompanySummary | null;
   categoryId: string | null;
   category: JobCategorySummary | null;
+  skills: JobSkillSummary[];
   salaryMin: number | null;
   salaryMax: number | null;
   currency: string;
@@ -53,7 +62,8 @@ export interface JobListParams {
   limit?: number;
   keyword?: string;
   location?: string;
-  jobType?: JobType;
+  employmentType?: EmploymentType;
+  workMode?: WorkMode;
   level?: JobLevel;
   categoryId?: string;
   companyId?: string;
@@ -72,7 +82,8 @@ export interface CreateJobInput {
   title: string;
   description: string;
   location: string;
-  jobType?: JobType;
+  employmentType?: EmploymentType;
+  workMode?: WorkMode;
   level?: JobLevel;
   categoryId?: string;
   salaryMin?: number;

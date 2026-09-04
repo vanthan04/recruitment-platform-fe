@@ -7,7 +7,7 @@ import { ApplyDialog } from "@/components/jobs/apply-dialog";
 import { CompanyLogo } from "@/components/companies/company-logo";
 import { SaveJobButton } from "@/components/jobs/save-job-button";
 import { ShareJobButtons } from "@/components/jobs/share-job-buttons";
-import { JOB_LEVEL_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
+import { EMPLOYMENT_TYPE_LABEL, JOB_LEVEL_LABEL, WORK_MODE_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
 import type { Cv } from "@/lib/types/cv";
 import { JOB_EXTRA_INFO_KEY, type Job } from "@/lib/types/job";
@@ -56,7 +56,10 @@ export function JobDetail({ job, isLoggedIn, isBookmarked, publishedCvs, hasAppl
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <Badge variant="secondary" className="rounded-full">
-            {JOB_TYPE_LABEL[job.jobType]}
+            {EMPLOYMENT_TYPE_LABEL[job.employmentType]}
+          </Badge>
+          <Badge variant="secondary" className="rounded-full">
+            {WORK_MODE_LABEL[job.workMode]}
           </Badge>
           {job.level && (
             <Badge variant="secondary" className="rounded-full">
@@ -68,6 +71,11 @@ export function JobDetail({ job, isLoggedIn, isBookmarked, publishedCvs, hasAppl
               {job.category.name}
             </Badge>
           )}
+          {job.skills.map((skill) => (
+            <Badge key={skill.id} variant="outline" className="rounded-full">
+              {skill.name}
+            </Badge>
+          ))}
         </div>
 
         <Separator className="my-5" />

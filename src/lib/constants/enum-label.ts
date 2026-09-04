@@ -2,14 +2,19 @@ import type { CompanySize } from "@/lib/types/company";
 import type { Gender, UserRole, UserStatus } from "@/lib/types/auth";
 import type { InterviewStatus } from "@/lib/types/interview";
 import type { ApplicationStatus } from "@/lib/types/job-application";
-import type { JobLevel, JobSortOption, JobStatus, JobType } from "@/lib/types/job";
+import type { EmploymentType, JobLevel, JobSortOption, JobStatus, WorkMode } from "@/lib/types/job";
 import type { NotificationType } from "@/lib/types/notification";
 
-export const JOB_TYPE_LABEL: Record<JobType, string> = {
+export const EMPLOYMENT_TYPE_LABEL: Record<EmploymentType, string> = {
   FULL_TIME: "Toàn thời gian",
   PART_TIME: "Bán thời gian",
   CONTRACT: "Hợp đồng",
   INTERNSHIP: "Thực tập",
+};
+
+export const WORK_MODE_LABEL: Record<WorkMode, string> = {
+  ONSITE: "Tại văn phòng",
+  HYBRID: "Kết hợp",
   REMOTE: "Từ xa",
 };
 

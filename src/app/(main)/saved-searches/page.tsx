@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
+import { EMPLOYMENT_TYPE_LABEL, WORK_MODE_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCategories } from "@/lib/services/category.service";
@@ -27,7 +27,8 @@ export default async function SavedSearchesPage() {
             savedSearch.keyword,
             savedSearch.location,
             savedSearch.categoryId ? categoryNameById.get(savedSearch.categoryId) : undefined,
-            savedSearch.jobType ? JOB_TYPE_LABEL[savedSearch.jobType] : undefined,
+            savedSearch.employmentType ? EMPLOYMENT_TYPE_LABEL[savedSearch.employmentType] : undefined,
+            savedSearch.workMode ? WORK_MODE_LABEL[savedSearch.workMode] : undefined,
           ].filter(Boolean);
 
           return (
