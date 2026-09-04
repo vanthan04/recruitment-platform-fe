@@ -8,15 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { JOB_LEVEL_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
+import { JOB_LEVEL_LABEL, JOB_SORT_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
 import type { Category } from "@/lib/types/category";
 import type { ListMeta } from "@/lib/types/common";
-import type { Job, JobLevel, JobType } from "@/lib/types/job";
+import type { Job, JobLevel, JobSortOption, JobType } from "@/lib/types/job";
 import { cn } from "@/lib/utils";
 
 const ALL = "all";
 const JOB_TYPES = Object.keys(JOB_TYPE_LABEL) as JobType[];
 const JOB_LEVELS = Object.keys(JOB_LEVEL_LABEL) as JobLevel[];
+const JOB_SORTS = Object.keys(JOB_SORT_LABEL) as JobSortOption[];
+const DEFAULT_SORT: JobSortOption = "newest";
 
 interface JobsListProps {
   items: Job[];
@@ -28,6 +30,7 @@ interface JobsListProps {
   initialJobType: string;
   initialLevel: string;
   initialCategoryId: string;
+  initialSort: string;
   isCandidate?: boolean;
 }
 
@@ -41,6 +44,7 @@ export function JobsList({
   initialJobType,
   initialLevel,
   initialCategoryId,
+  initialSort,
   isCandidate,
 }: JobsListProps) {
   const router = useRouter();
@@ -82,78 +86,99 @@ export function JobsList({
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Input
-          value={keyword}
-          onChange={(event) => setKeyword(event.target.value)}
-          placeholder="Vị trí, từ khóa..."
-        />
-        <Input
-          value={location}
-          onChange={(event) => setLocation(event.target.value)}
-          placeholder="Địa điểm..."
-        />
-        <Select
-          value={initialJobType || ALL}
-          onValueChange={(value) =>
-            pushParams({ jobType: value === ALL ? undefined : value, page: undefined })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Hình thức" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>Tất cả hình thức</SelectItem>
-            {JOB_TYPES.map((type) => (
-              <SelectItem key={type} value={type}>
-                {JOB_TYPE_LABEL[type]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={initialLevel || ALL}
-          onValueChange={(value) => pushParams({ level: value === ALL ? undefined : value, page: undefined })}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Cấp bậc" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>Tất cả cấp bậc</SelectItem>
-            {JOB_LEVELS.map((level) => (
-              <SelectItem key={level} value={level}>
-                {JOB_LEVEL_LABEL[level]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        {categories.length > 0 && (
+      <div className="bg-card ring-foreground/10 -mt-14 space-y-3 rounded-2xl p-4 shadow-lg ring-1 sm:-mt-16">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Input
+            value={keyword}
+            onChange={(event) => setKeyword(event.target.value)}
+            placeholder="Vị trí, từ khóa..."
+          />
+          <Input
+            value={location}
+            onChange={(event) => setLocation(event.target.value)}
+            placeholder="Địa điểm..."
+          />
           <Select
-            value={initialCategoryId || ALL}
+            value={initialJobType || ALL}
             onValueChange={(value) =>
-              pushParams({ categoryId: value === ALL ? undefined : value, page: undefined })
+              pushParams({ jobType: value === ALL ? undefined : value, page: undefined })
             }
           >
-            <SelectTrigger className="sm:w-64">
-              <SelectValue placeholder="Ngành nghề" />
+            <SelectTrigger>
+              <SelectValue placeholder="Hình thức" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL}>Tất cả ngành nghề</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
+              <SelectItem value={ALL}>Tất cả hình thức</SelectItem>
+              {JOB_TYPES.map((type) => (
+                <SelectItem key={type} value={type}>
+                  {JOB_TYPE_LABEL[type]}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        )}
-        {isCandidate && <SaveSearchButton />}
+          <Select
+            value={initialLevel || ALL}
+            onValueChange={(value) =>
+              pushParams({ level: value === ALL ? undefined : value, page: undefined })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Cấp bậc" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Tất cả cấp bậc</SelectItem>
+              {JOB_LEVELS.map((level) => (
+                <SelectItem key={level} value={level}>
+                  {JOB_LEVEL_LABEL[level]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          {categories.length > 0 && (
+            <Select
+              value={initialCategoryId || ALL}
+              onValueChange={(value) =>
+                pushParams({ categoryId: value === ALL ? undefined : value, page: undefined })
+              }
+            >
+              <SelectTrigger className="sm:w-64">
+                <SelectValue placeholder="Ngành nghề" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL}>Tất cả ngành nghề</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <Select
+            value={initialSort || DEFAULT_SORT}
+            onValueChange={(value) =>
+              pushParams({ sort: value === DEFAULT_SORT ? undefined : value, page: undefined })
+            }
+          >
+            <SelectTrigger className="sm:w-52">
+              <SelectValue placeholder="Sắp xếp" />
+            </SelectTrigger>
+            <SelectContent>
+              {JOB_SORTS.map((sort) => (
+                <SelectItem key={sort} value={sort}>
+                  {JOB_SORT_LABEL[sort]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {isCandidate && <SaveSearchButton />}
+        </div>
       </div>
 
-      <div className={cn("grid gap-4 sm:grid-cols-2", isPending && "opacity-60")}>
+      <div className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3", isPending && "opacity-60")}>
         {items.map((job) => (
           <JobCard key={job.id} job={job} bookmarkedJobIds={bookmarkedJobIds} />
         ))}

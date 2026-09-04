@@ -54,7 +54,7 @@ export function CompaniesList({ items, meta, initialKeyword, initialIndustry }: 
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="bg-card ring-foreground/10 -mt-14 grid gap-3 rounded-2xl p-4 shadow-lg ring-1 sm:-mt-16 sm:grid-cols-2">
         <Input
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}

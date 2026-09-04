@@ -12,14 +12,23 @@ export default async function CompaniesPage({ searchParams }: CompaniesPageProps
   const { items, meta } = await getCompanies({ page, keyword: sp.keyword, industry: sp.industry });
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-semibold">Công ty</h1>
-      <CompaniesList
-        items={items}
-        meta={meta}
-        initialKeyword={sp.keyword ?? ""}
-        initialIndustry={sp.industry ?? ""}
-      />
+    <div>
+      <div className="bg-primary/5 border-b py-8">
+        <div className="mx-auto max-w-6xl px-4">
+          <h1 className="text-2xl font-semibold sm:text-3xl">Công ty</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {(meta?.total ?? items.length).toLocaleString("vi-VN")} công ty đang tuyển dụng
+          </p>
+        </div>
+      </div>
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <CompaniesList
+          items={items}
+          meta={meta}
+          initialKeyword={sp.keyword ?? ""}
+          initialIndustry={sp.industry ?? ""}
+        />
+      </div>
     </div>
   );
 }

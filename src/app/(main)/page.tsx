@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { ArrowRight, Building2, Layers, Sparkles } from "lucide-react";
 import { HeroSearch } from "@/components/home/hero-search";
+import { CategoryGrid } from "@/components/home/category-grid";
 import { CompanyCard } from "@/components/companies/company-card";
 import { JobCard } from "@/components/jobs/job-card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
@@ -13,48 +15,50 @@ import { getJobs } from "@/lib/services/job.service";
 export default async function HomePage() {
   // Independent data sources — fetched in parallel instead of awaited one
   // after another.
-  const [{ items: jobs }, { items: companies }, categories, user] = await Promise.all([
-    getJobs({ limit: 6 }),
-    getCompanies({ limit: 6 }),
-    getCategories(),
-    getCurrentUser(),
-  ]);
+  const [{ items: jobs, meta: jobsMeta }, { items: companies, meta: companiesMeta }, categories, user] =
+    await Promise.all([getJobs({ limit: 6 }), getCompanies({ limit: 6 }), getCategories(), getCurrentUser()]);
 
   const bookmarkedJobIds = user ? await getMyBookmarkedJobIds() : undefined;
 
+  const stats = [
+    { icon: Sparkles, value: jobsMeta?.total ?? jobs.length, label: "Việc làm đang tuyển" },
+    { icon: Building2, value: companiesMeta?.total ?? companies.length, label: "Công ty tuyển dụng" },
+    { icon: Layers, value: categories.length, label: "Ngành nghề" },
+  ];
+
   return (
     <div>
-      <section className="bg-primary/5 py-14">
-        <div className="mx-auto max-w-3xl px-4 text-center">
-          <h1 className="text-3xl font-bold sm:text-4xl">Tìm việc làm mơ ước của bạn</h1>
-          <p className="text-muted-foreground mt-2">Hàng ngàn tin tuyển dụng từ các công ty hàng đầu</p>
+      <section className="from-primary bg-gradient-to-b to-[color-mix(in_oklch,var(--primary),black_25%)] px-4 pt-14 pb-20 sm:pb-24">
+        <div className="mx-auto max-w-3xl text-center">
+          <h1 className="text-3xl font-bold text-white sm:text-4xl">Tìm việc làm mơ ước của bạn</h1>
+          <p className="mt-2 text-white/80">Hàng ngàn tin tuyển dụng từ các công ty hàng đầu</p>
           <div className="mt-6">
             <HeroSearch />
           </div>
         </div>
       </section>
 
+      <div className="mx-auto -mt-10 max-w-4xl px-4 sm:-mt-12">
+        <div className="bg-card ring-foreground/10 grid grid-cols-3 divide-x rounded-2xl shadow-lg ring-1">
+          {stats.map(({ icon: Icon, value, label }) => (
+            <div key={label} className="flex flex-col items-center gap-1.5 px-2 py-5 text-center sm:py-6">
+              <Icon className="text-primary size-5" />
+              <span className="text-xl font-bold sm:text-2xl">{value.toLocaleString("vi-VN")}+</span>
+              <span className="text-muted-foreground text-xs sm:text-sm">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {categories.length > 0 && (
-        <section className="mx-auto max-w-5xl px-4 py-8">
-          <div className="flex flex-wrap justify-center gap-2">
-            {categories.map((category) => (
-              <Link key={category.id} href={`${PATH.JOBS}?categoryId=${category.id}`}>
-                <Badge variant="secondary" className="px-3 py-1.5">
-                  {category.name}
-                </Badge>
-              </Link>
-            ))}
-          </div>
+        <section className="mx-auto max-w-6xl px-4 py-14">
+          <SectionHeading title="Việc làm theo ngành nghề" />
+          <CategoryGrid categories={categories} />
         </section>
       )}
 
-      <section className="mx-auto max-w-5xl px-4 py-8">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Việc làm nổi bật</h2>
-          <Link href={PATH.JOBS} className="text-primary text-sm hover:underline">
-            Xem tất cả
-          </Link>
-        </div>
+      <section className="mx-auto max-w-6xl px-4 py-8">
+        <SectionHeading title="Việc làm nổi bật" href={PATH.JOBS} />
         {jobs.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {jobs.map((job) => (
@@ -66,13 +70,8 @@ export default async function HomePage() {
         )}
       </section>
 
-      <section className="mx-auto max-w-5xl px-4 py-8">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Công ty nổi bật</h2>
-          <Link href={PATH.COMPANIES} className="text-primary text-sm hover:underline">
-            Xem tất cả
-          </Link>
-        </div>
+      <section className="mx-auto max-w-6xl px-4 py-8">
+        <SectionHeading title="Công ty nổi bật" href={PATH.COMPANIES} />
         {companies.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {companies.map((company) => (
@@ -83,6 +82,42 @@ export default async function HomePage() {
           <p className="text-muted-foreground text-sm">Chưa có công ty nào.</p>
         )}
       </section>
+
+      {user?.role !== "RECRUITER" && (
+        <section className="mx-auto max-w-6xl px-4 py-8">
+          <div className="from-primary/10 via-accent to-primary/5 flex flex-col items-center justify-between gap-4 rounded-2xl bg-gradient-to-r px-6 py-8 text-center sm:flex-row sm:text-left">
+            <div>
+              <h3 className="text-lg font-semibold">Bạn là nhà tuyển dụng?</h3>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Đăng tin tuyển dụng và tiếp cận hàng ngàn ứng viên tiềm năng.
+              </p>
+            </div>
+            <Link href={user ? PATH.RECRUITER_JOBS : PATH.REGISTER}>
+              <Button size="lg" className="gap-2">
+                Đăng tuyển ngay
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function SectionHeading({ title, href }: { title: string; href?: string }) {
+  return (
+    <div className="mb-5 flex items-center justify-between">
+      <h2 className="text-xl font-semibold sm:text-2xl">{title}</h2>
+      {href && (
+        <Link
+          href={href}
+          className="text-primary flex items-center gap-1 text-sm font-medium hover:underline"
+        >
+          Xem tất cả
+          <ArrowRight className="size-3.5" />
+        </Link>
+      )}
     </div>
   );
 }

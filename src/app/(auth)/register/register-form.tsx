@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowRight } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -50,20 +51,40 @@ export function RegisterForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4" noValidate>
+    <form onSubmit={onSubmit} className="space-y-5" noValidate>
       <div className="space-y-1.5">
         <Label htmlFor="fullName">Họ tên</Label>
-        <Input id="fullName" autoComplete="name" {...registerField("fullName")} />
+        <Input
+          id="fullName"
+          autoComplete="name"
+          placeholder="Nhập họ tên"
+          className="h-11 rounded-xl px-4 text-base"
+          {...registerField("fullName")}
+        />
         {errors.fullName && <p className="text-destructive text-sm">{errors.fullName.message}</p>}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" {...registerField("email")} />
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Nhập email"
+          className="h-11 rounded-xl px-4 text-base"
+          {...registerField("email")}
+        />
         {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="password">Mật khẩu</Label>
-        <Input id="password" type="password" autoComplete="new-password" {...registerField("password")} />
+        <Input
+          id="password"
+          type="password"
+          autoComplete="new-password"
+          placeholder="Nhập mật khẩu"
+          className="h-11 rounded-xl px-4 text-base"
+          {...registerField("password")}
+        />
         {errors.password && <p className="text-destructive text-sm">{errors.password.message}</p>}
       </div>
       <div className="space-y-1.5">
@@ -72,6 +93,8 @@ export function RegisterForm() {
           id="confirmPassword"
           type="password"
           autoComplete="new-password"
+          placeholder="Nhập lại mật khẩu"
+          className="h-11 rounded-xl px-4 text-base"
           {...registerField("confirmPassword")}
         />
         {errors.confirmPassword && (
@@ -85,7 +108,7 @@ export function RegisterForm() {
           name="role"
           render={({ field }) => (
             <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="h-11 w-full rounded-xl px-4 text-base">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -96,8 +119,9 @@ export function RegisterForm() {
           )}
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button type="submit" className="h-12 w-full rounded-full text-base font-semibold" disabled={isPending}>
         {isPending ? "Đang đăng ký..." : "Đăng ký"}
+        {!isPending && <ArrowRight className="size-4" />}
       </Button>
     </form>
   );

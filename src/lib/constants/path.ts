@@ -10,6 +10,7 @@ export const PATH = {
   COMPANIES: "/companies",
   COMPANY_DETAIL: (id: string) => `/companies/${id}`,
   PROFILE: "/profile",
+  DASHBOARD: "/dashboard",
   CV_LIST: "/cv",
   CV_NEW: "/cv/new",
   CV_EDIT: (id: string) => `/cv/${id}/edit`,

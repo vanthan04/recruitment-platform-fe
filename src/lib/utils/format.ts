@@ -15,6 +15,10 @@ export function formatSalaryRange(
   return "Thỏa thuận";
 }
 
+export function formatDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("vi-VN");
+}
+
 export function formatRelativeDate(iso: string): string {
   const date = new Date(iso);
   const diffMs = Date.now() - date.getTime();

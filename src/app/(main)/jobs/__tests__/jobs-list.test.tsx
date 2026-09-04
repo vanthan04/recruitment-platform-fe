@@ -27,6 +27,7 @@ const mockJob: Job = {
   currency: "VND",
   requirements: null,
   benefits: null,
+  extraInfo: null,
   expiresAt: null,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
@@ -42,6 +43,7 @@ const baseProps = {
   initialJobType: "",
   initialLevel: "",
   initialCategoryId: "",
+  initialSort: "",
 };
 
 describe("JobsList", () => {

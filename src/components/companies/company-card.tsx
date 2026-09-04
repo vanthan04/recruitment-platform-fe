@@ -8,19 +8,32 @@ import type { Company } from "@/lib/types/company";
 
 export function CompanyCard({ company }: { company: Company }) {
   return (
-    <Link href={PATH.COMPANY_DETAIL(company.id)}>
-      <Card className="hover:border-primary h-full transition-colors">
-        <CardHeader className="flex flex-row items-start gap-3">
-          <CompanyLogo name={company.name} logoUrl={company.logoUrl} className="size-12" />
-          <div className="min-w-0">
+    <Link href={PATH.COMPANY_DETAIL(company.id)} className="block h-full">
+      <Card className="hover:border-primary/60 h-full gap-0 overflow-hidden rounded-2xl py-0 transition-all hover:-translate-y-0.5 hover:shadow-lg">
+        <div className="from-primary/15 via-primary/5 h-14 bg-gradient-to-r to-transparent" />
+        <CardHeader className="-mt-7 flex flex-row items-start gap-3 pb-3">
+          <CompanyLogo
+            name={company.name}
+            logoUrl={company.logoUrl}
+            className="ring-background size-14 rounded-xl bg-white ring-4"
+          />
+          <div className="mt-7 min-w-0">
             <CardTitle className="line-clamp-1">{company.name}</CardTitle>
             {company.industry && <p className="text-muted-foreground truncate text-sm">{company.industry}</p>}
           </div>
         </CardHeader>
         {(company.size || company.address) && (
-          <CardContent className="flex flex-wrap gap-2">
-            {company.size && <Badge variant="secondary">{COMPANY_SIZE_LABEL[company.size]}</Badge>}
-            {company.address && <Badge variant="outline">{company.address}</Badge>}
+          <CardContent className="flex flex-wrap gap-2 pb-4">
+            {company.size && (
+              <Badge variant="secondary" className="rounded-full">
+                {COMPANY_SIZE_LABEL[company.size]}
+              </Badge>
+            )}
+            {company.address && (
+              <Badge variant="outline" className="rounded-full">
+                {company.address}
+              </Badge>
+            )}
           </CardContent>
         )}
       </Card>

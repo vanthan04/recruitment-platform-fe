@@ -12,7 +12,13 @@ import { useApiToast } from "@/hooks/use-api-toast";
 import { JOB_LEVEL_LABEL, JOB_TYPE_LABEL } from "@/lib/constants/enum-label";
 import { createJob, updateJob } from "@/lib/services/job.service";
 import type { Category } from "@/lib/types/category";
-import type { CreateJobInput, Job, JobLevel, JobType } from "@/lib/types/job";
+import {
+  JOB_EXTRA_INFO_KEY,
+  type CreateJobInput,
+  type Job,
+  type JobLevel,
+  type JobType,
+} from "@/lib/types/job";
 
 const JOB_TYPES = Object.keys(JOB_TYPE_LABEL) as JobType[];
 const JOB_LEVELS = Object.keys(JOB_LEVEL_LABEL) as JobLevel[];
@@ -31,6 +37,8 @@ const jobSchema = z
     currency: z.string().optional(),
     requirements: z.string().optional(),
     benefits: z.string().optional(),
+    workingHours: z.string().optional(),
+    applicationMethod: z.string().optional(),
     expiresAt: z.string().optional(),
   })
   .refine(
@@ -70,11 +78,17 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       currency: job?.currency ?? "VND",
       requirements: job?.requirements ?? "",
       benefits: job?.benefits ?? "",
+      workingHours: job?.extraInfo?.[JOB_EXTRA_INFO_KEY.WORKING_HOURS] ?? "",
+      applicationMethod: job?.extraInfo?.[JOB_EXTRA_INFO_KEY.APPLICATION_METHOD] ?? "",
       expiresAt: job?.expiresAt ? job.expiresAt.slice(0, 10) : "",
     },
   });
 
   const onSubmit = handleSubmit((values) => {
+    const extraInfo: Record<string, string> = {};
+    if (values.workingHours) extraInfo[JOB_EXTRA_INFO_KEY.WORKING_HOURS] = values.workingHours;
+    if (values.applicationMethod) extraInfo[JOB_EXTRA_INFO_KEY.APPLICATION_METHOD] = values.applicationMethod;
+
     const input: CreateJobInput = {
       title: values.title,
       description: values.description,
@@ -87,6 +101,7 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       currency: values.currency || undefined,
       requirements: values.requirements || undefined,
       benefits: values.benefits || undefined,
+      extraInfo: Object.keys(extraInfo).length > 0 ? extraInfo : undefined,
       expiresAt: values.expiresAt || undefined,
     };
 
@@ -207,6 +222,19 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       <div className="space-y-1.5">
         <Label htmlFor="benefits">Quyền lợi</Label>
         <Textarea id="benefits" rows={4} {...register("benefits")} />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="workingHours">Thời gian làm việc</Label>
+        <Textarea
+          id="workingHours"
+          rows={2}
+          placeholder="Thứ 2 - Thứ 6 (08:00 - 17:00)"
+          {...register("workingHours")}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="applicationMethod">Cách thức ứng tuyển</Label>
+        <Textarea id="applicationMethod" rows={2} {...register("applicationMethod")} />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="expiresAt">Hạn nộp hồ sơ</Label>

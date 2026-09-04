@@ -2,7 +2,7 @@ import type { CompanySize } from "@/lib/types/company";
 import type { Gender, UserRole, UserStatus } from "@/lib/types/auth";
 import type { InterviewStatus } from "@/lib/types/interview";
 import type { ApplicationStatus } from "@/lib/types/job-application";
-import type { JobLevel, JobStatus, JobType } from "@/lib/types/job";
+import type { JobLevel, JobSortOption, JobStatus, JobType } from "@/lib/types/job";
 import type { NotificationType } from "@/lib/types/notification";
 
 export const JOB_TYPE_LABEL: Record<JobType, string> = {
@@ -59,6 +59,12 @@ export const JOB_STATUS_LABEL: Record<JobStatus, string> = {
   DRAFT: "Nháp",
   OPEN: "Đang tuyển",
   CLOSED: "Đã đóng",
+};
+
+export const JOB_SORT_LABEL: Record<JobSortOption, string> = {
+  newest: "Mới nhất",
+  salary_desc: "Lương cao → thấp",
+  views_desc: "Nhiều lượt xem",
 };
 
 export const NOTIFICATION_TYPE_LABEL: Record<NotificationType, string> = {

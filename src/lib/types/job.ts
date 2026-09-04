@@ -1,6 +1,14 @@
 export type JobType = "FULL_TIME" | "PART_TIME" | "CONTRACT" | "INTERNSHIP" | "REMOTE";
 export type JobLevel = "INTERN" | "FRESHER" | "JUNIOR" | "MIDDLE" | "SENIOR" | "MANAGER";
 export type JobStatus = "DRAFT" | "OPEN" | "CLOSED";
+export type JobSortOption = "newest" | "salary_desc" | "views_desc";
+
+// Well-known extraInfo keys the UI reads/writes explicitly. Anything else in
+// extraInfo is opaque to the current UI but persists fine.
+export const JOB_EXTRA_INFO_KEY = {
+  WORKING_HOURS: "workingHours",
+  APPLICATION_METHOD: "applicationMethod",
+} as const;
 
 export interface JobCompanySummary {
   id: string;
@@ -32,6 +40,9 @@ export interface Job {
   currency: string;
   requirements: string | null;
   benefits: string | null;
+  // Free-form extra fields (working hours, application method, and whatever
+  // else gets added later) — new keys need no migration.
+  extraInfo: Record<string, string> | null;
   expiresAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -48,6 +59,7 @@ export interface JobListParams {
   companyId?: string;
   salaryMin?: number;
   salaryMax?: number;
+  sort?: JobSortOption;
 }
 
 export interface JobMineListParams {
@@ -68,6 +80,7 @@ export interface CreateJobInput {
   currency?: string;
   requirements?: string;
   benefits?: string;
+  extraInfo?: Record<string, string>;
   expiresAt?: string;
 }
 

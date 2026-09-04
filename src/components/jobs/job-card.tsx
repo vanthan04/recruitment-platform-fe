@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CompanyLogo } from "@/components/companies/company-logo";
@@ -17,7 +18,7 @@ interface JobCardProps {
 
 export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
   return (
-    <Card className="hover:border-primary relative transition-colors">
+    <Card className="hover:border-primary/60 relative gap-3 rounded-2xl transition-all hover:-translate-y-0.5 hover:shadow-lg">
       {bookmarkedJobIds && (
         <SaveJobButton
           jobId={job.id}
@@ -27,22 +28,42 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
       )}
       <Link href={PATH.JOB_DETAIL(job.id)} scroll={false} className="block">
         <CardHeader className="flex flex-row items-start gap-3">
-          <CompanyLogo name={job.company?.name ?? "?"} logoUrl={job.company?.logoUrl ?? null} />
+          <CompanyLogo
+            name={job.company?.name ?? "?"}
+            logoUrl={job.company?.logoUrl ?? null}
+            className="size-12 rounded-xl"
+          />
           <div className="min-w-0 pr-8">
-            <CardTitle className="line-clamp-1">{job.title}</CardTitle>
-            <p className="text-muted-foreground truncate text-sm">
-              {job.company?.name ?? "Công ty ẩn danh"} — {job.location}
+            <CardTitle className="line-clamp-1 text-base">{job.title}</CardTitle>
+            <p className="text-muted-foreground mt-0.5 truncate text-sm">
+              {job.company?.name ?? "Công ty ẩn danh"}
+            </p>
+            <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
+              <MapPin className="size-3 shrink-0" />
+              <span className="truncate">{job.location}</span>
             </p>
           </div>
         </CardHeader>
-        <CardContent className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary">{JOB_TYPE_LABEL[job.jobType]}</Badge>
-          {job.level && <Badge variant="secondary">{JOB_LEVEL_LABEL[job.level]}</Badge>}
-          {job.category && <Badge variant="outline">{job.category.name}</Badge>}
-          <span className="text-primary ml-auto text-sm font-medium">
+        <CardContent className="flex flex-wrap items-center gap-1.5">
+          <Badge variant="secondary" className="rounded-full">
+            {JOB_TYPE_LABEL[job.jobType]}
+          </Badge>
+          {job.level && (
+            <Badge variant="secondary" className="rounded-full">
+              {JOB_LEVEL_LABEL[job.level]}
+            </Badge>
+          )}
+          {job.category && (
+            <Badge variant="outline" className="rounded-full">
+              {job.category.name}
+            </Badge>
+          )}
+        </CardContent>
+        <CardContent className="border-border/70 flex items-center justify-between border-t pt-3">
+          <span className="text-primary text-sm font-semibold">
             {formatSalaryRange(job.salaryMin, job.salaryMax, job.currency)}
           </span>
-          <span className="text-muted-foreground w-full text-xs">{formatRelativeDate(job.createdAt)}</span>
+          <span className="text-muted-foreground text-xs">{formatRelativeDate(job.createdAt)}</span>
         </CardContent>
       </Link>
     </Card>

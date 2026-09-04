@@ -25,6 +25,12 @@ export async function getJobById(id: string): Promise<Job> {
   });
 }
 
+export async function getRelatedJobs(job: Job, limit = 4): Promise<Job[]> {
+  if (!job.categoryId) return [];
+  const { items } = await getJobs({ categoryId: job.categoryId, limit: limit + 1 });
+  return items.filter((item) => item.id !== job.id).slice(0, limit);
+}
+
 export async function getMyJobs(params: JobMineListParams = {}): Promise<{ items: Job[]; meta?: ListMeta }> {
   const { items, metadata } = await api.getPaginated<Job[]>(JOB_ENDPOINT.MINE, { searchParams: params });
   return { items, meta: metadata };
