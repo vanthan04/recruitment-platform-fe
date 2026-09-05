@@ -7,6 +7,7 @@ import { PATH } from "@/lib/constants/path";
 import type {
   ApplicationStatus,
   ApplicationStats,
+  ApplicationStatusHistoryEntry,
   CreateApplicationInput,
   JobApplication,
 } from "@/lib/types/job-application";
@@ -31,6 +32,10 @@ export async function getApplicationsForJob(jobId: string): Promise<JobApplicati
 
 export async function getApplicationStats(jobId: string): Promise<ApplicationStats> {
   return api.get<ApplicationStats>(JOB_APPLICATION_ENDPOINT.STATS(jobId));
+}
+
+export async function getApplicationHistory(id: string): Promise<ApplicationStatusHistoryEntry[]> {
+  return api.get<ApplicationStatusHistoryEntry[]>(JOB_APPLICATION_ENDPOINT.HISTORY(id));
 }
 
 export async function updateApplicationStatus(

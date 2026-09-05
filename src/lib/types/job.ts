@@ -61,6 +61,8 @@ export interface JobListParams {
   companyId?: string;
   salaryMin?: number;
   salaryMax?: number;
+  /** Job matches if it has at least one of these skills (OR, not AND). */
+  skillIds?: string[];
   sort?: JobSortOption;
 }
 
@@ -86,6 +88,7 @@ export interface CreateJobInput {
   workingHours?: string;
   applicationMethod?: string;
   expiresAt?: string;
+  skillIds?: string[];
 }
 
 export type UpdateJobInput = Partial<CreateJobInput>;

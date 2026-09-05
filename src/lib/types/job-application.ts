@@ -34,6 +34,15 @@ export interface CreateApplicationInput {
   coverLetter?: string;
 }
 
+export interface ApplicationStatusHistoryEntry {
+  id: string;
+  fromStatus: ApplicationStatus | null;
+  toStatus: ApplicationStatus;
+  note: string | null;
+  changedById: string | null;
+  createdAt: string;
+}
+
 export interface ApplicationStats {
   jobId: string;
   viewCount: number;

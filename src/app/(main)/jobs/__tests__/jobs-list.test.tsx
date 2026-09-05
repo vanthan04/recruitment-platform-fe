@@ -41,12 +41,14 @@ const mockCategories: Category[] = [{ id: "cat1", name: "Backend", slug: "backen
 const baseProps = {
   meta: { total: 1, page: 1, limit: 10 },
   categories: mockCategories,
+  skills: [],
   initialKeyword: "",
   initialLocation: "",
   initialEmploymentType: "",
   initialWorkMode: "",
   initialLevel: "",
   initialCategoryId: "",
+  initialSkillIds: [],
   initialSort: "",
 };
 

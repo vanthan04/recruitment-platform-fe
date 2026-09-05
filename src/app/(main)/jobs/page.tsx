@@ -3,6 +3,7 @@ import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCategories } from "@/lib/services/category.service";
 import { getJobs } from "@/lib/services/job.service";
+import { getSkills } from "@/lib/services/skill.service";
 import {
   EMPLOYMENT_TYPE_LABEL,
   JOB_LEVEL_LABEL,
@@ -21,6 +22,7 @@ interface JobsPageProps {
     workMode?: string;
     level?: string;
     categoryId?: string;
+    skillIds?: string;
     sort?: string;
   }>;
 }
@@ -31,7 +33,9 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
 
   // Independent data sources for this route — fetched in parallel instead
   // of awaited one after another.
-  const [{ items, meta }, categories, user] = await Promise.all([
+  const skillIds = sp.skillIds ? sp.skillIds.split(",").filter(Boolean) : undefined;
+
+  const [{ items, meta }, categories, skills, user] = await Promise.all([
     getJobs({
       page,
       keyword: sp.keyword,
@@ -43,9 +47,11 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
       workMode: parseEnumParam<WorkMode>(sp.workMode, Object.keys(WORK_MODE_LABEL) as WorkMode[]),
       level: parseEnumParam<JobLevel>(sp.level, Object.keys(JOB_LEVEL_LABEL) as JobLevel[]),
       categoryId: sp.categoryId,
+      skillIds,
       sort: parseEnumParam<JobSortOption>(sp.sort, Object.keys(JOB_SORT_LABEL) as JobSortOption[]),
     }),
     getCategories(),
+    getSkills(),
     getCurrentUser(),
   ]);
 
@@ -66,6 +72,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
           items={items}
           meta={meta}
           categories={categories}
+          skills={skills}
           bookmarkedJobIds={bookmarkedJobIds}
           initialKeyword={sp.keyword ?? ""}
           initialLocation={sp.location ?? ""}
@@ -73,6 +80,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
           initialWorkMode={sp.workMode ?? ""}
           initialLevel={sp.level ?? ""}
           initialCategoryId={sp.categoryId ?? ""}
+          initialSkillIds={skillIds ?? []}
           initialSort={sp.sort ?? ""}
           isCandidate={user?.role === "CANDIDATE"}
         />

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,6 +14,7 @@ import { EMPLOYMENT_TYPE_LABEL, JOB_LEVEL_LABEL, WORK_MODE_LABEL } from "@/lib/c
 import { createJob, updateJob } from "@/lib/services/job.service";
 import type { Category } from "@/lib/types/category";
 import type { CreateJobInput, EmploymentType, Job, JobLevel, WorkMode } from "@/lib/types/job";
+import type { Skill } from "@/lib/types/skill";
 
 const EMPLOYMENT_TYPES = Object.keys(EMPLOYMENT_TYPE_LABEL) as EmploymentType[];
 const WORK_MODES = Object.keys(WORK_MODE_LABEL) as WorkMode[];
@@ -36,6 +38,7 @@ const jobSchema = z
     workingHours: z.string().optional(),
     applicationMethod: z.string().optional(),
     expiresAt: z.string().optional(),
+    skillIds: z.array(z.string()).optional(),
   })
   .refine(
     (values) => {
@@ -51,9 +54,10 @@ interface JobFormProps {
   mode: "create" | "edit";
   job?: Job;
   categories: Category[];
+  skills: Skill[];
 }
 
-export function JobForm({ mode, job, categories }: JobFormProps) {
+export function JobForm({ mode, job, categories, skills }: JobFormProps) {
   const { run, isPending } = useApiToast();
   const {
     register,
@@ -78,6 +82,7 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       workingHours: job?.workingHours ?? "",
       applicationMethod: job?.applicationMethod ?? "",
       expiresAt: job?.expiresAt ? job.expiresAt.slice(0, 10) : "",
+      skillIds: job?.skills.map((skill) => skill.id) ?? [],
     },
   });
 
@@ -98,6 +103,7 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       workingHours: values.workingHours || undefined,
       applicationMethod: values.applicationMethod || undefined,
       expiresAt: values.expiresAt || undefined,
+      skillIds: values.skillIds,
     };
 
     if (mode === "create") {
@@ -214,6 +220,37 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
           )}
         />
       </div>
+
+      {skills.length > 0 && (
+        <div className="space-y-1.5">
+          <Label>Kỹ năng</Label>
+          <Controller
+            control={control}
+            name="skillIds"
+            render={({ field }) => (
+              <div className="flex flex-wrap gap-x-4 gap-y-2 rounded-md border p-3">
+                {skills.map((skill) => {
+                  const selected = field.value ?? [];
+                  const checked = selected.includes(skill.id);
+                  return (
+                    <label key={skill.id} className="flex items-center gap-2 text-sm">
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={(value) =>
+                          field.onChange(
+                            value ? [...selected, skill.id] : selected.filter((id) => id !== skill.id),
+                          )
+                        }
+                      />
+                      {skill.name}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          />
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">

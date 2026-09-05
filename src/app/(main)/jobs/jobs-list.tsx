@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { JobCard } from "@/components/jobs/job-card";
 import { SaveSearchButton } from "@/components/jobs/save-search-button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PaginationBar } from "@/components/shared/pagination-bar";
@@ -17,6 +18,7 @@ import {
 import type { Category } from "@/lib/types/category";
 import type { ListMeta } from "@/lib/types/common";
 import type { EmploymentType, Job, JobLevel, JobSortOption, WorkMode } from "@/lib/types/job";
+import type { Skill } from "@/lib/types/skill";
 import { cn } from "@/lib/utils";
 
 const ALL = "all";
@@ -30,6 +32,7 @@ interface JobsListProps {
   items: Job[];
   meta?: ListMeta;
   categories: Category[];
+  skills: Skill[];
   bookmarkedJobIds?: Set<string>;
   initialKeyword: string;
   initialLocation: string;
@@ -37,6 +40,7 @@ interface JobsListProps {
   initialWorkMode: string;
   initialLevel: string;
   initialCategoryId: string;
+  initialSkillIds: string[];
   initialSort: string;
   isCandidate?: boolean;
 }
@@ -45,6 +49,7 @@ export function JobsList({
   items,
   meta,
   categories,
+  skills,
   bookmarkedJobIds,
   initialKeyword,
   initialLocation,
@@ -52,6 +57,7 @@ export function JobsList({
   initialWorkMode,
   initialLevel,
   initialCategoryId,
+  initialSkillIds,
   initialSort,
   isCandidate,
 }: JobsListProps) {
@@ -202,6 +208,29 @@ export function JobsList({
           </Select>
           {isCandidate && <SaveSearchButton />}
         </div>
+
+        {skills.length > 0 && (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            <span className="text-muted-foreground">Kỹ năng:</span>
+            {skills.map((skill) => {
+              const checked = initialSkillIds.includes(skill.id);
+              return (
+                <label key={skill.id} className="flex items-center gap-1.5">
+                  <Checkbox
+                    checked={checked}
+                    onCheckedChange={(value) => {
+                      const next = value
+                        ? [...initialSkillIds, skill.id]
+                        : initialSkillIds.filter((id) => id !== skill.id);
+                      pushParams({ skillIds: next.length > 0 ? next.join(",") : undefined, page: undefined });
+                    }}
+                  />
+                  {skill.name}
+                </label>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3", isPending && "opacity-60")}>

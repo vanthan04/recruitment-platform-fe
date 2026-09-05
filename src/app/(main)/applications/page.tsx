@@ -8,13 +8,18 @@ import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getMyConversations } from "@/lib/services/chat.service";
 import { getInterviewsForApplication } from "@/lib/services/interview.service";
-import { getMyApplications } from "@/lib/services/job-application.service";
+import { getApplicationHistory, getMyApplications } from "@/lib/services/job-application.service";
 import { getJobById } from "@/lib/services/job.service";
 import type { Interview } from "@/lib/types/interview";
 import type { Job } from "@/lib/types/job";
-import { NON_TERMINAL_APPLICATION_STATUSES, type JobApplication } from "@/lib/types/job-application";
+import {
+  NON_TERMINAL_APPLICATION_STATUSES,
+  type ApplicationStatusHistoryEntry,
+  type JobApplication,
+} from "@/lib/types/job-application";
 import { formatRelativeDate } from "@/lib/utils";
 import { DownloadCvButton } from "@/app/(main)/cv/cv-actions";
+import { ApplicationHistory } from "./application-history";
 import { InterviewInfo } from "./interview-info";
 import { WithdrawButton } from "./withdraw-button";
 
@@ -28,9 +33,10 @@ export default async function ApplicationsPage() {
   ]);
   // The application list doesn't embed job details (API guide note #5) —
   // resolve each job separately.
-  const [jobsById, interviewByApplicationId] = await Promise.all([
+  const [jobsById, interviewByApplicationId, historyByApplicationId] = await Promise.all([
     resolveJobs(applications),
     resolveInterviews(applications),
+    resolveHistories(applications),
   ]);
   const conversationIdByApplicationId = new Map(conversations.map((c) => [c.applicationId, c.id]));
 
@@ -79,6 +85,7 @@ export default async function ApplicationsPage() {
                 </div>
               </div>
               {interview && <InterviewInfo interview={interview} />}
+              <ApplicationHistory history={historyByApplicationId.get(application.id) ?? []} />
             </div>
           );
         })}
@@ -126,4 +133,11 @@ async function resolveInterviews(applications: JobApplication[]): Promise<Map<st
     .map((id, index) => [id, lists[index].find((interview) => interview.status !== "CANCELLED")] as const)
     .filter((entry): entry is [string, Interview] => Boolean(entry[1]));
   return new Map(entries);
+}
+
+async function resolveHistories(
+  applications: JobApplication[],
+): Promise<Map<string, ApplicationStatusHistoryEntry[]>> {
+  const histories = await Promise.all(applications.map((a) => getApplicationHistory(a.id)));
+  return new Map(applications.map((a, index) => [a.id, histories[index]]));
 }

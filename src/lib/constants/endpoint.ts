@@ -50,6 +50,10 @@ export const CATEGORY_ENDPOINT = {
   DETAIL: (id: string) => `/categories/${id}`,
 } as const;
 
+export const SKILL_ENDPOINT = {
+  LIST: "/skills",
+} as const;
+
 export const CV_ENDPOINT = {
   LIST: "/cvs",
   DETAIL: (id: string) => `/cvs/${id}`,
@@ -64,6 +68,7 @@ export const JOB_APPLICATION_ENDPOINT = {
   FOR_JOB: (jobId: string) => `/job-applications/job/${jobId}`,
   STATS: (jobId: string) => `/job-applications/job/${jobId}/stats`,
   STATUS: (id: string) => `/job-applications/${id}/status`,
+  HISTORY: (id: string) => `/job-applications/${id}/history`,
 } as const;
 
 export const BOOKMARK_ENDPOINT = {
