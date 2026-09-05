@@ -8,6 +8,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SocialLoginButtons } from "@/components/shared/social-login-buttons";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { PATH } from "@/lib/constants/path";
 import { login } from "@/lib/services/auth.service";
@@ -66,6 +67,7 @@ export function LoginForm() {
         {isPending ? "Đang đăng nhập..." : "Đăng nhập"}
         {!isPending && <ArrowRight className="size-4" />}
       </Button>
+      <SocialLoginButtons />
     </form>
   );
 }

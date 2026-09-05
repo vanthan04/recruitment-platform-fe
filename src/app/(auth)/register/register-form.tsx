@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SocialLoginButtons } from "@/components/shared/social-login-buttons";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { register as registerUser } from "@/lib/services/auth.service";
 
@@ -32,11 +33,13 @@ export function RegisterForm() {
     register: registerField,
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { role: "CANDIDATE" },
   });
+  const selectedRole = watch("role");
 
   const onSubmit = handleSubmit((values) => {
     // The backend rejects unknown body fields — don't forward confirmPassword.
@@ -123,6 +126,7 @@ export function RegisterForm() {
         {isPending ? "Đang đăng ký..." : "Đăng ký"}
         {!isPending && <ArrowRight className="size-4" />}
       </Button>
+      <SocialLoginButtons role={selectedRole} />
     </form>
   );
 }

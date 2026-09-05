@@ -8,6 +8,7 @@ export const AUTH_ENDPOINT = {
   FORGOT_PASSWORD: "/auth/forgot-password",
   RESET_PASSWORD: "/auth/reset-password",
   CHANGE_PASSWORD: "/auth/change-password",
+  SOCIAL_EXCHANGE: "/auth/social/exchange",
 } as const;
 
 export const USER_ENDPOINT = {

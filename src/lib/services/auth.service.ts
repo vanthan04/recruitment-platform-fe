@@ -44,6 +44,21 @@ export async function login(input: LoginInput): Promise<void> {
   redirect(PATH.JOBS);
 }
 
+export async function completeSocialLogin(code: string): Promise<void> {
+  let tokens: ReturnType<typeof toAuthTokens>;
+  try {
+    const wire = await api.post<AuthTokensWire>(AUTH_ENDPOINT.SOCIAL_EXCHANGE, { code }, { skipAuth: true });
+    tokens = toAuthTokens(wire);
+  } catch {
+    redirect(`${PATH.LOGIN}?error=oauth`);
+  }
+
+  const cookieStore = await getCookies();
+  cookieStore.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+  cookieStore.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+  redirect(PATH.JOBS);
+}
+
 export async function logout(): Promise<void> {
   const cookieStore = await getCookies();
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
