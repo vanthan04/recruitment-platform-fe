@@ -12,14 +12,7 @@ import { useApiToast } from "@/hooks/use-api-toast";
 import { EMPLOYMENT_TYPE_LABEL, JOB_LEVEL_LABEL, WORK_MODE_LABEL } from "@/lib/constants/enum-label";
 import { createJob, updateJob } from "@/lib/services/job.service";
 import type { Category } from "@/lib/types/category";
-import {
-  JOB_EXTRA_INFO_KEY,
-  type CreateJobInput,
-  type EmploymentType,
-  type Job,
-  type JobLevel,
-  type WorkMode,
-} from "@/lib/types/job";
+import type { CreateJobInput, EmploymentType, Job, JobLevel, WorkMode } from "@/lib/types/job";
 
 const EMPLOYMENT_TYPES = Object.keys(EMPLOYMENT_TYPE_LABEL) as EmploymentType[];
 const WORK_MODES = Object.keys(WORK_MODE_LABEL) as WorkMode[];
@@ -82,17 +75,13 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       currency: job?.currency ?? "VND",
       requirements: job?.requirements ?? "",
       benefits: job?.benefits ?? "",
-      workingHours: job?.extraInfo?.[JOB_EXTRA_INFO_KEY.WORKING_HOURS] ?? "",
-      applicationMethod: job?.extraInfo?.[JOB_EXTRA_INFO_KEY.APPLICATION_METHOD] ?? "",
+      workingHours: job?.workingHours ?? "",
+      applicationMethod: job?.applicationMethod ?? "",
       expiresAt: job?.expiresAt ? job.expiresAt.slice(0, 10) : "",
     },
   });
 
   const onSubmit = handleSubmit((values) => {
-    const extraInfo: Record<string, string> = {};
-    if (values.workingHours) extraInfo[JOB_EXTRA_INFO_KEY.WORKING_HOURS] = values.workingHours;
-    if (values.applicationMethod) extraInfo[JOB_EXTRA_INFO_KEY.APPLICATION_METHOD] = values.applicationMethod;
-
     const input: CreateJobInput = {
       title: values.title,
       description: values.description,
@@ -106,7 +95,8 @@ export function JobForm({ mode, job, categories }: JobFormProps) {
       currency: values.currency || undefined,
       requirements: values.requirements || undefined,
       benefits: values.benefits || undefined,
-      extraInfo: Object.keys(extraInfo).length > 0 ? extraInfo : undefined,
+      workingHours: values.workingHours || undefined,
+      applicationMethod: values.applicationMethod || undefined,
       expiresAt: values.expiresAt || undefined,
     };
 

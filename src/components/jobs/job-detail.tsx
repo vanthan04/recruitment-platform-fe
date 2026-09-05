@@ -10,7 +10,7 @@ import { ShareJobButtons } from "@/components/jobs/share-job-buttons";
 import { EMPLOYMENT_TYPE_LABEL, JOB_LEVEL_LABEL, WORK_MODE_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
 import type { Cv } from "@/lib/types/cv";
-import { JOB_EXTRA_INFO_KEY, type Job } from "@/lib/types/job";
+import type { Job } from "@/lib/types/job";
 import { formatDate, formatRelativeDate, formatSalaryRange } from "@/lib/utils";
 
 interface JobDetailProps {
@@ -97,16 +97,16 @@ export function JobDetail({ job, isLoggedIn, isBookmarked, publishedCvs, hasAppl
               <p className="whitespace-pre-line">{job.benefits}</p>
             </section>
           )}
-          {job.extraInfo?.[JOB_EXTRA_INFO_KEY.WORKING_HOURS] && (
+          {job.workingHours && (
             <section>
               <h2 className="mb-1 font-semibold">Thời gian làm việc</h2>
-              <p className="whitespace-pre-line">{job.extraInfo[JOB_EXTRA_INFO_KEY.WORKING_HOURS]}</p>
+              <p className="whitespace-pre-line">{job.workingHours}</p>
             </section>
           )}
-          {job.extraInfo?.[JOB_EXTRA_INFO_KEY.APPLICATION_METHOD] && (
+          {job.applicationMethod && (
             <section>
               <h2 className="mb-1 font-semibold">Cách thức ứng tuyển</h2>
-              <p className="whitespace-pre-line">{job.extraInfo[JOB_EXTRA_INFO_KEY.APPLICATION_METHOD]}</p>
+              <p className="whitespace-pre-line">{job.applicationMethod}</p>
             </section>
           )}
         </div>
