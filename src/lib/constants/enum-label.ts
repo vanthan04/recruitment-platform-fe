@@ -1,4 +1,4 @@
-import type { CompanySize } from "@/lib/types/company";
+import type { CompanySize, CompanyType } from "@/lib/types/company";
 import type { Gender, UserRole, UserStatus } from "@/lib/types/auth";
 import type { InterviewStatus } from "@/lib/types/interview";
 import type { ApplicationStatus } from "@/lib/types/job-application";
@@ -62,6 +62,13 @@ export const COMPANY_SIZE_LABEL: Record<CompanySize, string> = {
   SIZE_51_200: "51 - 200 nhân viên",
   SIZE_201_500: "201 - 500 nhân viên",
   SIZE_500_PLUS: "Trên 500 nhân viên",
+};
+
+export const COMPANY_TYPE_LABEL: Record<CompanyType, string> = {
+  PRODUCT: "Product",
+  OUTSOURCING: "Outsourcing",
+  STARTUP: "Startup",
+  CONSULTING: "Consulting",
 };
 
 export const JOB_STATUS_LABEL: Record<JobStatus, string> = {

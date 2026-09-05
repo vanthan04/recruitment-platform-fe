@@ -27,6 +27,12 @@ export interface AuthUser {
   profile: UserProfile;
 }
 
+// RECRUITER accounts must complete phone/gender + create a company before
+// using the platform (see /onboarding). CANDIDATE/ADMIN never need this.
+export function needsRecruiterOnboarding(user: AuthUser): boolean {
+  return user.role === "RECRUITER" && (!user.profile.phoneNumber || !user.profile.gender || !user.companyId);
+}
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;

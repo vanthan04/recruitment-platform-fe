@@ -3,7 +3,7 @@ import { ApiError } from "@/lib/api";
 import { CompanyLogo } from "@/components/companies/company-logo";
 import { JobCard } from "@/components/jobs/job-card";
 import { Badge } from "@/components/ui/badge";
-import { COMPANY_SIZE_LABEL } from "@/lib/constants/enum-label";
+import { COMPANY_SIZE_LABEL, COMPANY_TYPE_LABEL } from "@/lib/constants/enum-label";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getMyBookmarkedJobIds } from "@/lib/services/bookmark.service";
 import { getCompanyById } from "@/lib/services/company.service";
@@ -33,6 +33,7 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
         <div className="min-w-0">
           <h1 className="text-xl font-semibold">{company.name}</h1>
           <div className="mt-1 flex flex-wrap gap-2">
+            {company.companyType && <Badge>{COMPANY_TYPE_LABEL[company.companyType]}</Badge>}
             {company.size && <Badge variant="outline">{COMPANY_SIZE_LABEL[company.size]}</Badge>}
           </div>
         </div>

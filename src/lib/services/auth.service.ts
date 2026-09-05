@@ -12,6 +12,7 @@ import {
 import { AUTH_ENDPOINT, FILE_ENDPOINT, USER_ENDPOINT } from "@/lib/constants/endpoint";
 import { PATH } from "@/lib/constants/path";
 import {
+  needsRecruiterOnboarding,
   toAuthTokens,
   type AuthTokensWire,
   type AuthUser,
@@ -41,6 +42,11 @@ export async function login(input: LoginInput): Promise<void> {
   const cookieStore = await getCookies();
   cookieStore.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
   cookieStore.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+  const user = await getCurrentUser();
+  if (user && needsRecruiterOnboarding(user)) {
+    redirect(PATH.ONBOARDING);
+  }
   redirect(PATH.JOBS);
 }
 
@@ -56,6 +62,11 @@ export async function completeSocialLogin(code: string): Promise<void> {
   const cookieStore = await getCookies();
   cookieStore.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
   cookieStore.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+  const user = await getCurrentUser();
+  if (user && needsRecruiterOnboarding(user)) {
+    redirect(PATH.ONBOARDING);
+  }
   redirect(PATH.JOBS);
 }
 

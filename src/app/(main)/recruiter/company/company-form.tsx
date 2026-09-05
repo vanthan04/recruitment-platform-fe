@@ -4,34 +4,42 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import { ProvinceWardFields } from "@/components/shared/province-ward-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useApiToast } from "@/hooks/use-api-toast";
-import { COMPANY_SIZE_LABEL } from "@/lib/constants/enum-label";
+import { COMPANY_SIZE_LABEL, COMPANY_TYPE_LABEL } from "@/lib/constants/enum-label";
+import type { LocationOption } from "@/lib/services/location.service";
 import { createCompany, updateCompany } from "@/lib/services/company.service";
-import type { Company, CompanySize } from "@/lib/types/company";
+import type { Company, CompanySize, CompanyType } from "@/lib/types/company";
 
 const companySchema = z.object({
   name: z.string().min(2, "Vui lòng nhập tên công ty"),
   description: z.string().optional().or(z.literal("")),
   website: z.string().url("Website không hợp lệ").optional().or(z.literal("")),
   size: z.enum(["SIZE_1_10", "SIZE_11_50", "SIZE_51_200", "SIZE_201_500", "SIZE_500_PLUS"]).optional(),
+  companyType: z.enum(["PRODUCT", "OUTSOURCING", "STARTUP", "CONSULTING"]).optional(),
   address: z.string().optional().or(z.literal("")),
+  province: z.string().optional().or(z.literal("")),
+  ward: z.string().optional().or(z.literal("")),
 });
 
 type CompanyFormValues = z.infer<typeof companySchema>;
 
 const COMPANY_SIZES = Object.keys(COMPANY_SIZE_LABEL) as CompanySize[];
+const COMPANY_TYPES = Object.keys(COMPANY_TYPE_LABEL) as CompanyType[];
 
 interface CompanyFormProps {
   mode: "create" | "edit";
   company?: Company;
+  provinces: LocationOption[];
+  initialWards?: LocationOption[];
 }
 
-export function CompanyForm({ mode, company }: CompanyFormProps) {
+export function CompanyForm({ mode, company, provinces, initialWards }: CompanyFormProps) {
   const { run, isPending } = useApiToast();
   const router = useRouter();
   const {
@@ -46,7 +54,10 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
       description: company?.description ?? "",
       website: company?.website ?? "",
       size: company?.size ?? undefined,
+      companyType: company?.companyType ?? undefined,
       address: company?.address ?? "",
+      province: company?.province ?? "",
+      ward: company?.ward ?? "",
     },
   });
 
@@ -56,7 +67,10 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
       description: values.description || undefined,
       website: values.website || undefined,
       size: values.size,
+      companyType: values.companyType,
       address: values.address || undefined,
+      province: values.province || undefined,
+      ward: values.ward || undefined,
     };
 
     if (mode === "create") {
@@ -112,6 +126,34 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
           <Input id="address" {...register("address")} />
         </div>
       </div>
+      <div className="space-y-1.5">
+        <Label>Loại hình công ty</Label>
+        <Controller
+          control={control}
+          name="companyType"
+          render={({ field }) => (
+            <Select value={field.value ?? ""} onValueChange={field.onChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Chọn loại hình công ty" />
+              </SelectTrigger>
+              <SelectContent>
+                {COMPANY_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {COMPANY_TYPE_LABEL[type]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+      </div>
+      <ProvinceWardFields
+        control={control}
+        provinceFieldName="province"
+        wardFieldName="ward"
+        provinces={provinces}
+        initialWards={initialWards}
+      />
       <Button type="submit" disabled={isPending}>
         {isPending ? "Đang lưu..." : mode === "create" ? "Tạo công ty" : "Lưu thay đổi"}
       </Button>

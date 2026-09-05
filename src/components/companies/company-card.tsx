@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CompanyLogo } from "@/components/companies/company-logo";
-import { COMPANY_SIZE_LABEL } from "@/lib/constants/enum-label";
+import { COMPANY_SIZE_LABEL, COMPANY_TYPE_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
 import type { Company } from "@/lib/types/company";
 
@@ -21,8 +21,13 @@ export function CompanyCard({ company }: { company: Company }) {
             <CardTitle className="line-clamp-1">{company.name}</CardTitle>
           </div>
         </CardHeader>
-        {(company.size || company.address) && (
+        {(company.companyType || company.size || company.address) && (
           <CardContent className="flex flex-wrap gap-2 pb-4">
+            {company.companyType && (
+              <Badge variant="default" className="rounded-full">
+                {COMPANY_TYPE_LABEL[company.companyType]}
+              </Badge>
+            )}
             {company.size && (
               <Badge variant="secondary" className="rounded-full">
                 {COMPANY_SIZE_LABEL[company.size]}

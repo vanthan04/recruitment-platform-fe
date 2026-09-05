@@ -3,6 +3,7 @@ import { ApiError } from "@/lib/api";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCompanyById } from "@/lib/services/company.service";
+import { getProvinces, getWardsByProvince } from "@/lib/services/location.service";
 import { CompanyForm } from "./company-form";
 import { CompanyLogoUpload } from "./company-logo-upload";
 import { DeleteCompanyButton } from "./delete-company-button";
@@ -19,6 +20,12 @@ export default async function RecruiterCompanyPage() {
   // instead of crashing, so a deleted recruiter can create a new one.
   const company = user.companyId ? await getCompanyOr404(user.companyId) : null;
 
+  const provinces = await getProvinces();
+  // Pre-fetch wards for the company's current province so the ward select
+  // isn't empty on first render — the client component only fetches on change.
+  const currentProvince = company?.province ? provinces.find((p) => p.name === company.province) : undefined;
+  const initialWards = currentProvince ? await getWardsByProvince(currentProvince.code) : [];
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="mb-1 text-2xl font-semibold">Công ty của tôi</h1>
@@ -32,7 +39,12 @@ export default async function RecruiterCompanyPage() {
         </div>
       )}
 
-      <CompanyForm mode={company ? "edit" : "create"} company={company ?? undefined} />
+      <CompanyForm
+        mode={company ? "edit" : "create"}
+        company={company ?? undefined}
+        provinces={provinces}
+        initialWards={initialWards}
+      />
 
       {company && (
         <div className="mt-6 border-t pt-6">

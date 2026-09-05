@@ -30,6 +30,12 @@ export function formatRelativeDate(iso: string): string {
   return date.toLocaleDateString("vi-VN");
 }
 
+/** Whole calendar days between now and an expiry ISO date (negative once past). */
+export function daysUntil(iso: string): number {
+  const diffMs = new Date(iso).getTime() - Date.now();
+  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+}
+
 /** Finer-grained than formatRelativeDate — minutes/hours today, then day-relative. */
 export function formatMessageTime(iso: string): string {
   const date = new Date(iso);
