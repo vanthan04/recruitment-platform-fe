@@ -33,7 +33,6 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
         <div className="min-w-0">
           <h1 className="text-xl font-semibold">{company.name}</h1>
           <div className="mt-1 flex flex-wrap gap-2">
-            {company.industry && <Badge variant="secondary">{company.industry}</Badge>}
             {company.size && <Badge variant="outline">{COMPANY_SIZE_LABEL[company.size]}</Badge>}
           </div>
         </div>

@@ -7,7 +7,6 @@ export interface Company {
   logoUrl: string | null;
   description: string | null;
   website: string | null;
-  industry: string | null;
   size: CompanySize | null;
   address: string | null;
   createdAt: string;
@@ -18,7 +17,6 @@ export interface CompanyListParams {
   page?: number;
   limit?: number;
   keyword?: string;
-  industry?: string;
 }
 
 export interface CreateCompanyInput {
@@ -26,7 +24,6 @@ export interface CreateCompanyInput {
   logoUrl?: string;
   description?: string;
   website?: string;
-  industry?: string;
   size?: CompanySize;
   address?: string;
 }

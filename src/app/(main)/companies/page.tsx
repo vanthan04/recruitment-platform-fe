@@ -2,14 +2,14 @@ import { CompaniesList } from "@/app/(main)/companies/companies-list";
 import { getCompanies } from "@/lib/services/company.service";
 
 interface CompaniesPageProps {
-  searchParams: Promise<{ page?: string; keyword?: string; industry?: string }>;
+  searchParams: Promise<{ page?: string; keyword?: string }>;
 }
 
 export default async function CompaniesPage({ searchParams }: CompaniesPageProps) {
   const sp = await searchParams;
   const page = Number(sp.page ?? 1);
 
-  const { items, meta } = await getCompanies({ page, keyword: sp.keyword, industry: sp.industry });
+  const { items, meta } = await getCompanies({ page, keyword: sp.keyword });
 
   return (
     <div>
@@ -22,12 +22,7 @@ export default async function CompaniesPage({ searchParams }: CompaniesPageProps
         </div>
       </div>
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <CompaniesList
-          items={items}
-          meta={meta}
-          initialKeyword={sp.keyword ?? ""}
-          initialIndustry={sp.industry ?? ""}
-        />
+        <CompaniesList items={items} meta={meta} initialKeyword={sp.keyword ?? ""} />
       </div>
     </div>
   );

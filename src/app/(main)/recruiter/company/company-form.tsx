@@ -18,7 +18,6 @@ const companySchema = z.object({
   name: z.string().min(2, "Vui lòng nhập tên công ty"),
   description: z.string().optional().or(z.literal("")),
   website: z.string().url("Website không hợp lệ").optional().or(z.literal("")),
-  industry: z.string().optional().or(z.literal("")),
   size: z.enum(["SIZE_1_10", "SIZE_11_50", "SIZE_51_200", "SIZE_201_500", "SIZE_500_PLUS"]).optional(),
   address: z.string().optional().or(z.literal("")),
 });
@@ -46,7 +45,6 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
       name: company?.name ?? "",
       description: company?.description ?? "",
       website: company?.website ?? "",
-      industry: company?.industry ?? "",
       size: company?.size ?? undefined,
       address: company?.address ?? "",
     },
@@ -57,7 +55,6 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
       name: values.name,
       description: values.description || undefined,
       website: values.website || undefined,
-      industry: values.industry || undefined,
       size: values.size,
       address: values.address || undefined,
     };
@@ -83,20 +80,10 @@ export function CompanyForm({ mode, company }: CompanyFormProps) {
         <Label htmlFor="description">Giới thiệu</Label>
         <Textarea id="description" rows={4} {...register("description")} />
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="website">Website</Label>
-          <Input id="website" placeholder="https://..." {...register("website")} />
-          {errors.website && <p className="text-destructive text-sm">{errors.website.message}</p>}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="industry">Lĩnh vực</Label>
-          <Input
-            id="industry"
-            placeholder="VD: Fintech, E-commerce, SaaS, Gaming..."
-            {...register("industry")}
-          />
-        </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="website">Website</Label>
+        <Input id="website" placeholder="https://..." {...register("website")} />
+        {errors.website && <p className="text-destructive text-sm">{errors.website.message}</p>}
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">

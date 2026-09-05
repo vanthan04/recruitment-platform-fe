@@ -19,7 +19,6 @@ export function CompanyCard({ company }: { company: Company }) {
           />
           <div className="mt-7 min-w-0">
             <CardTitle className="line-clamp-1">{company.name}</CardTitle>
-            {company.industry && <p className="text-muted-foreground truncate text-sm">{company.industry}</p>}
           </div>
         </CardHeader>
         {(company.size || company.address) && (

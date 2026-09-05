@@ -14,19 +14,16 @@ interface CompaniesListProps {
   items: Company[];
   meta?: ListMeta;
   initialKeyword: string;
-  initialIndustry: string;
 }
 
-export function CompaniesList({ items, meta, initialKeyword, initialIndustry }: CompaniesListProps) {
+export function CompaniesList({ items, meta, initialKeyword }: CompaniesListProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
   const [keyword, setKeyword] = useState(initialKeyword);
-  const [industry, setIndustry] = useState(initialIndustry);
   const debouncedKeyword = useDebouncedValue(keyword, 400);
-  const debouncedIndustry = useDebouncedValue(industry, 400);
 
   function pushParams(next: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -43,27 +40,16 @@ export function CompaniesList({ items, meta, initialKeyword, initialIndustry }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedKeyword]);
 
-  useEffect(() => {
-    if (debouncedIndustry === (searchParams.get("industry") ?? "")) return;
-    pushParams({ industry: debouncedIndustry || undefined, page: undefined });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedIndustry]);
-
   const page = meta?.page ?? 1;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
 
   return (
     <div className="space-y-6">
-      <div className="bg-card ring-foreground/10 -mt-14 grid gap-3 rounded-2xl p-4 shadow-lg ring-1 sm:-mt-16 sm:grid-cols-2">
+      <div className="bg-card ring-foreground/10 -mt-14 rounded-2xl p-4 shadow-lg ring-1 sm:-mt-16">
         <Input
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
           placeholder="Tên công ty..."
-        />
-        <Input
-          value={industry}
-          onChange={(event) => setIndustry(event.target.value)}
-          placeholder="Ngành nghề..."
         />
       </div>
 
