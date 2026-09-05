@@ -25,21 +25,21 @@ export function NotificationList({ items }: { items: Notification[] }) {
           key={notification.id}
           href={notificationHref(notification)}
           onClick={() => {
-            if (!notification.isRead) {
+            if (!notification.readAt) {
               run(() => markNotificationAsRead(notification.id), { onSuccess: () => router.refresh() });
             }
           }}
           className={cn(
             "hover:bg-muted/50 flex items-start justify-between gap-3 rounded-lg border p-4 transition-colors",
-            !notification.isRead && "border-primary/30 bg-primary/5",
+            !notification.readAt && "border-primary/30 bg-primary/5",
           )}
         >
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <Badge variant={notification.isRead ? "outline" : "default"}>
+              <Badge variant={notification.readAt ? "outline" : "default"}>
                 {NOTIFICATION_TYPE_LABEL[notification.type]}
               </Badge>
-              {!notification.isRead && <span className="bg-primary size-1.5 shrink-0 rounded-full" />}
+              {!notification.readAt && <span className="bg-primary size-1.5 shrink-0 rounded-full" />}
             </div>
             <p className="mt-1 font-medium">{notification.title}</p>
             <p className="text-muted-foreground text-sm">{notification.message}</p>

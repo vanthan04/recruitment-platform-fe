@@ -23,3 +23,11 @@ export async function rescheduleInterview(id: string, input: RescheduleInterview
 export async function cancelInterview(id: string): Promise<void> {
   await api.patch(INTERVIEW_ENDPOINT.CANCEL(id));
 }
+
+export async function completeInterview(id: string): Promise<void> {
+  await api.patch(INTERVIEW_ENDPOINT.COMPLETE(id));
+}
+
+export async function markInterviewNoShow(id: string): Promise<void> {
+  await api.patch(INTERVIEW_ENDPOINT.NO_SHOW(id));
+}

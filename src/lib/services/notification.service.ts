@@ -22,7 +22,7 @@ export async function getMyNotifications(
 export async function getUnreadNotificationCount(): Promise<number> {
   try {
     const { items } = await getMyNotifications({ limit: 50 });
-    return items.filter((notification) => !notification.isRead).length;
+    return items.filter((notification) => !notification.readAt).length;
   } catch {
     return 0;
   }

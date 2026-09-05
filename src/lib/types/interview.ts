@@ -1,9 +1,12 @@
-export type InterviewStatus = "SCHEDULED" | "RESCHEDULED" | "CANCELLED";
+export type InterviewStatus = "SCHEDULED" | "RESCHEDULED" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
+
+export const NON_TERMINAL_INTERVIEW_STATUSES: InterviewStatus[] = ["SCHEDULED", "RESCHEDULED"];
 
 export interface Interview {
   id: string;
   jobApplicationId: string;
   scheduledAt: string;
+  durationMinutes: number | null;
   location: string | null;
   meetingLink: string | null;
   note: string | null;
@@ -19,6 +22,7 @@ export interface ScheduleInterviewInput {
   location?: string;
   meetingLink?: string;
   note?: string;
+  durationMinutes?: number;
 }
 
 export interface RescheduleInterviewInput {
@@ -26,4 +30,5 @@ export interface RescheduleInterviewInput {
   location?: string;
   meetingLink?: string;
   note?: string;
+  durationMinutes?: number;
 }

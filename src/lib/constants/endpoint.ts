@@ -85,6 +85,8 @@ export const INTERVIEW_ENDPOINT = {
   LIST: "/interviews",
   DETAIL: (id: string) => `/interviews/${id}`,
   CANCEL: (id: string) => `/interviews/${id}/cancel`,
+  COMPLETE: (id: string) => `/interviews/${id}/complete`,
+  NO_SHOW: (id: string) => `/interviews/${id}/no-show`,
   FOR_APPLICATION: (applicationId: string) => `/interviews/application/${applicationId}`,
 } as const;
 

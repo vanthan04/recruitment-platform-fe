@@ -85,5 +85,7 @@ export const NOTIFICATION_TYPE_LABEL: Record<NotificationType, string> = {
 export const INTERVIEW_STATUS_LABEL: Record<InterviewStatus, string> = {
   SCHEDULED: "Đã lên lịch",
   RESCHEDULED: "Đã dời lịch",
+  COMPLETED: "Đã hoàn thành",
   CANCELLED: "Đã huỷ",
+  NO_SHOW: "Không đến phỏng vấn",
 };

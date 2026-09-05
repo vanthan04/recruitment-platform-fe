@@ -37,7 +37,7 @@ export function NotificationBell({ unreadCount }: { unreadCount: number }) {
   }
 
   function handleItemClick(notification: Notification) {
-    if (!notification.isRead) {
+    if (!notification.readAt) {
       run(() => markNotificationAsRead(notification.id), { onSuccess: () => router.refresh() });
     }
   }
@@ -72,7 +72,7 @@ export function NotificationBell({ unreadCount }: { unreadCount: number }) {
             >
               <span className="flex w-full items-center justify-between gap-2">
                 <span className="font-medium">{NOTIFICATION_TYPE_LABEL[notification.type]}</span>
-                {!notification.isRead && <span className="bg-primary size-1.5 shrink-0 rounded-full" />}
+                {!notification.readAt && <span className="bg-primary size-1.5 shrink-0 rounded-full" />}
               </span>
               <span className="text-muted-foreground text-xs">{notification.message}</span>
               <span className="text-muted-foreground text-[11px]">

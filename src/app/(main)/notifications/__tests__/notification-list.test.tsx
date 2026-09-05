@@ -11,7 +11,7 @@ const baseNotification: Notification = {
   type: "NEW_APPLICATION",
   title: "Nguyễn Văn A đã ứng tuyển",
   message: "Có ứng viên mới ứng tuyển vị trí Backend Developer",
-  isRead: false,
+  readAt: null,
   metadata: { applicationId: "a1", jobId: "j1" },
   createdAt: new Date().toISOString(),
 };

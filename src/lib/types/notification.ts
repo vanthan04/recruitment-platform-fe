@@ -5,7 +5,7 @@ export interface Notification {
   type: NotificationType;
   title: string;
   message: string;
-  isRead: boolean;
+  readAt: string | null;
   metadata: Record<string, unknown> | null;
   createdAt: string;
 }
