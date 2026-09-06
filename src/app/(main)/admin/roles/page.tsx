@@ -18,7 +18,7 @@ export default async function AdminRolesPage() {
           <Link
             key={role.id}
             href={PATH.ADMIN_ROLE_DETAIL(role.id)}
-            className="hover:bg-muted/50 block rounded-lg border p-4 transition-colors"
+            className="border-border hover:border-primary block rounded-xl border p-4 shadow-sm transition-colors"
           >
             <p className="font-medium">{role.name}</p>
             {role.description && <p className="text-muted-foreground text-sm">{role.description}</p>}

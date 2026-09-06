@@ -28,32 +28,48 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-      <div className="flex items-start gap-4">
-        <CompanyLogo name={company.name} logoUrl={company.logoUrl} className="size-16" />
-        <div className="min-w-0">
-          <h1 className="text-xl font-semibold">{company.name}</h1>
-          <div className="mt-1 flex flex-wrap gap-2">
-            {company.companyType && <Badge>{COMPANY_TYPE_LABEL[company.companyType]}</Badge>}
-            {company.size && <Badge variant="outline">{COMPANY_SIZE_LABEL[company.size]}</Badge>}
+      <div className="bg-card ring-foreground/10 overflow-hidden rounded-xl shadow-sm ring-1">
+        <div className="from-primary/20 via-primary/5 h-20 bg-gradient-to-r to-transparent" />
+        <div className="flex items-start gap-4 px-5 pb-5">
+          <CompanyLogo
+            name={company.name}
+            logoUrl={company.logoUrl}
+            className="ring-card -mt-8 size-16 rounded-xl ring-4"
+          />
+          <div className="mt-1.5 min-w-0">
+            <h1 className="text-xl font-semibold">{company.name}</h1>
+            <div className="mt-1.5 flex flex-wrap gap-2">
+              {company.companyType && (
+                <Badge className="rounded-full">{COMPANY_TYPE_LABEL[company.companyType]}</Badge>
+              )}
+              {company.size && (
+                <Badge variant="secondary" className="rounded-full">
+                  {COMPANY_SIZE_LABEL[company.size]}
+                </Badge>
+              )}
+              {company.address && (
+                <Badge variant="outline" className="rounded-full">
+                  {company.address}
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {company.description && (
-        <p className="text-sm leading-relaxed whitespace-pre-line">{company.description}</p>
-      )}
-
-      <dl className="grid gap-2 text-sm sm:grid-cols-2">
-        {company.address && (
-          <div>
-            <dt className="text-muted-foreground">Địa chỉ</dt>
-            <dd>{company.address}</dd>
-          </div>
-        )}
-        {company.website && (
-          <div>
-            <dt className="text-muted-foreground">Website</dt>
-            <dd>
+      {(company.description || company.website) && (
+        <div className="bg-card ring-foreground/10 space-y-4 rounded-xl p-5 shadow-sm ring-1">
+          {company.description && (
+            <div>
+              <h2 className="mb-1.5 text-sm font-semibold">Giới thiệu công ty</h2>
+              <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+                {company.description}
+              </p>
+            </div>
+          )}
+          {company.website && (
+            <div className="text-sm">
+              <span className="text-muted-foreground">Website: </span>
               <a
                 href={company.website}
                 target="_blank"
@@ -62,10 +78,10 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
               >
                 {company.website}
               </a>
-            </dd>
-          </div>
-        )}
-      </dl>
+            </div>
+          )}
+        </div>
+      )}
 
       <div>
         <h2 className="mb-3 text-lg font-semibold">Việc làm đang tuyển ({openJobs.length})</h2>

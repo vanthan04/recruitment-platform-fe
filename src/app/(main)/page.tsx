@@ -28,10 +28,13 @@ export default async function HomePage() {
 
   return (
     <div>
-      <section className="from-primary bg-gradient-to-b to-[color-mix(in_oklch,var(--primary),black_25%)] px-4 pt-14 pb-20 sm:pb-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-3xl font-bold text-white sm:text-4xl">Tìm việc IT mơ ước của bạn</h1>
-          <p className="mt-2 text-white/80">Hàng ngàn tin tuyển dụng IT từ các công ty công nghệ hàng đầu</p>
+      <section className="bg-hero relative overflow-hidden px-4 pt-14 pb-20 sm:pb-24">
+        <div className="from-primary/25 pointer-events-none absolute inset-0 bg-gradient-to-br to-transparent" />
+        <div className="relative mx-auto max-w-3xl text-center">
+          <h1 className="text-hero-foreground text-3xl font-bold sm:text-4xl">Tìm việc IT mơ ước của bạn</h1>
+          <p className="text-hero-foreground/70 mt-2">
+            Hàng ngàn tin tuyển dụng IT từ các công ty công nghệ hàng đầu
+          </p>
           <div className="mt-6">
             <HeroSearch />
           </div>

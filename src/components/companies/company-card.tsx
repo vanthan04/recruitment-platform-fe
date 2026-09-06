@@ -9,13 +9,13 @@ import type { Company } from "@/lib/types/company";
 export function CompanyCard({ company }: { company: Company }) {
   return (
     <Link href={PATH.COMPANY_DETAIL(company.id)} className="block h-full">
-      <Card className="hover:border-primary/60 h-full gap-0 overflow-hidden rounded-2xl py-0 transition-all hover:-translate-y-0.5 hover:shadow-lg">
+      <Card className="border-border hover:border-primary h-full gap-0 overflow-hidden rounded-xl py-0 shadow-sm transition-all hover:shadow-md">
         <div className="from-primary/15 via-primary/5 h-14 bg-gradient-to-r to-transparent" />
         <CardHeader className="-mt-7 flex flex-row items-start gap-3 pb-3">
           <CompanyLogo
             name={company.name}
             logoUrl={company.logoUrl}
-            className="ring-background size-14 rounded-xl bg-white ring-4"
+            className="ring-card size-14 rounded-xl bg-white ring-4"
           />
           <div className="mt-7 min-w-0">
             <CardTitle className="line-clamp-1">{company.name}</CardTitle>

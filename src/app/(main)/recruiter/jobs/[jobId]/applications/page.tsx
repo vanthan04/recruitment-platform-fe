@@ -74,52 +74,63 @@ export default async function RecruiterJobApplicationsPage({
   ]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="mb-1 text-2xl font-semibold">Ứng viên</h1>
-      <p className="text-muted-foreground mb-6 text-sm">{job.title}</p>
+    <div>
+      <div className="bg-primary/5 border-b py-8">
+        <div className="mx-auto max-w-3xl px-4">
+          <h1 className="text-2xl font-semibold sm:text-3xl">Ứng viên</h1>
+          <p className="text-muted-foreground mt-1 text-sm">{job.title}</p>
+        </div>
+      </div>
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <JobStatsPanel stats={stats} />
 
-      <JobStatsPanel stats={stats} />
-
-      <div className="space-y-4">
-        {applications.map((application) => (
-          <div key={application.id} className="rounded-lg border p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <Avatar>
-                  {application.candidate?.avatarUrl && (
-                    <AvatarImage src={application.candidate.avatarUrl} alt={application.candidate.fullName} />
-                  )}
-                  <AvatarFallback>{initials(application.candidate?.fullName ?? "?")}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{application.candidate?.fullName ?? "Ứng viên"}</p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Badge variant={application.status === "APPLIED" ? "secondary" : "outline"}>
-                      {APPLICATION_STATUS_LABEL[application.status]}
-                    </Badge>
-                    <span className="text-muted-foreground text-xs">
-                      Ứng tuyển {formatRelativeDate(application.createdAt)}
-                    </span>
+        <div className="space-y-4">
+          {applications.map((application) => (
+            <div key={application.id} className="border-border rounded-xl border p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <Avatar>
+                    {application.candidate?.avatarUrl && (
+                      <AvatarImage
+                        src={application.candidate.avatarUrl}
+                        alt={application.candidate.fullName}
+                      />
+                    )}
+                    <AvatarFallback>{initials(application.candidate?.fullName ?? "?")}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{application.candidate?.fullName ?? "Ứng viên"}</p>
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <Badge
+                        variant={application.status === "APPLIED" ? "secondary" : "outline"}
+                        className="rounded-full"
+                      >
+                        {APPLICATION_STATUS_LABEL[application.status]}
+                      </Badge>
+                      <span className="text-muted-foreground text-xs">
+                        Ứng tuyển {formatRelativeDate(application.createdAt)}
+                      </span>
+                    </div>
                   </div>
                 </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <DownloadCvButton cvId={application.cvId} />
+                  <ApplicationActions application={application} />
+                </div>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <DownloadCvButton cvId={application.cvId} />
-                <ApplicationActions application={application} />
-              </div>
+              {application.status === "HIRED" && (
+                <InterviewPanel
+                  applicationId={application.id}
+                  interview={interviewByApplicationId.get(application.id)}
+                />
+              )}
+              <ApplicationHistory history={historyByApplicationId.get(application.id) ?? []} />
             </div>
-            {application.status === "HIRED" && (
-              <InterviewPanel
-                applicationId={application.id}
-                interview={interviewByApplicationId.get(application.id)}
-              />
-            )}
-            <ApplicationHistory history={historyByApplicationId.get(application.id) ?? []} />
-          </div>
-        ))}
-        {applications.length === 0 && (
-          <p className="text-muted-foreground text-sm">Chưa có ứng viên nào cho tin tuyển dụng này.</p>
-        )}
+          ))}
+          {applications.length === 0 && (
+            <p className="text-muted-foreground text-sm">Chưa có ứng viên nào cho tin tuyển dụng này.</p>
+          )}
+        </div>
       </div>
     </div>
   );

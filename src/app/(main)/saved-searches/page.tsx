@@ -34,7 +34,7 @@ export default async function SavedSearchesPage() {
           return (
             <div
               key={savedSearch.id}
-              className="flex items-center justify-between gap-3 rounded-lg border p-4"
+              className="border-border flex items-center justify-between gap-3 rounded-xl border p-4 shadow-sm"
             >
               <p className="text-sm font-medium">
                 {parts.length > 0 ? parts.join(" · ") : "Tất cả việc làm"}

@@ -57,7 +57,10 @@ export function OnboardingForm({ user, provinces }: OnboardingFormProps) {
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
+    <form
+      onSubmit={onSubmit}
+      className="bg-card ring-foreground/10 space-y-5 rounded-xl p-5 shadow-sm ring-1 sm:p-6"
+    >
       <div className="space-y-1.5">
         <Label htmlFor="fullName">Họ tên *</Label>
         <Input id="fullName" {...register("fullName")} />
@@ -111,7 +114,7 @@ export function OnboardingForm({ user, provinces }: OnboardingFormProps) {
         {errors.province && <p className="text-destructive text-sm">{errors.province.message}</p>}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button type="submit" className="h-12 w-full rounded-full text-base font-semibold" disabled={isPending}>
         {isPending ? "Đang lưu..." : "Lưu và Tiếp tục"}
         {!isPending && <ArrowRight className="size-4" />}
       </Button>

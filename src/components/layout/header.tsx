@@ -88,13 +88,15 @@ export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unrea
             </>
           ) : (
             <>
-              <Link href={PATH.LOGIN} className="hidden sm:block">
-                <Button variant="outline" size="sm">
-                  Đăng nhập
+              <Link href={PATH.REGISTER} className="hidden sm:block">
+                <Button variant="outline" size="sm" className="rounded-full">
+                  Đăng ký
                 </Button>
               </Link>
-              <Link href={PATH.REGISTER}>
-                <Button size="sm">Đăng ký</Button>
+              <Link href={PATH.LOGIN}>
+                <Button size="sm" className="rounded-full">
+                  Đăng nhập
+                </Button>
               </Link>
             </>
           )}

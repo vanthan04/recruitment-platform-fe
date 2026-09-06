@@ -19,14 +19,23 @@ export default async function RecruiterJobsPage({ searchParams }: RecruiterJobsP
   const { items, meta } = await getMyJobs({ status, page });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Tin tuyển dụng của tôi</h1>
-        <Link href={PATH.RECRUITER_JOB_NEW}>
-          <Button>Đăng tin mới</Button>
-        </Link>
+    <div>
+      <div className="bg-primary/5 border-b py-8">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4">
+          <div>
+            <h1 className="text-2xl font-semibold sm:text-3xl">Tin tuyển dụng của tôi</h1>
+            <p className="text-muted-foreground mt-1 text-sm">
+              {(meta?.total ?? items.length).toLocaleString("vi-VN")} tin đang quản lý
+            </p>
+          </div>
+          <Link href={PATH.RECRUITER_JOB_NEW}>
+            <Button className="rounded-full">Đăng tin mới</Button>
+          </Link>
+        </div>
       </div>
-      <MyJobsList items={items} meta={meta} initialStatus={sp.status ?? ""} />
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <MyJobsList items={items} meta={meta} initialStatus={sp.status ?? ""} />
+      </div>
     </div>
   );
 }

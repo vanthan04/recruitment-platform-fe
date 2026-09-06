@@ -20,7 +20,7 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
   const daysLeft = job.expiresAt ? daysUntil(job.expiresAt) : null;
 
   return (
-    <Card className="hover:border-primary/60 relative gap-3 rounded-2xl transition-all hover:-translate-y-0.5 hover:shadow-lg">
+    <Card className="border-border hover:border-primary relative gap-3 rounded-xl shadow-sm transition-all hover:shadow-md">
       {bookmarkedJobIds && (
         <SaveJobButton
           jobId={job.id}
@@ -40,7 +40,7 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
             <p className="text-muted-foreground mt-0.5 truncate text-sm">
               {job.company?.name ?? "Công ty ẩn danh"}
             </p>
-            <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
+            <p className="text-muted-foreground bg-muted mt-1.5 inline-flex max-w-full items-center gap-1 rounded-md px-1.5 py-0.5 text-xs">
               <MapPin className="size-3 shrink-0" />
               <span className="truncate">{job.location}</span>
             </p>
@@ -70,7 +70,7 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
           )}
         </CardContent>
         <CardContent className="border-border/70 flex items-center justify-between border-t pt-3">
-          <span className="text-primary text-sm font-semibold">
+          <span className="text-primary bg-primary/10 rounded-md px-2 py-1 text-sm font-semibold">
             {formatSalaryRange(job.salaryMin, job.salaryMax, job.currency)}
           </span>
           <span className="text-muted-foreground text-xs">{formatRelativeDate(job.createdAt)}</span>

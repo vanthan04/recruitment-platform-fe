@@ -27,6 +27,7 @@ export interface Job {
   title: string;
   description: string;
   location: string;
+  address: string | null;
   employmentType: EmploymentType;
   workMode: WorkMode;
   level: JobLevel | null;
@@ -40,10 +41,9 @@ export interface Job {
   salaryMin: number | null;
   salaryMax: number | null;
   currency: string;
-  requirements: string | null;
-  benefits: string | null;
-  workingHours: string | null;
-  applicationMethod: string | null;
+  requirements: string[];
+  benefits: string[];
+  workingHours: string[];
   expiresAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -76,6 +76,7 @@ export interface CreateJobInput {
   title: string;
   description: string;
   location: string;
+  address?: string;
   employmentType?: EmploymentType;
   workMode?: WorkMode;
   level?: JobLevel;
@@ -83,10 +84,9 @@ export interface CreateJobInput {
   salaryMin?: number;
   salaryMax?: number;
   currency?: string;
-  requirements?: string;
-  benefits?: string;
-  workingHours?: string;
-  applicationMethod?: string;
+  requirements?: string[];
+  benefits?: string[];
+  workingHours?: string[];
   expiresAt?: string;
   skillIds?: string[];
 }

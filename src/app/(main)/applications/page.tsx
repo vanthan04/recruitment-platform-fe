@@ -49,7 +49,7 @@ export default async function ApplicationsPage() {
           const interview = interviewByApplicationId.get(application.id);
 
           return (
-            <div key={application.id} className="rounded-lg border p-4">
+            <div key={application.id} className="border-border rounded-xl border p-4 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   {job ? (
@@ -59,8 +59,11 @@ export default async function ApplicationsPage() {
                   ) : (
                     <span className="font-medium">Tin tuyển dụng không còn tồn tại</span>
                   )}
-                  <div className="mt-1 flex items-center gap-2">
-                    <Badge variant={application.status === "APPLIED" ? "secondary" : "outline"}>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <Badge
+                      variant={application.status === "APPLIED" ? "secondary" : "outline"}
+                      className="rounded-full"
+                    >
                       {APPLICATION_STATUS_LABEL[application.status]}
                     </Badge>
                     <span className="text-muted-foreground text-xs">

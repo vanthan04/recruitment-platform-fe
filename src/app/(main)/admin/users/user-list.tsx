@@ -32,7 +32,10 @@ export function UserList({ items, meta, currentUserId }: UserListProps) {
         {items.map((user) => {
           const isSelf = user.id === currentUserId;
           return (
-            <div key={user.id} className="flex items-center justify-between gap-3 rounded-lg border p-4">
+            <div
+              key={user.id}
+              className="border-border flex items-center justify-between gap-3 rounded-xl border p-4 shadow-sm"
+            >
               <div className="flex items-center gap-3">
                 <Avatar>
                   {user.profile.avatarUrl && (
@@ -46,9 +49,14 @@ export function UserList({ items, meta, currentUserId }: UserListProps) {
                     {isSelf && <span className="text-muted-foreground ml-2 text-xs">(bạn)</span>}
                   </p>
                   <p className="text-muted-foreground text-sm">{user.email}</p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Badge variant="outline">{USER_ROLE_LABEL[user.role]}</Badge>
-                    <Badge variant={user.status === "BLOCKED" ? "destructive" : "secondary"}>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <Badge variant="outline" className="rounded-full">
+                      {USER_ROLE_LABEL[user.role]}
+                    </Badge>
+                    <Badge
+                      variant={user.status === "BLOCKED" ? "destructive" : "secondary"}
+                      className="rounded-full"
+                    >
                       {USER_STATUS_LABEL[user.status]}
                     </Badge>
                   </div>

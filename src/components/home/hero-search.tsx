@@ -46,12 +46,12 @@ export function HeroSearch() {
         </Button>
       </form>
       <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-        <span className="text-sm text-white/70">Phổ biến:</span>
+        <span className="text-hero-foreground/60 text-sm">Phổ biến:</span>
         {POPULAR_KEYWORDS.map((keyword) => (
           <Link
             key={keyword}
             href={`${PATH.JOBS}?keyword=${encodeURIComponent(keyword)}`}
-            className="rounded-full border border-white/30 px-3 py-1 text-xs text-white/90 transition-colors hover:bg-white/10"
+            className="border-hero-foreground/25 text-hero-foreground/90 hover:bg-hero-foreground/10 rounded-full border px-3 py-1 text-xs transition-colors"
           >
             {keyword}
           </Link>

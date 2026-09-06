@@ -17,8 +17,8 @@ export function JobStatsPanel({ stats }: { stats: ApplicationStats }) {
   return (
     <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
       {TILES.map(({ key, label }) => (
-        <div key={key} className="rounded-lg border p-3 text-center">
-          <div className="text-xl font-semibold">{stats[key]}</div>
+        <div key={key} className="border-border rounded-xl border p-3 text-center shadow-sm">
+          <div className="text-primary text-xl font-semibold">{stats[key]}</div>
           <div className="text-muted-foreground text-xs">{label}</div>
         </div>
       ))}

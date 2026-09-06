@@ -21,11 +21,22 @@ const WORK_MODES = Object.keys(WORK_MODE_LABEL) as WorkMode[];
 const JOB_LEVELS = Object.keys(JOB_LEVEL_LABEL) as JobLevel[];
 const NONE = "none";
 
+// Textareas keep the familiar "one item per line" UX — split into an array
+// (dropping blank lines) only at submit time, since the API stores each as
+// a string[] rather than a single text blob.
+function linesToArray(text: string | undefined): string[] {
+  return (text ?? "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
 const jobSchema = z
   .object({
     title: z.string().min(2, "Vui lòng nhập tiêu đề tin tuyển dụng"),
     description: z.string().min(1, "Vui lòng nhập mô tả công việc"),
     location: z.string().min(1, "Vui lòng nhập địa điểm làm việc"),
+    address: z.string().optional(),
     employmentType: z.string().min(1),
     workMode: z.string().min(1),
     level: z.string().optional(),
@@ -36,7 +47,6 @@ const jobSchema = z
     requirements: z.string().optional(),
     benefits: z.string().optional(),
     workingHours: z.string().optional(),
-    applicationMethod: z.string().optional(),
     expiresAt: z.string().optional(),
     skillIds: z.array(z.string()).optional(),
   })
@@ -70,6 +80,7 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
       title: job?.title ?? "",
       description: job?.description ?? "",
       location: job?.location ?? "",
+      address: job?.address ?? "",
       employmentType: job?.employmentType ?? "FULL_TIME",
       workMode: job?.workMode ?? "ONSITE",
       level: job?.level ?? NONE,
@@ -77,10 +88,9 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
       salaryMin: job?.salaryMin != null ? String(job.salaryMin) : "",
       salaryMax: job?.salaryMax != null ? String(job.salaryMax) : "",
       currency: job?.currency ?? "VND",
-      requirements: job?.requirements ?? "",
-      benefits: job?.benefits ?? "",
-      workingHours: job?.workingHours ?? "",
-      applicationMethod: job?.applicationMethod ?? "",
+      requirements: job?.requirements?.join("\n") ?? "",
+      benefits: job?.benefits?.join("\n") ?? "",
+      workingHours: job?.workingHours?.join("\n") ?? "",
       expiresAt: job?.expiresAt ? job.expiresAt.slice(0, 10) : "",
       skillIds: job?.skills.map((skill) => skill.id) ?? [],
     },
@@ -91,6 +101,7 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
       title: values.title,
       description: values.description,
       location: values.location,
+      address: values.address || undefined,
       employmentType: values.employmentType as EmploymentType,
       workMode: values.workMode as WorkMode,
       level: values.level && values.level !== NONE ? (values.level as JobLevel) : undefined,
@@ -98,10 +109,9 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
       salaryMin: values.salaryMin ? Number(values.salaryMin) : undefined,
       salaryMax: values.salaryMax ? Number(values.salaryMax) : undefined,
       currency: values.currency || undefined,
-      requirements: values.requirements || undefined,
-      benefits: values.benefits || undefined,
-      workingHours: values.workingHours || undefined,
-      applicationMethod: values.applicationMethod || undefined,
+      requirements: linesToArray(values.requirements),
+      benefits: linesToArray(values.benefits),
+      workingHours: linesToArray(values.workingHours),
       expiresAt: values.expiresAt || undefined,
       skillIds: values.skillIds,
     };
@@ -114,7 +124,10 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form
+      onSubmit={onSubmit}
+      className="bg-card ring-foreground/10 space-y-4 rounded-xl p-5 shadow-sm ring-1 sm:p-6"
+    >
       <div className="space-y-1.5">
         <Label htmlFor="title">Tiêu đề tin tuyển dụng</Label>
         <Input id="title" {...register("title")} />
@@ -127,8 +140,12 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="location">Địa điểm làm việc</Label>
-        <Input id="location" {...register("location")} />
+        <Input id="location" placeholder="Hà Nội, Hồ Chí Minh..." {...register("location")} />
         {errors.location && <p className="text-destructive text-sm">{errors.location.message}</p>}
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="address">Địa chỉ cụ thể (không bắt buộc)</Label>
+        <Input id="address" placeholder="Số 520 đường CMT8, Phường Nhiêu Lộc" {...register("address")} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -270,31 +287,39 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
 
       <div className="space-y-1.5">
         <Label htmlFor="requirements">Yêu cầu ứng viên</Label>
-        <Textarea id="requirements" rows={4} {...register("requirements")} />
+        <Textarea
+          id="requirements"
+          rows={4}
+          placeholder={
+            "Mỗi dòng là một yêu cầu, ví dụ:\n2+ năm kinh nghiệm Node.js\nTốt nghiệp Đại học chuyên ngành CNTT"
+          }
+          {...register("requirements")}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="benefits">Quyền lợi</Label>
-        <Textarea id="benefits" rows={4} {...register("benefits")} />
+        <Textarea
+          id="benefits"
+          rows={4}
+          placeholder={"Mỗi dòng là một quyền lợi, ví dụ:\nBảo hiểm sức khỏe\nDu lịch hàng năm"}
+          {...register("benefits")}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="workingHours">Thời gian làm việc</Label>
         <Textarea
           id="workingHours"
           rows={2}
-          placeholder="Thứ 2 - Thứ 6 (08:00 - 17:00)"
+          placeholder={"Mỗi dòng một ý, ví dụ:\nThứ 2 - Thứ 6 (08:00 - 17:00)\nNghỉ trưa 12:00 - 13:00"}
           {...register("workingHours")}
         />
-      </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="applicationMethod">Cách thức ứng tuyển</Label>
-        <Textarea id="applicationMethod" rows={2} {...register("applicationMethod")} />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="expiresAt">Hạn nộp hồ sơ</Label>
         <Input id="expiresAt" type="date" {...register("expiresAt")} />
       </div>
 
-      <Button type="submit" disabled={isPending}>
+      <Button type="submit" className="rounded-full" disabled={isPending}>
         {isPending ? "Đang lưu..." : mode === "create" ? "Đăng tin" : "Lưu thay đổi"}
       </Button>
     </form>

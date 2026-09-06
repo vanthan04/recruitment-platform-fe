@@ -21,7 +21,10 @@ export default async function AdminCategoriesPage() {
 
       <div className="space-y-3">
         {categories.map((category) => (
-          <div key={category.id} className="flex items-center justify-between gap-3 rounded-lg border p-4">
+          <div
+            key={category.id}
+            className="border-border flex items-center justify-between gap-3 rounded-xl border p-4 shadow-sm"
+          >
             <div>
               <p className="font-medium">{category.name}</p>
               <p className="text-muted-foreground text-xs">{category.slug}</p>

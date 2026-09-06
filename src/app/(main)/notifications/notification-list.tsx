@@ -30,13 +30,13 @@ export function NotificationList({ items }: { items: Notification[] }) {
             }
           }}
           className={cn(
-            "hover:bg-muted/50 flex items-start justify-between gap-3 rounded-lg border p-4 transition-colors",
+            "border-border hover:border-primary flex items-start justify-between gap-3 rounded-xl border p-4 shadow-sm transition-colors",
             !notification.readAt && "border-primary/30 bg-primary/5",
           )}
         >
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <Badge variant={notification.readAt ? "outline" : "default"}>
+              <Badge variant={notification.readAt ? "outline" : "default"} className="rounded-full">
                 {NOTIFICATION_TYPE_LABEL[notification.type]}
               </Badge>
               {!notification.readAt && <span className="bg-primary size-1.5 shrink-0 rounded-full" />}

@@ -84,7 +84,10 @@ export function CompanyForm({ mode, company, provinces, initialWards }: CompanyF
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
+    <form
+      onSubmit={onSubmit}
+      className="bg-card ring-foreground/10 space-y-4 rounded-xl p-5 shadow-sm ring-1 sm:p-6"
+    >
       <div className="space-y-1.5">
         <Label htmlFor="name">Tên công ty</Label>
         <Input id="name" {...register("name")} />
@@ -154,7 +157,7 @@ export function CompanyForm({ mode, company, provinces, initialWards }: CompanyF
         provinces={provinces}
         initialWards={initialWards}
       />
-      <Button type="submit" disabled={isPending}>
+      <Button type="submit" className="rounded-full" disabled={isPending}>
         {isPending ? "Đang lưu..." : mode === "create" ? "Tạo công ty" : "Lưu thay đổi"}
       </Button>
     </form>
