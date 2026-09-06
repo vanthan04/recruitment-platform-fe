@@ -1,50 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Recruitment Platform — Frontend
 
-## Getting Started
+Đây là project [Next.js](https://nextjs.org) khởi tạo bằng [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app), là giao diện web cho backend ở [`recruitment-platform-be`](../recruitment-platform-be).
 
-First, run the development server:
+## Bắt đầu
+
+Chạy dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt để xem kết quả.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy lên Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+App này deploy lên [Vercel](https://vercel.com) — kết nối repo này như
+1 Vercel project (Vercel tự nhận diện Next.js, không cần config gì
+thêm), mỗi lần push lên `main` sẽ tự deploy. Gần như mọi route ở đây
+đều server-rendered, nên cần Node runtime (không phải static export);
+Vercel hỗ trợ sẵn điều này trên gói Hobby miễn phí.
 
-## Learn More
+Set các biến môi trường sau ở Vercel project (Project Settings →
+Environment Variables), trỏ vào Elastic IP của EC2 bên backend (hoặc 1
+domain khi đã có — xem `recruitment-platform-be/DEPLOY.md` và repo
+`recruitment-platform-infra` để biết cách cấp phát):
 
-To learn more about Next.js, take a look at the following resources:
+- `BACKEND_URL` — origin phía server dùng để gọi API.
+- `NEXT_PUBLIC_BACKEND_URL` — cùng origin, expose ra browser (socket
+  chat realtime mở ở phía client nên cần biến này thay vì
+  `BACKEND_URL` chỉ dùng ở server).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-This app deploys to [Vercel](https://vercel.com) — connect this repo as a
-Vercel project (Vercel auto-detects Next.js, no config needed) and every
-push to `main` deploys automatically. Almost every route here is
-server-rendered, so it needs a Node runtime (not a static export); Vercel
-provides that on its free Hobby plan.
-
-Set these as Vercel project env vars (Project Settings → Environment
-Variables), pointing at the backend's EC2 Elastic IP (or a domain once
-one exists — see `recruitment-platform-be/DEPLOY.md` and the
-`recruitment-platform-infra` repo for how that's provisioned):
-
-- `BACKEND_URL` — server-side origin for API calls.
-- `NEXT_PUBLIC_BACKEND_URL` — same origin, exposed to the browser (the
-  realtime chat socket is opened client-side, so it needs this rather
-  than the server-only `BACKEND_URL`).
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Xem thêm [tài liệu deploy Next.js](https://nextjs.org/docs/app/building-your-application/deploying) nếu cần.
