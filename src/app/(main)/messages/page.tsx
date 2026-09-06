@@ -7,15 +7,15 @@ import { getConversation, getMessages, getMyConversations } from "@/lib/services
 import type { Conversation, Message } from "@/lib/types/chat";
 
 interface MessagesPageProps {
-  searchParams: Promise<{ conversationId?: string }>;
+  searchParams: Promise<{ conversationId?: string; page?: string }>;
 }
 
 export default async function MessagesPage({ searchParams }: MessagesPageProps) {
   const user = await getCurrentUser();
   if (!user) redirect(PATH.LOGIN);
 
-  const { conversationId } = await searchParams;
-  const { items: conversations } = await getMyConversations();
+  const { conversationId, page } = await searchParams;
+  const { items: conversations, metadata } = await getMyConversations(Number(page) || 1);
 
   let selected: Conversation | null = null;
   let initialMessages: Message[] = [];
@@ -38,6 +38,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
       <div className={selected ? "hidden md:block" : "block"}>
         <ConversationList
           initialConversations={conversations}
+          meta={metadata}
           selectedConversationId={selected?.id ?? null}
         />
       </div>

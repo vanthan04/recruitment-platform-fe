@@ -1,21 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ConversationItem } from "@/components/chat/conversation-item";
+import { PaginationBar } from "@/components/shared/pagination-bar";
 import { useChat } from "@/contexts/chat-context";
 import { getChatSocket } from "@/lib/realtime/socket";
+import type { ListMeta } from "@/lib/types/common";
 import type { Conversation, Message } from "@/lib/types/chat";
 
 export function ConversationList({
   initialConversations,
+  meta,
   selectedConversationId,
 }: {
   initialConversations: Conversation[];
+  meta?: ListMeta;
   selectedConversationId: string | null;
 }) {
   const { onlineUserIds } = useChat();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [conversations, setConversations] = useState(initialConversations);
   const [search, setSearch] = useState("");
 
@@ -63,6 +71,15 @@ export function ConversationList({
       c.jobTitle.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const page = meta?.page ?? 1;
+  const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
+
+  function goToPage(next: number) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(next));
+    router.push(`${pathname}?${params.toString()}`);
+  }
+
   return (
     <div className="flex h-full min-h-0 flex-col border-r">
       <div className="p-3">
@@ -88,6 +105,9 @@ export function ConversationList({
           ))}
         </div>
       </ScrollArea>
+      <div className="border-t px-2 py-1">
+        <PaginationBar page={page} totalPages={totalPages} onPageChange={goToPage} />
+      </div>
     </div>
   );
 }
