@@ -38,7 +38,20 @@ export function NotificationBell({ unreadCount }: { unreadCount: number }) {
 
   function handleItemClick(notification: Notification) {
     if (!notification.readAt) {
-      run(() => markNotificationAsRead(notification.id), { onSuccess: () => router.refresh() });
+      run(() => markNotificationAsRead(notification.id), {
+        onSuccess: () => {
+          // router.refresh() alone updates the server-rendered unread badge
+          // count but not this locally-cached `notifications` array, so the
+          // item kept showing as unread on next open in the same session.
+          setNotifications(
+            (prev) =>
+              prev?.map((item) =>
+                item.id === notification.id ? { ...item, readAt: new Date().toISOString() } : item,
+              ) ?? prev,
+          );
+          router.refresh();
+        },
+      });
     }
   }
 
@@ -83,7 +96,17 @@ export function NotificationBell({ unreadCount }: { unreadCount: number }) {
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => run(() => markAllNotificationsAsRead(), { onSuccess: () => router.refresh() })}
+          onSelect={() =>
+            run(() => markAllNotificationsAsRead(), {
+              onSuccess: () => {
+                const now = new Date().toISOString();
+                setNotifications(
+                  (prev) => prev?.map((item) => ({ ...item, readAt: item.readAt ?? now })) ?? prev,
+                );
+                router.refresh();
+              },
+            })
+          }
         >
           Đánh dấu tất cả đã đọc
         </DropdownMenuItem>

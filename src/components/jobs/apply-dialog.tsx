@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -20,12 +21,19 @@ export function ApplyDialog({ jobId, cvs }: ApplyDialogProps) {
   const [cvId, setCvId] = useState(cvs[0]?.id ?? "");
   const [coverLetter, setCoverLetter] = useState("");
   const { run, isPending } = useApiToast();
+  const router = useRouter();
 
   function handleSubmit() {
     if (!cvId) return;
     run(() => applyToJob({ jobId, cvId, coverLetter: coverLetter || undefined }), {
       successMessage: "Nộp đơn ứng tuyển thành công!",
-      onSuccess: () => setOpen(false),
+      onSuccess: () => {
+        setOpen(false);
+        // The job detail page's `hasApplied` prop is computed server-side —
+        // without this it stays stale and "Ứng tuyển ngay" keeps showing
+        // after a successful apply, until an unrelated navigation/reload.
+        router.refresh();
+      },
     });
   }
 
