@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { JobCard } from "@/components/jobs/job-card";
 import { SaveSearchButton } from "@/components/jobs/save-search-button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PaginationBar } from "@/components/shared/pagination-bar";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { usePushParams, useDebouncedUrlFilter } from "@/hooks/use-url-filter";
 import {
   EMPLOYMENT_TYPE_LABEL,
   JOB_LEVEL_LABEL,
@@ -61,39 +59,15 @@ export function JobsList({
   initialSort,
   isCandidate,
 }: JobsListProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const { pushParams, searchParams, isPending } = usePushParams();
 
-  const [keyword, setKeyword] = useState(initialKeyword);
-  const [location, setLocation] = useState(initialLocation);
-  const debouncedKeyword = useDebouncedValue(keyword, 400);
-  const debouncedLocation = useDebouncedValue(location, 400);
-
-  // Search/filter/pagination all live in the URL, so a change simply
-  // triggers a server re-render of page.tsx with new searchParams — no
-  // client-side REST call is made here.
-  function pushParams(next: Record<string, string | undefined>) {
-    const params = new URLSearchParams(searchParams.toString());
-    for (const [key, value] of Object.entries(next)) {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    }
-    startTransition(() => router.push(`${pathname}?${params.toString()}`));
-  }
-
-  useEffect(() => {
-    if (debouncedKeyword === (searchParams.get("keyword") ?? "")) return;
-    pushParams({ keyword: debouncedKeyword || undefined, page: undefined });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedKeyword]);
-
-  useEffect(() => {
-    if (debouncedLocation === (searchParams.get("location") ?? "")) return;
-    pushParams({ location: debouncedLocation || undefined, page: undefined });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedLocation]);
+  const [keyword, setKeyword] = useDebouncedUrlFilter("keyword", initialKeyword, pushParams, searchParams);
+  const [location, setLocation] = useDebouncedUrlFilter(
+    "location",
+    initialLocation,
+    pushParams,
+    searchParams,
+  );
 
   const page = meta?.page ?? 1;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;

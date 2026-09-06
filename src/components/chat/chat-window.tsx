@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useChat } from "@/contexts/chat-context";
+import { useChat, useChatPresence } from "@/contexts/chat-context";
 import { ConversationHeader } from "@/components/chat/conversation-header";
 import { MessageList } from "@/components/chat/message-list";
 import { MessageInput } from "@/components/chat/message-input";
@@ -20,6 +20,7 @@ export function ChatWindow({
   initialNextCursor: string | null;
 }) {
   const chat = useChat();
+  const { onlineUserIds } = useChatPresence();
   const [nextCursor, setNextCursor] = useState(initialNextCursor);
   const [loadingMore, setLoadingMore] = useState(false);
 
@@ -38,7 +39,7 @@ export function ChatWindow({
   const messages = chat.messagesByConversation[conversation.id] ?? [];
   const isOtherTyping =
     chat.typingByConversation[conversation.id]?.has(conversation.otherParticipant.id) ?? false;
-  const isOnline = chat.onlineUserIds.has(conversation.otherParticipant.id);
+  const isOnline = onlineUserIds.has(conversation.otherParticipant.id);
 
   const handleLoadMore = useCallback(async () => {
     if (!nextCursor || loadingMore) return;

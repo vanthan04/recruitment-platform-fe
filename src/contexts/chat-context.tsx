@@ -169,7 +169,7 @@ function reducer(state: ChatState, action: Action): ChatState {
   }
 }
 
-interface ChatContextValue extends ChatState {
+interface ChatContextValue extends Omit<ChatState, "onlineUserIds"> {
   hydrateMessages: (conversationId: string, messages: Message[], mode: "replace" | "prepend") => void;
   subscribeToConversation: (conversationId: string) => void;
   unsubscribeFromConversation: (conversationId: string) => void;
@@ -179,7 +179,17 @@ interface ChatContextValue extends ChatState {
   setTyping: (conversationId: string, isTyping: boolean) => void;
 }
 
+interface ChatPresenceContextValue {
+  onlineUserIds: Set<string>;
+}
+
 const ChatContext = createContext<ChatContextValue | null>(null);
+// Split out from ChatContext so a presence-only consumer (e.g. the
+// conversation list, which just needs to know who's online) doesn't
+// re-render on every message/typing action elsewhere in the reducer — the
+// reducer already gives each state field a stable reference across actions
+// that don't touch it, so these two memos naturally change independently.
+const ChatPresenceContext = createContext<ChatPresenceContextValue | null>(null);
 
 export function ChatProvider({ currentUserId, children }: { currentUserId: string; children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -344,7 +354,9 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
 
   const value: ChatContextValue = useMemo(
     () => ({
-      ...state,
+      connectionStatus: state.connectionStatus,
+      messagesByConversation: state.messagesByConversation,
+      typingByConversation: state.typingByConversation,
       hydrateMessages,
       subscribeToConversation,
       unsubscribeFromConversation,
@@ -354,7 +366,9 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
       setTyping,
     }),
     [
-      state,
+      state.connectionStatus,
+      state.messagesByConversation,
+      state.typingByConversation,
       hydrateMessages,
       subscribeToConversation,
       unsubscribeFromConversation,
@@ -365,11 +379,27 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
     ],
   );
 
-  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
+  const presenceValue: ChatPresenceContextValue = useMemo(
+    () => ({ onlineUserIds: state.onlineUserIds }),
+    [state.onlineUserIds],
+  );
+
+  return (
+    <ChatContext.Provider value={value}>
+      <ChatPresenceContext.Provider value={presenceValue}>{children}</ChatPresenceContext.Provider>
+    </ChatContext.Provider>
+  );
 }
 
 export function useChat(): ChatContextValue {
   const context = useContext(ChatContext);
   if (!context) throw new Error("useChat must be used within a ChatProvider");
+  return context;
+}
+
+/** Presence-only slice of chat state — re-renders solely on online/offline changes. */
+export function useChatPresence(): ChatPresenceContextValue {
+  const context = useContext(ChatPresenceContext);
+  if (!context) throw new Error("useChatPresence must be used within a ChatProvider");
   return context;
 }

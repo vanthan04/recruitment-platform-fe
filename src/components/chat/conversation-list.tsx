@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ConversationItem } from "@/components/chat/conversation-item";
 import { PaginationBar } from "@/components/shared/pagination-bar";
-import { useChat } from "@/contexts/chat-context";
+import { useChatPresence } from "@/contexts/chat-context";
 import { getChatSocket } from "@/lib/realtime/socket";
 import type { ListMeta } from "@/lib/types/common";
 import type { Conversation, Message } from "@/lib/types/chat";
@@ -20,7 +20,7 @@ export function ConversationList({
   meta?: ListMeta;
   selectedConversationId: string | null;
 }) {
-  const { onlineUserIds } = useChat();
+  const { onlineUserIds } = useChatPresence();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

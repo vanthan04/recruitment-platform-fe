@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CompanyCard } from "@/components/companies/company-card";
 import { Input } from "@/components/ui/input";
 import { PaginationBar } from "@/components/shared/pagination-bar";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { usePushParams, useDebouncedUrlFilter } from "@/hooks/use-url-filter";
 import type { Company } from "@/lib/types/company";
 import type { ListMeta } from "@/lib/types/common";
 import { cn } from "@/lib/utils";
@@ -17,28 +15,9 @@ interface CompaniesListProps {
 }
 
 export function CompaniesList({ items, meta, initialKeyword }: CompaniesListProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const { pushParams, searchParams, isPending } = usePushParams();
 
-  const [keyword, setKeyword] = useState(initialKeyword);
-  const debouncedKeyword = useDebouncedValue(keyword, 400);
-
-  function pushParams(next: Record<string, string | undefined>) {
-    const params = new URLSearchParams(searchParams.toString());
-    for (const [key, value] of Object.entries(next)) {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    }
-    startTransition(() => router.push(`${pathname}?${params.toString()}`));
-  }
-
-  useEffect(() => {
-    if (debouncedKeyword === (searchParams.get("keyword") ?? "")) return;
-    pushParams({ keyword: debouncedKeyword || undefined, page: undefined });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedKeyword]);
+  const [keyword, setKeyword] = useDebouncedUrlFilter("keyword", initialKeyword, pushParams, searchParams);
 
   const page = meta?.page ?? 1;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;

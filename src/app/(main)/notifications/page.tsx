@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { PaginationBar } from "@/components/shared/pagination-bar";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getMyNotifications } from "@/lib/services/notification.service";
@@ -27,35 +26,13 @@ export default async function NotificationsPage({
         <MarkAllReadButton />
       </div>
       <NotificationList items={items} />
-      {totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-center gap-2">
-          {page > 1 ? (
-            <Link href={`${PATH.NOTIFICATIONS}?page=${page - 1}`}>
-              <Button type="button" variant="outline" size="sm">
-                Trước
-              </Button>
-            </Link>
-          ) : (
-            <Button type="button" variant="outline" size="sm" disabled>
-              Trước
-            </Button>
-          )}
-          <span className="text-muted-foreground text-sm">
-            Trang {page} / {totalPages}
-          </span>
-          {page < totalPages ? (
-            <Link href={`${PATH.NOTIFICATIONS}?page=${page + 1}`}>
-              <Button type="button" variant="outline" size="sm">
-                Sau
-              </Button>
-            </Link>
-          ) : (
-            <Button type="button" variant="outline" size="sm" disabled>
-              Sau
-            </Button>
-          )}
-        </div>
-      )}
+      <div className="mt-6">
+        <PaginationBar
+          page={page}
+          totalPages={totalPages}
+          hrefFor={(next) => `${PATH.NOTIFICATIONS}?page=${next}`}
+        />
+      </div>
     </div>
   );
 }

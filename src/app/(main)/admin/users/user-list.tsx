@@ -1,9 +1,7 @@
-"use client";
-
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { PaginationBar } from "@/components/shared/pagination-bar";
+import { PATH } from "@/lib/constants/path";
 import { USER_ROLE_LABEL, USER_STATUS_LABEL } from "@/lib/constants/enum-label";
 import type { AdminUser } from "@/lib/types/admin";
 import type { ListMeta } from "@/lib/types/common";
@@ -25,18 +23,8 @@ interface UserListProps {
 }
 
 export function UserList({ items, meta, currentUserId }: UserListProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
   const page = meta?.page ?? 1;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
-
-  function pushPage(next: number) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(next));
-    router.push(`${pathname}?${params.toString()}`);
-  }
 
   return (
     <div className="space-y-6">
@@ -79,7 +67,11 @@ export function UserList({ items, meta, currentUserId }: UserListProps) {
         )}
       </div>
 
-      <PaginationBar page={page} totalPages={totalPages} onPageChange={pushPage} />
+      <PaginationBar
+        page={page}
+        totalPages={totalPages}
+        hrefFor={(next) => `${PATH.ADMIN_USERS}?page=${next}`}
+      />
     </div>
   );
 }
