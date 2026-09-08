@@ -3,14 +3,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { API_PREFIX, PUBLIC_BACKEND_URL } from "@/lib/constants/service";
 import type { PublicUserRole } from "@/lib/types/auth";
 
 // Plain <a> full-page navigation on purpose — this leaves the app entirely to
 // hit Google/Facebook's consent screen, so it can't go through fetch/Server
-// Actions the way every other backend call in this app does.
+// Actions the way every other backend call in this app does. The href is a
+// same-origin path handled by app/(auth)/auth/[provider]/route.ts, which
+// redirects server-side to the real backend — the browser never needs to
+// know that origin.
 function socialHref(provider: "google" | "facebook", role: PublicUserRole): string {
-  return `${PUBLIC_BACKEND_URL}${API_PREFIX}/auth/${provider}?role=${role}`;
+  return `/auth/${provider}?role=${role}`;
 }
 
 interface SocialLoginButtonsProps {
