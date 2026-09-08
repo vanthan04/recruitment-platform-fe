@@ -39,7 +39,7 @@ export function ApplyDialog({ jobId, cvs }: ApplyDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button type="button" className="w-full" onClick={() => setOpen(true)}>
+      <Button type="button" variant="cta" className="w-full" onClick={() => setOpen(true)}>
         Ứng tuyển ngay
       </Button>
       <DialogContent>
@@ -73,7 +73,7 @@ export function ApplyDialog({ jobId, cvs }: ApplyDialogProps) {
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" disabled={isPending || !cvId} onClick={handleSubmit}>
+          <Button type="button" variant="cta" disabled={isPending || !cvId} onClick={handleSubmit}>
             {isPending ? "Đang nộp..." : "Nộp đơn"}
           </Button>
         </DialogFooter>

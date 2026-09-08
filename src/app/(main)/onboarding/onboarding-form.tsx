@@ -114,7 +114,12 @@ export function OnboardingForm({ user, provinces }: OnboardingFormProps) {
         {errors.province && <p className="text-destructive text-sm">{errors.province.message}</p>}
       </div>
 
-      <Button type="submit" className="h-12 w-full rounded-full text-base font-semibold" disabled={isPending}>
+      <Button
+        type="submit"
+        variant="cta"
+        className="h-12 w-full rounded-full text-base font-semibold"
+        disabled={isPending}
+      >
         {isPending ? "Đang lưu..." : "Lưu và Tiếp tục"}
         {!isPending && <ArrowRight className="size-4" />}
       </Button>

@@ -17,7 +17,7 @@ export default async function CvListPage() {
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">CV của tôi</h1>
-        <Button asChild className="rounded-full">
+        <Button asChild variant="cta" className="rounded-full">
           <Link href={PATH.CV_NEW}>Tạo CV mới</Link>
         </Button>
       </div>

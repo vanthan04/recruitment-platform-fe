@@ -8,6 +8,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { SocialLoginButtons } from "@/components/shared/social-login-buttons";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { PATH } from "@/lib/constants/path";
@@ -53,9 +54,8 @@ export function LoginForm() {
             Quên mật khẩu?
           </Link>
         </div>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           autoComplete="current-password"
           placeholder="Nhập mật khẩu"
           className="h-11 rounded-xl px-4 text-base"

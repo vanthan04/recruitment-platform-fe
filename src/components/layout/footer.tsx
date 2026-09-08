@@ -43,7 +43,7 @@ export function Footer() {
         <FooterColumn title="Dành cho nhà tuyển dụng" links={RECRUITER_LINKS} />
 
         <div>
-          <h3 className="text-sm font-semibold text-white">Liên hệ</h3>
+          <h2 className="text-sm font-semibold text-white">Liên hệ</h2>
           <ul className="mt-3 space-y-2 text-sm text-neutral-400">
             {CONTACT_ITEMS.map(({ icon: Icon, text }) => (
               <li key={text} className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export function Footer() {
 function FooterColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
   return (
     <div>
-      <h3 className="text-sm font-semibold text-white">{title}</h3>
+      <h2 className="text-sm font-semibold text-white">{title}</h2>
       <ul className="mt-3 space-y-2 text-sm">
         {links.map((link) => (
           <li key={link.href}>

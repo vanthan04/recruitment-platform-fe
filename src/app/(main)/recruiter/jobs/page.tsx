@@ -29,7 +29,9 @@ export default async function RecruiterJobsPage({ searchParams }: RecruiterJobsP
             </p>
           </div>
           <Link href={PATH.RECRUITER_JOB_NEW}>
-            <Button className="rounded-full">Đăng tin mới</Button>
+            <Button variant="cta" className="rounded-full">
+              Đăng tin mới
+            </Button>
           </Link>
         </div>
       </div>

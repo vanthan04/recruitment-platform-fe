@@ -16,7 +16,7 @@ export function ErrorState({ error, reset, title }: ErrorStateProps) {
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4 py-16 text-center">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <h1 className="text-lg font-semibold">{title}</h1>
       <p className="text-muted-foreground text-sm">Vui lòng kiểm tra kết nối backend và thử lại.</p>
       <Button onClick={reset}>Thử lại</Button>
     </div>

@@ -96,7 +96,7 @@ export default async function HomePage() {
               </p>
             </div>
             <Link href={user ? PATH.RECRUITER_JOBS : PATH.REGISTER}>
-              <Button size="lg" className="gap-2">
+              <Button size="lg" variant="cta" className="gap-2">
                 Đăng tuyển ngay
                 <ArrowRight className="size-4" />
               </Button>

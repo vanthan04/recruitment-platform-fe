@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BackLink } from "@/components/shared/back-link";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCategories } from "@/lib/services/category.service";
@@ -18,6 +19,7 @@ export default async function EditJobPage({ params }: { params: Promise<{ jobId:
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
+      <BackLink href={PATH.RECRUITER_JOBS} label="Quay lại danh sách tin" />
       <h1 className="mb-6 text-2xl font-semibold">Chỉnh sửa tin tuyển dụng</h1>
       <JobForm mode="edit" job={job} categories={categories} skills={skills} />
     </div>

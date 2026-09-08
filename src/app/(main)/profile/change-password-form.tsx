@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { changePassword } from "@/lib/services/auth.service";
 
@@ -49,27 +49,17 @@ export function ChangePasswordForm() {
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="oldPassword">Mật khẩu hiện tại</Label>
-        <Input
-          id="oldPassword"
-          type="password"
-          autoComplete="current-password"
-          {...register("oldPassword")}
-        />
+        <PasswordInput id="oldPassword" autoComplete="current-password" {...register("oldPassword")} />
         {errors.oldPassword && <p className="text-destructive text-sm">{errors.oldPassword.message}</p>}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="newPassword">Mật khẩu mới</Label>
-        <Input id="newPassword" type="password" autoComplete="new-password" {...register("newPassword")} />
+        <PasswordInput id="newPassword" autoComplete="new-password" {...register("newPassword")} />
         {errors.newPassword && <p className="text-destructive text-sm">{errors.newPassword.message}</p>}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          {...register("confirmPassword")}
-        />
+        <PasswordInput id="confirmPassword" autoComplete="new-password" {...register("confirmPassword")} />
         {errors.confirmPassword && (
           <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
         )}

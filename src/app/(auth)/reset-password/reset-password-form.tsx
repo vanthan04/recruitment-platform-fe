@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { resetPassword } from "@/lib/services/auth.service";
 
@@ -43,17 +44,12 @@ export function ResetPasswordForm() {
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="newPassword">Mật khẩu mới</Label>
-        <Input id="newPassword" type="password" autoComplete="new-password" {...register("newPassword")} />
+        <PasswordInput id="newPassword" autoComplete="new-password" {...register("newPassword")} />
         {errors.newPassword && <p className="text-destructive text-sm">{errors.newPassword.message}</p>}
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="confirmPassword">Xác nhận mật khẩu mới</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          {...register("confirmPassword")}
-        />
+        <PasswordInput id="confirmPassword" autoComplete="new-password" {...register("confirmPassword")} />
         {errors.confirmPassword && (
           <p className="text-destructive text-sm">{errors.confirmPassword.message}</p>
         )}

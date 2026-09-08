@@ -319,7 +319,12 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
         <Input id="expiresAt" type="date" {...register("expiresAt")} />
       </div>
 
-      <Button type="submit" className="rounded-full" disabled={isPending}>
+      <Button
+        type="submit"
+        variant={mode === "create" ? "cta" : "default"}
+        className="rounded-full"
+        disabled={isPending}
+      >
         {isPending ? "Đang lưu..." : mode === "create" ? "Đăng tin" : "Lưu thay đổi"}
       </Button>
     </form>

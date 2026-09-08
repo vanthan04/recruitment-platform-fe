@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MobileMenuToggle } from "@/components/layout/mobile-menu-toggle";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { NavLink } from "@/components/layout/nav-link";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { PATH } from "@/lib/constants/path";
 import { logout } from "@/lib/services/auth.service";
@@ -56,13 +57,14 @@ export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unrea
 
         <nav className="hidden min-w-0 items-center gap-0.5 overflow-x-auto text-sm font-medium md:flex md:flex-1 md:justify-center">
           {navLinks.map((link) => (
-            <Link
+            <NavLink
               key={link.href}
               href={link.href}
               className="text-foreground/80 hover:bg-muted hover:text-foreground rounded-full px-3 py-2 whitespace-nowrap transition-colors"
+              activeClassName="bg-muted text-foreground"
             >
               {link.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 

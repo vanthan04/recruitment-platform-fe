@@ -1,7 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { BackLink } from "@/components/shared/back-link";
 import { ApiError } from "@/lib/api";
 import { APPLICATION_STATUS_LABEL } from "@/lib/constants/enum-label";
+import { PATH } from "@/lib/constants/path";
 import {
   getApplicationHistory,
   getApplicationsForJob,
@@ -77,6 +79,7 @@ export default async function RecruiterJobApplicationsPage({
     <div>
       <div className="bg-primary/5 border-b py-8">
         <div className="mx-auto max-w-3xl px-4">
+          <BackLink href={PATH.RECRUITER_JOBS} label="Quay lại danh sách tin" />
           <h1 className="text-2xl font-semibold sm:text-3xl">Ứng viên</h1>
           <p className="text-muted-foreground mt-1 text-sm">{job.title}</p>
         </div>

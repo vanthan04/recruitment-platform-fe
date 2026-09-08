@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { BackLink } from "@/components/shared/back-link";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getCvById } from "@/lib/services/cv.service";
@@ -18,6 +19,7 @@ export default async function EditCvPage({ params }: EditCvPageProps) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
+      <BackLink href={PATH.CV_LIST} label="Quay lại danh sách CV" />
       <h1 className="mb-6 text-2xl font-semibold">Chỉnh sửa CV</h1>
       <CvForm cv={cv} />
     </div>

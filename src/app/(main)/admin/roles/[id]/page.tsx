@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
+import { BackLink } from "@/components/shared/back-link";
 import { ApiError } from "@/lib/api";
+import { PATH } from "@/lib/constants/path";
 import { getPermissions, getRole, getRolePermissions } from "@/lib/services/admin-role.service";
 import { RolePermissionsForm } from "./role-permissions-form";
 
@@ -11,6 +13,7 @@ export default async function AdminRoleDetailPage({ params }: { params: Promise<
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
+      <BackLink href={PATH.ADMIN_ROLES} label="Quay lại danh sách vai trò" />
       <h1 className="mb-1 text-2xl font-semibold">{role.name}</h1>
       <p className="text-muted-foreground mb-6 text-sm">{role.description}</p>
 

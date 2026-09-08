@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SocialLoginButtons } from "@/components/shared/social-login-buttons";
 import { useApiToast } from "@/hooks/use-api-toast";
@@ -80,9 +81,8 @@ export function RegisterForm() {
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="password">Mật khẩu</Label>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           autoComplete="new-password"
           placeholder="Nhập mật khẩu"
           className="h-11 rounded-xl px-4 text-base"
@@ -92,9 +92,8 @@ export function RegisterForm() {
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
-        <Input
+        <PasswordInput
           id="confirmPassword"
-          type="password"
           autoComplete="new-password"
           placeholder="Nhập lại mật khẩu"
           className="h-11 rounded-xl px-4 text-base"
@@ -122,7 +121,12 @@ export function RegisterForm() {
           )}
         />
       </div>
-      <Button type="submit" className="h-12 w-full rounded-full text-base font-semibold" disabled={isPending}>
+      <Button
+        type="submit"
+        variant="cta"
+        className="h-12 w-full rounded-full text-base font-semibold"
+        disabled={isPending}
+      >
         {isPending ? "Đang đăng ký..." : "Đăng ký"}
         {!isPending && <ArrowRight className="size-4" />}
       </Button>

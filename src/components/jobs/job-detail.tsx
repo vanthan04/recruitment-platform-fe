@@ -225,7 +225,7 @@ function ApplyCta({
 }) {
   if (!isLoggedIn) {
     return (
-      <Button asChild className="w-full">
+      <Button asChild variant="cta" className="w-full">
         <Link href={PATH.LOGIN}>Ứng tuyển ngay</Link>
       </Button>
     );
