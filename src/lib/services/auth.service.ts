@@ -14,6 +14,7 @@ import { PATH } from "@/lib/constants/path";
 import {
   needsRecruiterOnboarding,
   toAuthTokens,
+  type AuthTokens,
   type AuthTokensWire,
   type AuthUser,
   type ChangePasswordInput,
@@ -50,24 +51,29 @@ export async function login(input: LoginInput): Promise<void> {
   redirect(PATH.JOBS);
 }
 
-export async function completeSocialLogin(code: string): Promise<void> {
-  let tokens: ReturnType<typeof toAuthTokens>;
-  try {
-    const wire = await api.post<AuthTokensWire>(AUTH_ENDPOINT.SOCIAL_EXCHANGE, { code }, { skipAuth: true });
-    tokens = toAuthTokens(wire);
-  } catch {
-    redirect(`${PATH.LOGIN}?error=oauth`);
-  }
+// Deliberately does NOT touch cookies or redirect() itself — it's called
+// from the /auth/callback Route Handler, which needs to attach the Set-Cookie
+// headers to the exact NextResponse it returns. Staging cookies via
+// next/headers cookies() and then calling next/navigation's redirect() from
+// inside a "use server" function invoked as a plain function call (not
+// through a client form/transition) isn't a reliable way to get that
+// Set-Cookie onto the resulting redirect — that combo is only well-supported
+// for Server Actions dispatched from a Client Component. The Route Handler
+// builds the response explicitly instead; see callback/route.ts.
+export async function exchangeSocialCode(
+  code: string,
+): Promise<{ tokens: AuthTokens; user: AuthUser | null }> {
+  const wire = await api.post<AuthTokensWire>(AUTH_ENDPOINT.SOCIAL_EXCHANGE, { code }, { skipAuth: true });
+  const tokens = toAuthTokens(wire);
 
-  const cookieStore = await getCookies();
-  cookieStore.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
-  cookieStore.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+  const user = await api
+    .get<AuthUser>(USER_ENDPOINT.ME, {
+      skipAuth: true,
+      headers: { Authorization: `Bearer ${tokens.accessToken}` },
+    })
+    .catch(() => null);
 
-  const user = await getCurrentUser();
-  if (user && needsRecruiterOnboarding(user)) {
-    redirect(PATH.ONBOARDING);
-  }
-  redirect(PATH.JOBS);
+  return { tokens, user };
 }
 
 export async function logout(): Promise<void> {
