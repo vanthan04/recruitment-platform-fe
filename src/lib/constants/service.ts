@@ -6,9 +6,10 @@ export const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8080";
 // Every route is versioned under this prefix on the backend.
 export const API_PREFIX = "/api/v1";
 
-// Public counterpart of BACKEND_URL — every other backend call happens
-// server-side (see lib/api/index.ts), but the realtime chat socket must be
-// opened directly from the browser (httpOnly cookies can't be attached to a
-// client fetch, so there's no server-proxy path for it), which means this
-// one origin has to be exposed to client code.
-export const PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8080";
+// Local-dev-only escape hatch for the realtime chat socket (see
+// lib/realtime/socket.ts). In production this must stay unset: the edge
+// proxy in front of the public domain routes /socket.io to the backend, so
+// the socket connects with a relative path and never needs a backend origin
+// exposed to client code. Locally there's no such proxy in front of `next
+// dev`, so .env sets this to the backend's dev origin instead.
+export const PUBLIC_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;

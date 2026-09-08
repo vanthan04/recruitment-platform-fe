@@ -20,14 +20,19 @@ thêm), mỗi lần push lên `main` sẽ tự deploy. Gần như mọi route �
 đều server-rendered, nên cần Node runtime (không phải static export);
 Vercel hỗ trợ sẵn điều này trên gói Hobby miễn phí.
 
-Set các biến môi trường sau ở Vercel project (Project Settings →
+Set biến môi trường sau ở Vercel project (Project Settings →
 Environment Variables), trỏ vào Elastic IP của EC2 bên backend (hoặc 1
 domain khi đã có — xem `recruitment-platform-be/DEPLOY.md` và repo
 `recruitment-platform-infra` để biết cách cấp phát):
 
-- `BACKEND_URL` — origin phía server dùng để gọi API.
-- `NEXT_PUBLIC_BACKEND_URL` — cùng origin, expose ra browser (socket
-  chat realtime mở ở phía client nên cần biến này thay vì
-  `BACKEND_URL` chỉ dùng ở server).
+- `BACKEND_URL` — origin phía server dùng để gọi API. Không public.
+
+**Không** set `NEXT_PUBLIC_BACKEND_URL` trên Vercel. Biến này chỉ dùng ở
+`.env` local (xem `.env.example`) — production không cần nó: socket chat
+realtime (`src/lib/realtime/socket.ts`) kết nối bằng relative path
+(`io("/ws")`), được route sang backend qua Cloudflare Worker đứng trước
+domain public (xem [`recruitment-platform-edge`](../recruitment-platform-edge)).
+Set `NEXT_PUBLIC_BACKEND_URL` trên Vercel sẽ khiến client lại nối thẳng
+tới origin backend thật — đúng thứ kiến trúc này cố tránh.
 
 Xem thêm [tài liệu deploy Next.js](https://nextjs.org/docs/app/building-your-application/deploying) nếu cần.
