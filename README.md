@@ -31,7 +31,8 @@ domain khi đã có — xem `recruitment-platform-be/DEPLOY.md` và repo
 `.env` local (xem `.env.example`) — production không cần nó: socket chat
 realtime (`src/lib/realtime/socket.ts`) kết nối bằng relative path
 (`io("/ws")`), được route sang backend qua Cloudflare Worker đứng trước
-domain public (xem [`recruitment-platform-edge`](../recruitment-platform-edge)).
+domain public (repo riêng — xem
+[`recruitment-platform-edge`](https://github.com/vanthan04/recruitment-platform-edge)).
 Set `NEXT_PUBLIC_BACKEND_URL` trên Vercel sẽ khiến client lại nối thẳng
 tới origin backend thật — đúng thứ kiến trúc này cố tránh.
 

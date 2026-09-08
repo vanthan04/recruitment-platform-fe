@@ -12,8 +12,10 @@ let socket: Socket | null = null;
  *
  * In production this connects with a relative path — same origin as the
  * page — because the Cloudflare edge in front of the public domain routes
- * /socket.io to the backend (see recruitment-platform-edge). PUBLIC_BACKEND_URL
- * is only ever set locally, where `next dev` has no such edge in front of it.
+ * /socket.io to the backend. See
+ * https://github.com/vanthan04/recruitment-platform-edge (separate repo)
+ * for that Worker. PUBLIC_BACKEND_URL is only ever set locally, where
+ * `next dev` has no such edge in front of it.
  */
 export function getChatSocket(): Socket {
   if (!socket) {
