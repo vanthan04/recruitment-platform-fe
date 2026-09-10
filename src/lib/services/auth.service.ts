@@ -43,6 +43,12 @@ export async function login(input: LoginInput): Promise<void> {
   const cookieStore = await getCookies();
   cookieStore.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
   cookieStore.set(REFRESH_TOKEN_COOKIE, tokens.refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+  // Without this, the client Router Cache can still hold the logged-out
+  // render of the shared (main) layout (Header) from before login — e.g. the
+  // user browsed /jobs while unauthenticated, then redirect() below reuses
+  // that cached entry instead of refetching, so the header stays stuck on
+  // "Đăng nhập/Đăng ký" until a manual refresh.
+  revalidatePath("/", "layout");
 
   const user = await getCurrentUser();
   if (user && needsRecruiterOnboarding(user)) {
@@ -89,6 +95,7 @@ export async function logout(): Promise<void> {
 
   cookieStore.delete(ACCESS_TOKEN_COOKIE);
   cookieStore.delete(REFRESH_TOKEN_COOKIE);
+  revalidatePath("/", "layout");
   redirect(PATH.LOGIN);
 }
 
@@ -100,6 +107,7 @@ export async function logoutAll(): Promise<void> {
   const cookieStore = await getCookies();
   cookieStore.delete(ACCESS_TOKEN_COOKIE);
   cookieStore.delete(REFRESH_TOKEN_COOKIE);
+  revalidatePath("/", "layout");
   redirect(PATH.LOGIN);
 }
 
