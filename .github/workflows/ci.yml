@@ -15,6 +15,10 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # Report-only: surface known-vulnerable dependencies without blocking
+      # the build on transitive advisories the team hasn't triaged yet.
+      - run: npm audit --audit-level=high
+        continue-on-error: true
       - run: npm run lint
       # `next build` writes ambient route types (e.g. LayoutProps) to
       # .next/types/ — tsc needs that to exist first, so build runs before
