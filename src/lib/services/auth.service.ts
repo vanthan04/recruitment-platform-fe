@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { api } from "@/lib/api";
+import { ApiError } from "@/lib/api/error";
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_COOKIE_OPTIONS,
@@ -142,8 +143,15 @@ export async function changePassword(input: ChangePasswordInput): Promise<void> 
 export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
     return await api.get<AuthUser>(USER_ENDPOINT.ME);
-  } catch {
-    // Unauthenticated pages call this — return null instead of crashing.
-    return null;
+  } catch (error) {
+    // Unauthenticated pages call this — a real 401 means "no user", return
+    // null instead of crashing. Anything else (a 500, a network timeout, a
+    // DNS failure) is not the same thing as "logged out": rethrow so it hits
+    // the nearest error.tsx instead of silently rendering every real
+    // signed-in user as logged-out during a transient backend hiccup.
+    if (error instanceof ApiError && error.status === 401) {
+      return null;
+    }
+    throw error;
   }
 }
