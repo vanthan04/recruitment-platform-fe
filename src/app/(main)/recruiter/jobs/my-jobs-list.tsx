@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { usePushParams } from "@/hooks/use-url-filter";
 import { JOB_STATUS_LABEL } from "@/lib/constants/enum-label";
 import type { ListMeta } from "@/lib/types/common";
 import type { Job, JobStatus } from "@/lib/types/job";
@@ -18,18 +18,7 @@ interface MyJobsListProps {
 }
 
 export function MyJobsList({ items, meta, initialStatus }: MyJobsListProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  function pushParams(next: Record<string, string | undefined>) {
-    const params = new URLSearchParams(searchParams.toString());
-    for (const [key, value] of Object.entries(next)) {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    }
-    router.push(`${pathname}?${params.toString()}`);
-  }
+  const { pushParams } = usePushParams();
 
   const page = meta?.page ?? 1;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;

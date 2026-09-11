@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ConversationItem } from "@/components/chat/conversation-item";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { useChatPresence } from "@/contexts/chat-context";
+import { usePushParams } from "@/hooks/use-url-filter";
 import { getChatSocket } from "@/lib/realtime/socket";
 import type { ListMeta } from "@/lib/types/common";
 import type { Conversation, Message } from "@/lib/types/chat";
@@ -21,9 +21,7 @@ export function ConversationList({
   selectedConversationId: string | null;
 }) {
   const { onlineUserIds } = useChatPresence();
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { pushParams } = usePushParams();
   const [conversations, setConversations] = useState(initialConversations);
   const [search, setSearch] = useState("");
 
@@ -75,9 +73,7 @@ export function ConversationList({
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
 
   function goToPage(next: number) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(next));
-    router.push(`${pathname}?${params.toString()}`);
+    pushParams({ page: String(next) });
   }
 
   return (
