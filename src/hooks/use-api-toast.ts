@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { unstable_rethrow } from "next/navigation";
 import { toast } from "sonner";
 import { ApiError } from "@/lib/api/error";
+import { logout } from "@/lib/services/auth.service";
 
 interface UseApiToastOptions<T> {
   successMessage?: string;
@@ -12,10 +13,23 @@ interface UseApiToastOptions<T> {
   onError?: (error: unknown) => void;
 }
 
-function handleError(error: unknown, onError?: (e: unknown) => void) {
+async function handleError(error: unknown, onError?: (e: unknown) => void) {
   // `redirect()` và `notFound()` của Next.js throw một special error —
   // phải re-throw để framework xử lý navigation / 404.
   unstable_rethrow(error);
+
+  if (error instanceof ApiError && error.status === 401) {
+    // lib/api/index.ts already retried once via the refresh-token flow
+    // before this ever reached the UI — a 401 here means the session is
+    // genuinely dead, not a fluke. Leaving it as a generic toast stranded
+    // the user on the current page with every subsequent action failing
+    // the same way; force a real logout (clears the now-invalid cookies)
+    // instead.
+    toast.error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
+    onError?.(error);
+    await logout();
+    return;
+  }
 
   if (error instanceof ApiError) {
     toast.error(error.message);
@@ -45,7 +59,7 @@ export function useApiToast() {
         if (options?.successMessage) toast.success(options.successMessage);
         options?.onSuccess?.(result);
       } catch (error) {
-        handleError(error, options?.onError);
+        await handleError(error, options?.onError);
       }
     });
   }
@@ -69,7 +83,7 @@ export function useApiToast() {
       options?.onSuccess?.(result);
       return result;
     } catch (error) {
-      handleError(error, options?.onError);
+      await handleError(error, options?.onError);
       return undefined;
     } finally {
       setIsLoading(false);
