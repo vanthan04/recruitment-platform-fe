@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useApiToast } from "@/hooks/use-api-toast";
+import { useConfirm } from "@/hooks/use-confirm";
 import { deleteCv, getCvDownloadUrl, publishCv } from "@/lib/services/cv.service";
 
 export function PublishCvButton({ cvId }: { cvId: string }) {
@@ -22,19 +23,25 @@ export function PublishCvButton({ cvId }: { cvId: string }) {
 
 export function DeleteCvButton({ cvId }: { cvId: string }) {
   const { run, isPending } = useApiToast();
+  const { confirm, ConfirmDialog } = useConfirm();
 
   return (
-    <Button
-      type="button"
-      size="sm"
-      variant="ghost"
-      disabled={isPending}
-      onClick={() => {
-        if (confirm("Xoá CV này?")) run(() => deleteCv(cvId), { successMessage: "Đã xoá CV." });
-      }}
-    >
-      Xoá
-    </Button>
+    <>
+      <Button
+        type="button"
+        size="sm"
+        variant="ghost"
+        disabled={isPending}
+        onClick={async () => {
+          if (await confirm({ title: "Xoá CV này?", destructive: true })) {
+            run(() => deleteCv(cvId), { successMessage: "Đã xoá CV." });
+          }
+        }}
+      >
+        Xoá
+      </Button>
+      {ConfirmDialog}
+    </>
   );
 }
 

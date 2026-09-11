@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useApiToast } from "@/hooks/use-api-toast";
+import { useConfirm } from "@/hooks/use-confirm";
 import { INTERVIEW_STATUS_LABEL } from "@/lib/constants/enum-label";
 import { cancelInterview, completeInterview, markInterviewNoShow } from "@/lib/services/interview.service";
 import { NON_TERMINAL_INTERVIEW_STATUSES, type Interview } from "@/lib/types/interview";
@@ -17,6 +18,7 @@ export function InterviewPanel({
   interview?: Interview;
 }) {
   const { run, isPending } = useApiToast();
+  const { confirm, ConfirmDialog } = useConfirm();
   const router = useRouter();
 
   if (!interview) {
@@ -76,8 +78,8 @@ export function InterviewPanel({
               size="sm"
               variant="ghost"
               disabled={isPending}
-              onClick={() => {
-                if (confirm("Huỷ lịch phỏng vấn này?")) {
+              onClick={async () => {
+                if (await confirm({ title: "Huỷ lịch phỏng vấn này?", destructive: true })) {
                   run(() => cancelInterview(interview.id), {
                     successMessage: "Đã huỷ lịch phỏng vấn.",
                     onSuccess: () => router.refresh(),
@@ -90,6 +92,7 @@ export function InterviewPanel({
           </>
         )}
       </div>
+      {ConfirmDialog}
     </div>
   );
 }
