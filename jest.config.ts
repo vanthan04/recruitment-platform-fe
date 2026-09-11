@@ -9,6 +9,10 @@ import type { Config } from "jest";
 const config: Config = {
   testEnvironment: "jest-environment-jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  // .claude/ is gitignored (so CI never sees it), but locally it can hold
+  // installed Claude Code skills with their own Playwright/ESM test files —
+  // Jest's default testMatch would otherwise pick those up and fail here.
+  testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.claude/"],
   transform: {
     "^.+\\.(js|jsx|ts|tsx|mjs)$": ["babel-jest", { configFile: "./babel.jest.config.js" }],
   },
