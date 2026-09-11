@@ -194,13 +194,25 @@ const ChatPresenceContext = createContext<ChatPresenceContextValue | null>(null)
 export function ChatProvider({ currentUserId, children }: { currentUserId: string; children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const typingTimeoutRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  // Conversations a component has asked to subscribe to (ChatWindow, on
+  // mount). Socket.IO's own `reconnection: true` silently reconnects the
+  // transport after a drop (WiFi blip, laptop sleep, tab backgrounding) —
+  // the server doesn't remember a fresh socket's prior subscriptions, so
+  // without re-emitting these on "connect", the UI shows "connected" while
+  // new messages for the still-open conversation stop arriving.
+  const subscribedConversationIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     const socket = getChatSocket();
     socket.connect();
     dispatch({ type: "status", status: "connecting" });
 
-    const onConnect = () => dispatch({ type: "status", status: "connected" });
+    const onConnect = () => {
+      dispatch({ type: "status", status: "connected" });
+      for (const conversationId of subscribedConversationIdsRef.current) {
+        socket.emit("conversation:subscribe", { conversationId });
+      }
+    };
     const onDisconnect = () => dispatch({ type: "status", status: "disconnected" });
     const onMessageNew = (message: Message) =>
       dispatch({ type: "incoming", conversationId: message.conversationId, message });
@@ -258,10 +270,12 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
   );
 
   const subscribeToConversation = useCallback((conversationId: string) => {
+    subscribedConversationIdsRef.current.add(conversationId);
     getChatSocket().emit("conversation:subscribe", { conversationId });
   }, []);
 
   const unsubscribeFromConversation = useCallback((conversationId: string) => {
+    subscribedConversationIdsRef.current.delete(conversationId);
     getChatSocket().emit("conversation:unsubscribe", { conversationId });
   }, []);
 

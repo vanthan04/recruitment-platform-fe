@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { act } from "react";
+import { act, useEffect } from "react";
 import { ChatProvider, useChat } from "@/contexts/chat-context";
 
 type Listener = (...args: unknown[]) => void;
@@ -50,6 +50,18 @@ function TestConsumer({ conversationId }: { conversationId: string }) {
       </ul>
     </div>
   );
+}
+
+function SubscribingConsumer({ conversationId }: { conversationId: string }) {
+  const chat = useChat();
+
+  useEffect(() => {
+    chat.subscribeToConversation(conversationId);
+    return () => chat.unsubscribeFromConversation(conversationId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId]);
+
+  return null;
 }
 
 describe("ChatProvider / useChat", () => {
@@ -120,5 +132,33 @@ describe("ChatProvider / useChat", () => {
     });
 
     expect(screen.getAllByText(/Hi there/)).toHaveLength(1);
+  });
+
+  it("re-subscribes to the open conversation after the socket reconnects", () => {
+    render(
+      <ChatProvider currentUserId="candidate-1">
+        <SubscribingConsumer conversationId="conv-1" />
+      </ChatProvider>,
+    );
+
+    const subscribeCalls = () =>
+      mockSocket.emit.mock.calls.filter(
+        ([event, payload]) =>
+          event === "conversation:subscribe" &&
+          (payload as { conversationId: string }).conversationId === "conv-1",
+      );
+
+    expect(subscribeCalls()).toHaveLength(1);
+
+    // Socket.IO's own `reconnection: true` reconnects the transport silently
+    // after a drop — the server doesn't remember a fresh socket's prior
+    // subscriptions, so the provider must re-emit on every "connect", not
+    // just the first one.
+    act(() => {
+      mockSocket.trigger("disconnect", undefined);
+      mockSocket.trigger("connect", undefined);
+    });
+
+    expect(subscribeCalls()).toHaveLength(2);
   });
 });
