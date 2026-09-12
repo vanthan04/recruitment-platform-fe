@@ -1,3 +1,4 @@
+import { StatTile } from "@/components/shared/stat-tile";
 import type { ApplicationStats } from "@/lib/types/job-application";
 
 const TILES: { key: keyof ApplicationStats; label: string }[] = [
@@ -15,12 +16,9 @@ const TILES: { key: keyof ApplicationStats; label: string }[] = [
 
 export function JobStatsPanel({ stats }: { stats: ApplicationStats }) {
   return (
-    <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
+    <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
       {TILES.map(({ key, label }) => (
-        <div key={key} className="border-border rounded-xl border p-3 text-center shadow-sm">
-          <div className="text-primary text-xl font-semibold">{stats[key]}</div>
-          <div className="text-muted-foreground text-xs">{label}</div>
-        </div>
+        <StatTile key={key} value={stats[key]} label={label} />
       ))}
     </div>
   );

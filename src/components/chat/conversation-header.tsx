@@ -33,7 +33,9 @@ export function ConversationHeader({
           <AvatarFallback>{initials(otherParticipant.fullName)}</AvatarFallback>
         </Avatar>
         {isOnline && (
-          <span className="border-background absolute right-0 bottom-0 size-2.5 rounded-full border-2 bg-green-500" />
+          <span className="border-background absolute right-0 bottom-0 size-2.5 rounded-full border-2 bg-green-500">
+            <span className="sr-only">Đang hoạt động</span>
+          </span>
         )}
       </div>
       <div className="min-w-0 flex-1">

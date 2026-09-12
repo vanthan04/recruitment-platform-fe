@@ -245,7 +245,7 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
             control={control}
             name="skillIds"
             render={({ field }) => (
-              <div className="flex flex-wrap gap-x-4 gap-y-2 rounded-md border p-3">
+              <div className="flex flex-wrap gap-x-4 gap-y-2 rounded-lg border p-3">
                 {skills.map((skill) => {
                   const selected = field.value ?? [];
                   const checked = selected.includes(skill.id);

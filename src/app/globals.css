@@ -27,6 +27,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-cta-foreground: var(--cta-foreground);
@@ -70,6 +71,7 @@
   --cta: oklch(0.627 0.17 149.2);
   --cta-foreground: oklch(0 0 0);
   --destructive: oklch(0.577 0.215 27.3);
+  --warning: oklch(0.6 0.15 55);
   --border: oklch(0.901 0.055 230.9);
   --input: oklch(0.901 0.055 230.9);
   --ring: oklch(0.5 0.119 242.7 / 50%);
@@ -109,6 +111,7 @@
   --cta: oklch(0.627 0.17 149.2);
   --cta-foreground: oklch(0 0 0);
   --destructive: oklch(0.7 0.19 27.3);
+  --warning: oklch(0.75 0.15 65);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.68 0.14 242.7 / 50%);
@@ -139,6 +142,14 @@
   html {
     @apply font-sans;
   }
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { InterviewInfo } from "@/components/shared/interview-info";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ApiError } from "@/lib/api";
@@ -20,7 +21,6 @@ import {
 import { formatRelativeDate } from "@/lib/utils";
 import { DownloadCvButton } from "@/app/(main)/cv/cv-actions";
 import { ApplicationHistory } from "./application-history";
-import { InterviewInfo } from "./interview-info";
 import { WithdrawButton } from "./withdraw-button";
 
 export default async function ApplicationsPage() {

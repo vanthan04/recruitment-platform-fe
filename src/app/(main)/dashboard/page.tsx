@@ -12,6 +12,7 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
+import { StatTile } from "@/components/shared/stat-tile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -121,17 +122,5 @@ export default async function DashboardPage() {
         </main>
       </div>
     </div>
-  );
-}
-
-function StatTile({ icon: Icon, value, label }: { icon: typeof FileText; value: number; label: string }) {
-  return (
-    <Card>
-      <CardContent className="flex flex-col items-center gap-1 py-2 text-center">
-        <Icon className="text-primary size-5" />
-        <span className="text-xl font-bold">{value}</span>
-        <span className="text-muted-foreground text-xs">{label}</span>
-      </CardContent>
-    </Card>
   );
 }

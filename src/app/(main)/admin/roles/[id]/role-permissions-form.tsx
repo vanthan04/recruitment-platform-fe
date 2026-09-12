@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -68,10 +69,10 @@ export function RolePermissionsForm({
   return (
     <div className="space-y-6">
       {isAdminRole && (
-        <p className="border-primary/30 bg-primary/5 rounded-lg border p-3 text-sm">
+        <Alert>
           Đây là vai trò ADMIN — quyền <code className="font-mono">{ROLE_PERMISSION_MANAGE}</code> luôn được
           giữ để tránh tự khoá quyền quản trị của chính mình.
-        </p>
+        </Alert>
       )}
 
       {[...groups.entries()].map(([resource, permissions]) => (

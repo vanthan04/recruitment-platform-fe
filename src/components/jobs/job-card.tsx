@@ -64,7 +64,7 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
             </Badge>
           )}
           {daysLeft !== null && daysLeft >= 0 && daysLeft <= 7 && (
-            <Badge className="rounded-full border-transparent bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400">
+            <Badge variant="warning" className="rounded-full">
               {daysLeft === 0 ? "Hết hạn hôm nay" : `Còn ${daysLeft} ngày`}
             </Badge>
           )}
