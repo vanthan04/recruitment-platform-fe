@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Building2, Layers, Sparkles } from "lucide-react";
+import { ArrowRight, Briefcase, Building2, Layers, Sparkles } from "lucide-react";
 import { HeroSearch } from "@/components/home/hero-search";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { CompanyCard } from "@/components/companies/company-card";
 import { JobCard } from "@/components/jobs/job-card";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
@@ -69,7 +70,7 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">Chưa có tin tuyển dụng nào.</p>
+          <EmptyState icon={Briefcase} title="Chưa có tin tuyển dụng nào" />
         )}
       </section>
 
@@ -82,7 +83,7 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">Chưa có công ty nào.</p>
+          <EmptyState icon={Building2} title="Chưa có công ty nào" />
         )}
       </section>
 

@@ -1,7 +1,9 @@
 "use client";
 
+import { SearchX } from "lucide-react";
 import { JobCard } from "@/components/jobs/job-card";
 import { SaveSearchButton } from "@/components/jobs/save-search-button";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -212,9 +214,12 @@ export function JobsList({
           <JobCard key={job.id} job={job} bookmarkedJobIds={bookmarkedJobIds} />
         ))}
         {items.length === 0 && (
-          <p className="text-muted-foreground col-span-full py-10 text-center text-sm">
-            Không tìm thấy việc làm phù hợp.
-          </p>
+          <EmptyState
+            icon={SearchX}
+            title="Không tìm thấy việc làm phù hợp"
+            description="Thử điều chỉnh từ khoá hoặc bộ lọc tìm kiếm."
+            className="col-span-full"
+          />
         )}
       </div>
 

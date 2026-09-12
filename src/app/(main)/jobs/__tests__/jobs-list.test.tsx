@@ -63,6 +63,6 @@ describe("JobsList", () => {
   it("shows an empty state when there are no jobs", () => {
     render(<JobsList items={[]} {...baseProps} meta={{ total: 0, page: 1, limit: 10 }} />);
 
-    expect(screen.getByText("Không tìm thấy việc làm phù hợp.")).toBeInTheDocument();
+    expect(screen.getByText("Không tìm thấy việc làm phù hợp")).toBeInTheDocument();
   });
 });

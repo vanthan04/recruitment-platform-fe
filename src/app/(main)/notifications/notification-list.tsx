@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Bell } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { NOTIFICATION_TYPE_LABEL } from "@/lib/constants/enum-label";
@@ -15,7 +17,13 @@ export function NotificationList({ items }: { items: Notification[] }) {
   const router = useRouter();
 
   if (items.length === 0) {
-    return <p className="text-muted-foreground py-10 text-center text-sm">Chưa có thông báo nào.</p>;
+    return (
+      <EmptyState
+        icon={Bell}
+        title="Chưa có thông báo nào"
+        description="Thông báo về việc làm và ứng tuyển của bạn sẽ xuất hiện ở đây."
+      />
+    );
   }
 
   return (

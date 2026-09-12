@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FileText } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PATH } from "@/lib/constants/path";
@@ -45,7 +47,18 @@ export default async function CvListPage() {
             </div>
           </div>
         ))}
-        {cvs.length === 0 && <p className="text-muted-foreground text-sm">Bạn chưa có CV nào.</p>}
+        {cvs.length === 0 && (
+          <EmptyState
+            icon={FileText}
+            title="Bạn chưa có CV nào"
+            description="Tạo CV để ứng tuyển vào các việc làm phù hợp."
+            action={
+              <Button asChild variant="cta" className="rounded-full">
+                <Link href={PATH.CV_NEW}>Tạo CV mới</Link>
+              </Button>
+            }
+          />
+        )}
       </div>
     </div>
   );

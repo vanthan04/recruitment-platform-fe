@@ -1,4 +1,8 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Search } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Button } from "@/components/ui/button";
 import { EMPLOYMENT_TYPE_LABEL, WORK_MODE_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
@@ -44,7 +48,16 @@ export default async function SavedSearchesPage() {
           );
         })}
         {savedSearches.length === 0 && (
-          <p className="text-muted-foreground text-sm">Bạn chưa lưu tìm kiếm nào.</p>
+          <EmptyState
+            icon={Search}
+            title="Bạn chưa lưu tìm kiếm nào"
+            description="Lưu một tìm kiếm để nhận email khi có việc làm mới phù hợp."
+            action={
+              <Button asChild variant="outline">
+                <Link href={PATH.JOBS}>Tìm việc làm</Link>
+              </Button>
+            }
+          />
         )}
       </div>
     </div>

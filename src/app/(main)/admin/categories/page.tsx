@@ -1,3 +1,5 @@
+import { FolderKanban } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { getCategories } from "@/lib/services/category.service";
 import { CreateCategoryForm } from "./create-category-form";
 import { DeleteCategoryButton } from "./delete-category-button";
@@ -36,7 +38,11 @@ export default async function AdminCategoriesPage() {
           </div>
         ))}
         {categories.length === 0 && (
-          <p className="text-muted-foreground py-10 text-center text-sm">Chưa có danh mục nào.</p>
+          <EmptyState
+            icon={FolderKanban}
+            title="Chưa có danh mục nào"
+            description="Tạo danh mục đầu tiên để bắt đầu phân loại tin tuyển dụng."
+          />
         )}
       </div>
     </div>

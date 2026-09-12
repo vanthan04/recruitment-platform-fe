@@ -1,6 +1,8 @@
 "use client";
 
+import { Building2 } from "lucide-react";
 import { CompanyCard } from "@/components/companies/company-card";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Input } from "@/components/ui/input";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { usePushParams, useDebouncedUrlFilter } from "@/hooks/use-url-filter";
@@ -37,9 +39,12 @@ export function CompaniesList({ items, meta, initialKeyword }: CompaniesListProp
           <CompanyCard key={company.id} company={company} />
         ))}
         {items.length === 0 && (
-          <p className="text-muted-foreground col-span-full py-10 text-center text-sm">
-            Không tìm thấy công ty phù hợp.
-          </p>
+          <EmptyState
+            icon={Building2}
+            title="Không tìm thấy công ty phù hợp"
+            description="Thử điều chỉnh từ khoá tìm kiếm."
+            className="col-span-full"
+          />
         )}
       </div>
 

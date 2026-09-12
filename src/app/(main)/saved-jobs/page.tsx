@@ -1,5 +1,9 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Bookmark } from "lucide-react";
 import { JobCard } from "@/components/jobs/job-card";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Button } from "@/components/ui/button";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getMyBookmarkedJobs } from "@/lib/services/bookmark.service";
@@ -21,7 +25,16 @@ export default async function SavedJobsPage() {
           ))}
         </div>
       ) : (
-        <p className="text-muted-foreground text-sm">Bạn chưa lưu tin tuyển dụng nào.</p>
+        <EmptyState
+          icon={Bookmark}
+          title="Bạn chưa lưu tin tuyển dụng nào"
+          description="Lưu tin tuyển dụng bạn quan tâm để xem lại sau."
+          action={
+            <Button asChild variant="outline">
+              <Link href={PATH.JOBS}>Tìm việc làm</Link>
+            </Button>
+          }
+        />
       )}
     </div>
   );

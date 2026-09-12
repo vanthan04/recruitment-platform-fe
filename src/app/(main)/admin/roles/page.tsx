@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
+import { EmptyState } from "@/components/shared/empty-state";
 import { PATH } from "@/lib/constants/path";
 import { getRoles } from "@/lib/services/admin-role.service";
 
@@ -24,6 +26,7 @@ export default async function AdminRolesPage() {
             {role.description && <p className="text-muted-foreground text-sm">{role.description}</p>}
           </Link>
         ))}
+        {roles.length === 0 && <EmptyState icon={ShieldCheck} title="Chưa có vai trò nào" />}
       </div>
     </div>
   );

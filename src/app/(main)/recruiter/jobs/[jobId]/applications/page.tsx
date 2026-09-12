@@ -1,6 +1,8 @@
+import { Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { BackLink } from "@/components/shared/back-link";
+import { EmptyState } from "@/components/shared/empty-state";
 import { ApiError } from "@/lib/api";
 import { APPLICATION_STATUS_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
@@ -131,7 +133,7 @@ export default async function RecruiterJobApplicationsPage({
             </div>
           ))}
           {applications.length === 0 && (
-            <p className="text-muted-foreground text-sm">Chưa có ứng viên nào cho tin tuyển dụng này.</p>
+            <EmptyState icon={Users} title="Chưa có ứng viên nào cho tin tuyển dụng này" />
           )}
         </div>
       </div>

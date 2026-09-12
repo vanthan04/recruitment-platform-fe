@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Send } from "lucide-react";
 import { InterviewInfo } from "@/components/shared/interview-info";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ApiError } from "@/lib/api";
@@ -93,7 +95,16 @@ export default async function ApplicationsPage() {
           );
         })}
         {applications.length === 0 && (
-          <p className="text-muted-foreground text-sm">Bạn chưa ứng tuyển việc làm nào.</p>
+          <EmptyState
+            icon={Send}
+            title="Bạn chưa ứng tuyển việc làm nào"
+            description="Đơn ứng tuyển của bạn sẽ xuất hiện ở đây."
+            action={
+              <Button asChild variant="outline">
+                <Link href={PATH.JOBS}>Tìm việc làm</Link>
+              </Button>
+            }
+          />
         )}
       </div>
     </div>

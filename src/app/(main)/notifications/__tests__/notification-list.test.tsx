@@ -19,7 +19,7 @@ const baseNotification: Notification = {
 describe("NotificationList", () => {
   it("shows an empty state when there are no notifications", () => {
     render(<NotificationList items={[]} />);
-    expect(screen.getByText("Chưa có thông báo nào.")).toBeInTheDocument();
+    expect(screen.getByText("Chưa có thông báo nào")).toBeInTheDocument();
   });
 
   it("renders notification title and message", () => {
