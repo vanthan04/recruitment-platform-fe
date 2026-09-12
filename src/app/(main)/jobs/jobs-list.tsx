@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { SearchX } from "lucide-react";
 import { JobCard } from "@/components/jobs/job-card";
 import { SaveSearchButton } from "@/components/jobs/save-search-button";
@@ -9,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PaginationBar } from "@/components/shared/pagination-bar";
-import { usePushParams, useDebouncedUrlFilter } from "@/hooks/use-url-filter";
+import { usePushParams, useDebouncedUrlFilter, useSyncedState } from "@/hooks/use-url-filter";
 import {
   EMPLOYMENT_TYPE_LABEL,
   JOB_LEVEL_LABEL,
@@ -76,26 +75,12 @@ export function JobsList({
   // interaction instead of waiting for the router transition (which
   // re-renders the whole server page) to resolve. Each is re-synced whenever
   // its server-confirmed value changes (e.g. back/forward navigation).
-  const [selectedSkillIds, setSelectedSkillIds] = useState(initialSkillIds);
-  useEffect(() => {
-    setSelectedSkillIds(initialSkillIds);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialSkillIds.join(",")]);
-
-  const [employmentType, setEmploymentType] = useState(initialEmploymentType);
-  useEffect(() => setEmploymentType(initialEmploymentType), [initialEmploymentType]);
-
-  const [workMode, setWorkMode] = useState(initialWorkMode);
-  useEffect(() => setWorkMode(initialWorkMode), [initialWorkMode]);
-
-  const [level, setLevel] = useState(initialLevel);
-  useEffect(() => setLevel(initialLevel), [initialLevel]);
-
-  const [categoryId, setCategoryId] = useState(initialCategoryId);
-  useEffect(() => setCategoryId(initialCategoryId), [initialCategoryId]);
-
-  const [sort, setSort] = useState(initialSort);
-  useEffect(() => setSort(initialSort), [initialSort]);
+  const [selectedSkillIds, setSelectedSkillIds] = useSyncedState(initialSkillIds, initialSkillIds.join(","));
+  const [employmentType, setEmploymentType] = useSyncedState(initialEmploymentType);
+  const [workMode, setWorkMode] = useSyncedState(initialWorkMode);
+  const [level, setLevel] = useSyncedState(initialLevel);
+  const [categoryId, setCategoryId] = useSyncedState(initialCategoryId);
+  const [sort, setSort] = useSyncedState(initialSort);
 
   const page = meta?.page ?? 1;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
