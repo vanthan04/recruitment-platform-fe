@@ -7,7 +7,7 @@ export interface Cv {
   originalName: string;
   fileType: CvFileType;
   mimeType: string;
-  fileSize: number | null;
+  fileSize: number;
   status: CvStatus;
   createdAt: string;
   updatedAt: string;
