@@ -34,7 +34,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
   }
 
   return (
-    <div className="grid h-[70vh] min-h-[500px] grid-cols-1 overflow-hidden rounded-lg border md:grid-cols-[320px_1fr]">
+    <div className="grid h-[calc(100vh-8rem)] min-h-[420px] grid-cols-1 overflow-hidden rounded-lg border md:grid-cols-[320px_1fr]">
       <div className={selected ? "hidden md:block" : "block"}>
         <ConversationList
           initialConversations={conversations}

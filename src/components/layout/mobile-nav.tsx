@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/layout/nav-link";
@@ -14,16 +14,44 @@ interface MobileNavProps {
 // Slide-in panel driven by SidebarProvider — always mounted so the
 // translate-x transition can animate in both directions.
 export function MobileNav({ links }: MobileNavProps) {
-  const { isOpen, close } = useSidebar();
+  const { isOpen, close, triggerRef } = useSidebar();
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
+
+    // Move focus into the panel; return it to the toggle button on close.
+    panelRef.current?.querySelector<HTMLElement>("button, a[href]")?.focus();
+
+    function getFocusable(): HTMLElement[] {
+      return Array.from(panelRef.current?.querySelectorAll<HTMLElement>("button, a[href]") ?? []);
+    }
+
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") close();
+      if (event.key === "Escape") {
+        close();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, close]);
+    const trigger = triggerRef.current;
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      trigger?.focus();
+    };
+  }, [isOpen, close, triggerRef]);
 
   return (
     <div className={cn("fixed inset-0 z-50 md:hidden", !isOpen && "pointer-events-none")}>
@@ -37,6 +65,7 @@ export function MobileNav({ links }: MobileNavProps) {
       />
       <div
         id="mobile-nav"
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Menu"

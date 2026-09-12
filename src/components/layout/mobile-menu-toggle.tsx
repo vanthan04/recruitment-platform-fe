@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/contexts/sidebar-context";
 
 export function MobileMenuToggle() {
-  const { isOpen, toggle } = useSidebar();
+  const { isOpen, toggle, triggerRef } = useSidebar();
 
   return (
     <Button
+      ref={triggerRef}
       variant="ghost"
       size="icon"
       className="md:hidden"
