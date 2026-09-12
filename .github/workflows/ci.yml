@@ -15,10 +15,12 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      # Report-only: surface known-vulnerable dependencies without blocking
-      # the build on transitive advisories the team hasn't triaged yet.
+      # Blocking: the tree is currently clean at this threshold (verified
+      # 2026-09-12), so this can't false-fail. If a future high/critical
+      # advisory lands with no non-breaking fix, drop back to
+      # `continue-on-error: true` with a comment naming the specific
+      # unfixable advisory — not as a blanket default.
       - run: npm audit --audit-level=high
-        continue-on-error: true
       - run: npm run lint
       # `next build` writes ambient route types (e.g. LayoutProps) to
       # .next/types/ — tsc needs that to exist first, so build runs before

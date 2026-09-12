@@ -20,6 +20,14 @@ function cookieOptionsFor(name: string) {
  * page.tsx never has to mutate cookies mid-render (Next only allows setting
  * cookies from a Server Action, Route Handler, or Middleware — not from a
  * plain render). Runs once per request, before auth.middleware's redirects.
+ *
+ * These cookies (on this app's own domain) are NOT the same cookie the
+ * backend sets on itself for the chat WebSocket handshake (see
+ * recruitment-platform-be's auth.controller.ts, `access_token` cookie) —
+ * this Node server's own fetch() calls to the backend never get a
+ * Set-Cookie relayed back to the browser, so this BFF layer has to manage
+ * its own session cookies independently. Two separate cookies, two
+ * separate origins, two separate purposes.
  */
 export async function withSession(request: NextRequest, response: NextResponse): Promise<void> {
   const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
