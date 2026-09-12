@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { SearchX } from "lucide-react";
 import { JobCard } from "@/components/jobs/job-card";
 import { SaveSearchButton } from "@/components/jobs/save-search-button";
@@ -71,6 +72,31 @@ export function JobsList({
     searchParams,
   );
 
+  // Optimistic local copies so a filter control updates immediately on
+  // interaction instead of waiting for the router transition (which
+  // re-renders the whole server page) to resolve. Each is re-synced whenever
+  // its server-confirmed value changes (e.g. back/forward navigation).
+  const [selectedSkillIds, setSelectedSkillIds] = useState(initialSkillIds);
+  useEffect(() => {
+    setSelectedSkillIds(initialSkillIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSkillIds.join(",")]);
+
+  const [employmentType, setEmploymentType] = useState(initialEmploymentType);
+  useEffect(() => setEmploymentType(initialEmploymentType), [initialEmploymentType]);
+
+  const [workMode, setWorkMode] = useState(initialWorkMode);
+  useEffect(() => setWorkMode(initialWorkMode), [initialWorkMode]);
+
+  const [level, setLevel] = useState(initialLevel);
+  useEffect(() => setLevel(initialLevel), [initialLevel]);
+
+  const [categoryId, setCategoryId] = useState(initialCategoryId);
+  useEffect(() => setCategoryId(initialCategoryId), [initialCategoryId]);
+
+  const [sort, setSort] = useState(initialSort);
+  useEffect(() => setSort(initialSort), [initialSort]);
+
   const page = meta?.page ?? 1;
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
 
@@ -89,10 +115,11 @@ export function JobsList({
             placeholder="Địa điểm..."
           />
           <Select
-            value={initialEmploymentType || ALL}
-            onValueChange={(value) =>
-              pushParams({ employmentType: value === ALL ? undefined : value, page: undefined })
-            }
+            value={employmentType || ALL}
+            onValueChange={(value) => {
+              setEmploymentType(value === ALL ? "" : value);
+              pushParams({ employmentType: value === ALL ? undefined : value, page: undefined });
+            }}
           >
             <SelectTrigger>
               <SelectValue placeholder="Hình thức" />
@@ -107,10 +134,11 @@ export function JobsList({
             </SelectContent>
           </Select>
           <Select
-            value={initialWorkMode || ALL}
-            onValueChange={(value) =>
-              pushParams({ workMode: value === ALL ? undefined : value, page: undefined })
-            }
+            value={workMode || ALL}
+            onValueChange={(value) => {
+              setWorkMode(value === ALL ? "" : value);
+              pushParams({ workMode: value === ALL ? undefined : value, page: undefined });
+            }}
           >
             <SelectTrigger>
               <SelectValue placeholder="Địa điểm làm việc" />
@@ -125,10 +153,11 @@ export function JobsList({
             </SelectContent>
           </Select>
           <Select
-            value={initialLevel || ALL}
-            onValueChange={(value) =>
-              pushParams({ level: value === ALL ? undefined : value, page: undefined })
-            }
+            value={level || ALL}
+            onValueChange={(value) => {
+              setLevel(value === ALL ? "" : value);
+              pushParams({ level: value === ALL ? undefined : value, page: undefined });
+            }}
           >
             <SelectTrigger>
               <SelectValue placeholder="Cấp bậc" />
@@ -147,10 +176,11 @@ export function JobsList({
         <div className="flex flex-wrap items-center gap-3">
           {categories.length > 0 && (
             <Select
-              value={initialCategoryId || ALL}
-              onValueChange={(value) =>
-                pushParams({ categoryId: value === ALL ? undefined : value, page: undefined })
-              }
+              value={categoryId || ALL}
+              onValueChange={(value) => {
+                setCategoryId(value === ALL ? "" : value);
+                pushParams({ categoryId: value === ALL ? undefined : value, page: undefined });
+              }}
             >
               <SelectTrigger className="sm:w-64">
                 <SelectValue placeholder="Ngành nghề" />
@@ -166,10 +196,11 @@ export function JobsList({
             </Select>
           )}
           <Select
-            value={initialSort || DEFAULT_SORT}
-            onValueChange={(value) =>
-              pushParams({ sort: value === DEFAULT_SORT ? undefined : value, page: undefined })
-            }
+            value={sort || DEFAULT_SORT}
+            onValueChange={(value) => {
+              setSort(value === DEFAULT_SORT ? "" : value);
+              pushParams({ sort: value === DEFAULT_SORT ? undefined : value, page: undefined });
+            }}
           >
             <SelectTrigger className="sm:w-52">
               <SelectValue placeholder="Sắp xếp" />
@@ -189,15 +220,16 @@ export function JobsList({
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
             <span className="text-muted-foreground">Kỹ năng:</span>
             {skills.map((skill) => {
-              const checked = initialSkillIds.includes(skill.id);
+              const checked = selectedSkillIds.includes(skill.id);
               return (
                 <label key={skill.id} className="flex items-center gap-1.5">
                   <Checkbox
                     checked={checked}
                     onCheckedChange={(value) => {
                       const next = value
-                        ? [...initialSkillIds, skill.id]
-                        : initialSkillIds.filter((id) => id !== skill.id);
+                        ? [...selectedSkillIds, skill.id]
+                        : selectedSkillIds.filter((id) => id !== skill.id);
+                      setSelectedSkillIds(next);
                       pushParams({ skillIds: next.length > 0 ? next.join(",") : undefined, page: undefined });
                     }}
                   />
