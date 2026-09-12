@@ -28,13 +28,20 @@ export function ForgotPasswordForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4" noValidate>
+    <form onSubmit={onSubmit} className="space-y-5" noValidate>
       <div className="space-y-1.5">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" {...register("email")} />
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="Nhập email"
+          className="h-11 rounded-xl px-4 text-base"
+          {...register("email")}
+        />
         {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
       </div>
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button type="submit" className="h-12 w-full rounded-full text-base font-semibold" disabled={isPending}>
         {isPending ? "Đang gửi..." : "Gửi mã khôi phục"}
       </Button>
     </form>

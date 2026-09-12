@@ -30,13 +30,19 @@ export function VerifyEmailForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4" noValidate>
+    <form onSubmit={onSubmit} className="space-y-5" noValidate>
       <div className="space-y-1.5">
         <Label htmlFor="code">Mã xác thực</Label>
-        <Input id="code" autoComplete="one-time-code" maxLength={6} {...register("code")} />
+        <Input
+          id="code"
+          autoComplete="one-time-code"
+          maxLength={6}
+          className="h-11 rounded-xl px-4 text-base"
+          {...register("code")}
+        />
         {errors.code && <p className="text-destructive text-sm">{errors.code.message}</p>}
       </div>
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button type="submit" className="h-12 w-full rounded-full text-base font-semibold" disabled={isPending}>
         {isPending ? "Đang xác thực..." : "Xác thực"}
       </Button>
     </form>
