@@ -14,7 +14,7 @@ function PasswordInput({ className, ...props }: React.ComponentProps<"input">) {
       <button
         type="button"
         onClick={() => setVisible((value) => !value)}
-        className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex w-9 items-center justify-center"
+        className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex w-9 cursor-pointer items-center justify-center"
         aria-label={visible ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
         aria-pressed={visible}
       >

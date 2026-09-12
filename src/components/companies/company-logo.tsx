@@ -22,7 +22,7 @@ export function CompanyLogo({ name, logoUrl, className }: CompanyLogoProps) {
   return (
     <div
       className={cn(
-        "bg-primary/10 text-primary flex size-10 shrink-0 items-center justify-center rounded-md text-sm font-semibold",
+        "bg-primary/10 text-primary border-border/70 flex size-10 shrink-0 items-center justify-center rounded-md border text-sm font-semibold",
         className,
       )}
       aria-hidden

@@ -64,7 +64,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-4 py-8">
         <SectionHeading title="Việc làm nổi bật" href={PATH.JOBS} />
         {jobs.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {jobs.map((job) => (
               <JobCard key={job.id} job={job} bookmarkedJobIds={bookmarkedJobIds} />
             ))}
@@ -77,7 +77,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-4 py-8">
         <SectionHeading title="Công ty nổi bật" href={PATH.COMPANIES} />
         {companies.length > 0 ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {companies.map((company) => (
               <CompanyCard key={company.id} company={company} />
             ))}

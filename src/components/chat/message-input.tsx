@@ -98,6 +98,7 @@ export function MessageInput({
                 type="button"
                 onClick={() => removeAttachment(index)}
                 aria-label={`Xoá ${attachment.fileName}`}
+                className="cursor-pointer"
               >
                 <XIcon className="size-3" />
               </button>

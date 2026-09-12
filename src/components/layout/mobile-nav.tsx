@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/layout/nav-link";
@@ -16,6 +17,15 @@ interface MobileNavProps {
 export function MobileNav({ links }: MobileNavProps) {
   const { isOpen, close, triggerRef } = useSidebar();
   const panelRef = useRef<HTMLDivElement>(null);
+  // Portal to <body>: the header uses backdrop-blur, and a `fixed` element
+  // nested inside a `backdrop-filter` ancestor is contained by that ancestor's
+  // box instead of the viewport, which squashed this panel into the header's
+  // own height. Rendering outside the header sidesteps that entirely.
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -53,7 +63,9 @@ export function MobileNav({ links }: MobileNavProps) {
     };
   }, [isOpen, close, triggerRef]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div className={cn("fixed inset-0 z-50 md:hidden", !isOpen && "pointer-events-none")}>
       <div
         className={cn(
@@ -93,6 +105,7 @@ export function MobileNav({ links }: MobileNavProps) {
           </NavLink>
         ))}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

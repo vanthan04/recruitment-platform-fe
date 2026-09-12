@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { PublicUserRole } from "@/lib/types/auth";
+import { cn } from "@/lib/utils";
 
 // Plain <a> full-page navigation on purpose — this leaves the app entirely to
 // hit Google/Facebook's consent screen, so it can't go through fetch/Server
@@ -39,11 +40,12 @@ export function SocialLoginButtons({ role: fixedRole }: SocialLoginButtonsProps)
           <button
             type="button"
             onClick={() => setRole("CANDIDATE")}
-            className={
+            className={cn(
+              "cursor-pointer",
               role === "CANDIDATE"
                 ? "text-primary font-medium underline underline-offset-4"
-                : "text-muted-foreground"
-            }
+                : "text-muted-foreground",
+            )}
           >
             Ứng viên
           </button>
@@ -51,11 +53,12 @@ export function SocialLoginButtons({ role: fixedRole }: SocialLoginButtonsProps)
           <button
             type="button"
             onClick={() => setRole("RECRUITER")}
-            className={
+            className={cn(
+              "cursor-pointer",
               role === "RECRUITER"
                 ? "text-primary font-medium underline underline-offset-4"
-                : "text-muted-foreground"
-            }
+                : "text-muted-foreground",
+            )}
           >
             Nhà tuyển dụng
           </button>

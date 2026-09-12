@@ -30,7 +30,7 @@ export function AvatarUpload({ fullName, avatarUrl }: AvatarUploadProps) {
       <div>
         <button
           type="button"
-          className="text-primary text-sm font-medium hover:underline disabled:opacity-50"
+          className="text-primary cursor-pointer text-sm font-medium hover:underline disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isPending}
           onClick={() => inputRef.current?.click()}
         >
