@@ -8,6 +8,14 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      # lib/constants/service.ts throws at import time in a production build
+      # if this is unset — `next build` sets NODE_ENV=production internally,
+      # and Next's "Collecting page data" step imports every route module
+      # (including ones that pull this in transitively) even though nothing
+      # here actually calls the backend. Any reachable-looking value works;
+      # this build never makes a real request.
+      BACKEND_URL: http://ci-placeholder:8080
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
