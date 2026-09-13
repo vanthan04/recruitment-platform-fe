@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Next.js (App Router) frontend for a job portal — the UI for `recruitment-platform-be` (separate repo, NestJS API). Part of a three-repo platform: this FE, `recruitment-platform-be` (backend), and `recruitment-platform-edge` (Cloudflare Worker that proxies realtime chat traffic in production — see Architecture below).
+Next.js (App Router) frontend for a job portal — the UI for `recruitment-platform-be` (separate repo, NestJS API, deployed on Railway). Two-repo platform: this FE (Vercel) and `recruitment-platform-be`. There is no edge/proxy layer in front of either — the browser connects directly to the backend's origin for both the socket and the BFF's server-side API calls (see Architecture below).
 
 ## Commands
 
@@ -39,7 +39,7 @@ Husky + lint-staged run `eslint --fix` and `prettier --write` on staged files at
 ### Two env vars for the backend origin — don't confuse them
 
 - `BACKEND_URL` — server-side only, used by `lib/api`. Required everywhere (local and prod).
-- `NEXT_PUBLIC_BACKEND_URL` — **dev-only escape hatch** for the realtime chat socket (`src/lib/realtime/socket.ts`). Must stay **unset in production**: prod connects the socket via a relative path (`io("/ws")`) which Cloudflare (the `recruitment-platform-edge` Worker) routes to the real backend, so the browser bundle never contains the backend's real origin. Setting this in Vercel defeats that.
+- `NEXT_PUBLIC_BACKEND_URL` — exposed to the browser bundle, used by the realtime chat socket (`src/lib/realtime/socket.ts`) to connect straight to the backend. Required everywhere (local and prod) — there's no edge proxy rewriting this to a relative path, so the browser needs the real origin. Cross-origin auth for this (frontend on Vercel, backend on Railway) relies on the backend's `CORS_ORIGIN` allowlisting this app's origin and the `access_token` cookie being `sameSite: 'none'; secure` in production (see `auth.controller.ts` in the backend repo).
 
 ### Routing
 
@@ -55,4 +55,4 @@ Jest runs on Babel (`babel.jest.config.js`), **not** `next/jest`/SWC — the nat
 
 ## Deploy
 
-Deploys to Vercel (Node runtime — most routes are server-rendered, not static). Required Vercel env var: `BACKEND_URL` pointing at the backend's origin (EC2 Elastic IP or domain). Do **not** set `NEXT_PUBLIC_BACKEND_URL` on Vercel (see above). See [README.md](README.md) for the full deploy write-up.
+Deploys to Vercel (Node runtime — most routes are server-rendered, not static). Required Vercel env vars: `BACKEND_URL` and `NEXT_PUBLIC_BACKEND_URL`, both pointing at the backend's Railway origin (see above). See [README.md](README.md) for the full deploy write-up.

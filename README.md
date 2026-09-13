@@ -21,19 +21,21 @@ thêm), mỗi lần push lên `main` sẽ tự deploy. Gần như mọi route �
 Vercel hỗ trợ sẵn điều này trên gói Hobby miễn phí.
 
 Set biến môi trường sau ở Vercel project (Project Settings →
-Environment Variables), trỏ vào Elastic IP của EC2 bên backend (hoặc 1
-domain khi đã có — xem `recruitment-platform-be/DEPLOY.md` và repo
-`recruitment-platform-infra` để biết cách cấp phát):
+Environment Variables), trỏ vào origin public của backend trên Railway
+(xem `recruitment-platform-be/DEPLOY.md`):
 
-- `BACKEND_URL` — origin phía server dùng để gọi API. Không public.
+- `BACKEND_URL` — origin phía server dùng để gọi API. Không public tới
+  browser.
+- `NEXT_PUBLIC_BACKEND_URL` — cùng origin đó nhưng expose ra browser bundle,
+  dùng để socket chat realtime (`src/lib/realtime/socket.ts`) kết nối thẳng
+  tới backend. Không còn edge proxy nào đứng trước domain public để route
+  `/socket.io` hộ nữa, nên biến này **bắt buộc phải set** ở Vercel (không
+  chỉ local) — thiếu nó chat sẽ fail vì client sẽ thử kết nối relative path
+  ngay trên domain Vercel, nơi không có gì lắng nghe WebSocket đó.
 
-**Không** set `NEXT_PUBLIC_BACKEND_URL` trên Vercel. Biến này chỉ dùng ở
-`.env` local (xem `.env.example`) — production không cần nó: socket chat
-realtime (`src/lib/realtime/socket.ts`) kết nối bằng relative path
-(`io("/ws")`), được route sang backend qua Cloudflare Worker đứng trước
-domain public (repo riêng — xem
-[`recruitment-platform-edge`](https://github.com/vanthan04/recruitment-platform-edge)).
-Set `NEXT_PUBLIC_BACKEND_URL` trên Vercel sẽ khiến client lại nối thẳng
-tới origin backend thật — đúng thứ kiến trúc này cố tránh.
+Backend (Railway) cũng cần set `CORS_ORIGIN` đúng bằng domain Vercel này —
+frontend và backend là hai origin khác nhau, cookie `access_token` dùng
+`sameSite: 'none'; secure` trong production để hoạt động cross-origin (xem
+`auth.controller.ts` bên backend).
 
 Xem thêm [tài liệu deploy Next.js](https://nextjs.org/docs/app/building-your-application/deploying) nếu cần.
