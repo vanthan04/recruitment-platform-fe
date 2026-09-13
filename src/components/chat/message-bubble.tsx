@@ -31,19 +31,29 @@ export function MessageBubble({
         {message.content}
         {message.attachments.length > 0 && (
           <ul className="mt-1.5 space-y-1">
-            {message.attachments.map((attachment) => (
-              <li key={attachment.id}>
-                <a
-                  href={attachment.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs underline underline-offset-2 opacity-90 hover:opacity-100"
-                >
+            {message.attachments.map((attachment) =>
+              // `fileUrl` is empty until the server resolves the upload key
+              // into a signed URL (see chat-context.tsx sendMessage) — while
+              // still sending, there's nothing to link to yet.
+              attachment.fileUrl ? (
+                <li key={attachment.id}>
+                  <a
+                    href={attachment.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 text-xs underline underline-offset-2 opacity-90 hover:opacity-100"
+                  >
+                    <FileIcon className="size-3.5 shrink-0" />
+                    <span className="truncate">{attachment.fileName}</span>
+                  </a>
+                </li>
+              ) : (
+                <li key={attachment.id} className="flex items-center gap-1.5 text-xs opacity-70">
                   <FileIcon className="size-3.5 shrink-0" />
                   <span className="truncate">{attachment.fileName}</span>
-                </a>
-              </li>
-            ))}
+                </li>
+              ),
+            )}
           </ul>
         )}
       </div>

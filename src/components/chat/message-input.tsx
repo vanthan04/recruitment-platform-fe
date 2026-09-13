@@ -43,12 +43,12 @@ export function MessageInput({
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const { url } = await uploadChatAttachment(formData);
+      const { key } = await uploadChatAttachment(formData);
       setAttachments((prev) => [
         ...prev,
         {
           fileName: file.name,
-          fileUrl: url,
+          fileKey: key,
           mimeType: file.type || "application/octet-stream",
           fileSize: file.size,
         },
@@ -90,7 +90,7 @@ export function MessageInput({
         <div className="mb-2 flex flex-wrap gap-2">
           {attachments.map((attachment, index) => (
             <span
-              key={`${attachment.fileUrl}-${index}`}
+              key={`${attachment.fileKey}-${index}`}
               className="bg-muted flex items-center gap-1 rounded-full px-2 py-1 text-xs"
             >
               <span className="max-w-32 truncate">{attachment.fileName}</span>

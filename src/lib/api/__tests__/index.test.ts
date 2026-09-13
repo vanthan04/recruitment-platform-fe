@@ -117,6 +117,84 @@ describe("api (server-only HTTP client)", () => {
     expect(cookieStore.set).toHaveBeenCalledWith("refresh_token", "new-refresh", expect.anything());
   });
 
+  it("de-duplicates concurrent refreshes for the same session — one 401 pair still hits /auth/refresh only once", async () => {
+    const cookieStore = makeCookieStore({ access_token: "expired-token", refresh_token: "refresh-abc" });
+    mockedGetCookies.mockResolvedValue(cookieStore);
+
+    // Two requests race in with the same (already-expired) access token —
+    // the pattern a page's Promise.all produces. Without de-duplication,
+    // each would independently call /auth/refresh with the same
+    // refresh_token; since the backend rotates and single-uses refresh
+    // tokens, the second call would fail outright instead of sharing the
+    // first call's result.
+    let resolveRefresh!: (value: Response) => void;
+    const refreshResponse = new Promise<Response>((resolve) => {
+      resolveRefresh = resolve;
+    });
+    const unauthorized = () =>
+      fakeResponse(envelopeBody(null, { success: false, message: "Unauthorized" }), {
+        ok: false,
+        status: 401,
+        statusText: "Unauthorized",
+      });
+    const seenBefore = new Set<string>();
+
+    fetchMock.mockImplementation((url: string) => {
+      if (typeof url === "string" && url.includes("/auth/refresh")) {
+        return refreshResponse;
+      }
+      // Each job endpoint returns 401 on its first call (the expired-token
+      // hit both requests race in on) and only succeeds on the retry that
+      // follows the shared refresh.
+      if (typeof url === "string" && url.includes("/jobs/job-1")) {
+        if (!seenBefore.has(url)) {
+          seenBefore.add(url);
+          return Promise.resolve(unauthorized());
+        }
+        return Promise.resolve(fakeResponse(envelopeBody({ id: "job-1" })));
+      }
+      if (typeof url === "string" && url.includes("/jobs/job-2")) {
+        if (!seenBefore.has(url)) {
+          seenBefore.add(url);
+          return Promise.resolve(unauthorized());
+        }
+        return Promise.resolve(fakeResponse(envelopeBody({ id: "job-2" })));
+      }
+      return Promise.resolve(unauthorized());
+    });
+
+    const call1 = api.get<{ id: string }>("/jobs/job-1");
+    const call2 = api.get<{ id: string }>("/jobs/job-2");
+
+    // Let both requests observe their 401 and reach the refresh gate before
+    // the refresh call resolves, to actually exercise the race.
+    await Promise.resolve();
+    await Promise.resolve();
+    resolveRefresh(fakeResponse(envelopeBody({ access_token: "new-token", refresh_token: "new-refresh" })));
+
+    const [result1, result2] = await Promise.all([call1, call2]);
+
+    expect(result1).toEqual({ id: "job-1" });
+    expect(result2).toEqual({ id: "job-2" });
+    const refreshCalls = fetchMock.mock.calls.filter(
+      ([url]) => typeof url === "string" && url.includes("/auth/refresh"),
+    );
+    expect(refreshCalls).toHaveLength(1);
+
+    // Both retries (the *second* call to each job URL — the first was the
+    // original request that got the 401) carry the freshly refreshed token,
+    // not the stale cookie value neither request's own cookie store was
+    // updated with yet.
+    for (const jobUrl of ["/jobs/job-1", "/jobs/job-2"]) {
+      const callsForJob = fetchMock.mock.calls.filter(
+        ([url]) => typeof url === "string" && url.includes(jobUrl),
+      );
+      expect(callsForJob).toHaveLength(2);
+      const [, retryInit] = callsForJob[1] as [string, RequestInit];
+      expect((retryInit.headers as Headers).get("Authorization")).toBe("Bearer new-token");
+    }
+  });
+
   it("does not retry a second time and surfaces the original 401 when the refresh itself fails", async () => {
     mockedGetCookies.mockResolvedValue(
       makeCookieStore({ access_token: "expired-token", refresh_token: "refresh-abc" }),

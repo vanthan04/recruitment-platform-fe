@@ -7,6 +7,13 @@ export interface MessageAttachment {
   fileUrl: string;
   mimeType: string;
   fileSize: number;
+  /**
+   * Set only on a not-yet-sent optimistic attachment (see chat-context.tsx
+   * sendMessage/retryMessage) so a retry can resend the original upload
+   * reference — `fileUrl` is empty/unusable until the server resolves it,
+   * since the client never has a real URL for a private chat-attachments key.
+   */
+  fileKey?: string;
 }
 
 export interface Message {
@@ -52,7 +59,8 @@ export interface MessagePage {
 
 export interface MessageAttachmentInput {
   fileName: string;
-  fileUrl: string;
+  /** Storage key returned by uploadChatAttachment() — never a URL. */
+  fileKey: string;
   mimeType: string;
   fileSize: number;
 }

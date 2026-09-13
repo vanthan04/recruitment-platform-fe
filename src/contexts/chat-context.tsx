@@ -313,7 +313,17 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
         messageType: (input.messageType ?? "TEXT") as MessageType,
         clientMessageId,
         isDeleted: false,
-        attachments: (input.attachments ?? []).map((a, i) => ({ id: `pending-${i}`, ...a })),
+        // `fileUrl` is left empty — the client never has a real URL for a
+        // private chat-attachments key (see uploadChatAttachment), only the
+        // key itself, kept here as `fileKey` so a failed send can retry.
+        attachments: (input.attachments ?? []).map((a, i) => ({
+          id: `pending-${i}`,
+          fileName: a.fileName,
+          fileUrl: "",
+          fileKey: a.fileKey,
+          mimeType: a.mimeType,
+          fileSize: a.fileSize,
+        })),
         createdAt: now,
         updatedAt: now,
         sendStatus: "sending",
@@ -330,9 +340,12 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
         content: message.content,
         messageType: message.messageType,
         clientMessageId: message.clientMessageId,
-        attachments: message.attachments.map(({ fileName, fileUrl, mimeType, fileSize }) => ({
+        // A message only reaches "failed" when the send itself never
+        // succeeded, so its attachments are still the pending optimistic
+        // ones — `fileKey` (not the empty `fileUrl`) is the one usable here.
+        attachments: message.attachments.map(({ fileName, fileKey, mimeType, fileSize }) => ({
           fileName,
-          fileUrl,
+          fileKey: fileKey!,
           mimeType,
           fileSize,
         })),

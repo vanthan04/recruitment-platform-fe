@@ -83,11 +83,15 @@ class Api {
     endpoint: string,
     options: ApiRequestOptions,
     isRetry = false,
+    // Set only on the retry recursion below, with the token this exact call
+    // chain's own refresh produced — see refreshToken() for why the retry
+    // can't just re-read the access token cookie itself.
+    retryAccessToken?: string,
   ): Promise<ApiEnvelope<T, M>> {
     const { body, searchParams, skipAuth, headers: customHeaders, next, cache, ...rest } = options;
     const isFormData = body instanceof FormData;
     const url = this.buildUrl(endpoint, searchParams);
-    const requestHeaders = await this.buildHeaders(customHeaders, skipAuth, isFormData);
+    const requestHeaders = await this.buildHeaders(customHeaders, skipAuth, isFormData, retryAccessToken);
 
     const response = await fetch(url, {
       ...rest,
@@ -101,8 +105,10 @@ class Api {
     });
 
     if (response.status === 401 && !skipAuth && !isRetry) {
-      const refreshed = await this.refreshToken();
-      if (refreshed) return this.requestEnvelope<T, M>(method, endpoint, options, true);
+      const tokens = await this.refreshToken();
+      if (tokens) {
+        return this.requestEnvelope<T, M>(method, endpoint, options, true, tokens.accessToken);
+      }
     }
 
     // 204 (delete) has no body at all — nothing to parse either way.
@@ -140,6 +146,7 @@ class Api {
     custom: Record<string, string> | undefined,
     skipAuth?: boolean,
     isFormData?: boolean,
+    accessTokenOverride?: string,
   ): Promise<Headers> {
     const requestHeaders = new Headers(custom);
     if (!isFormData && !requestHeaders.has("Content-Type")) {
@@ -152,29 +159,57 @@ class Api {
     }
 
     if (!skipAuth) {
-      const cookieStore = await getCookies();
-      const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+      const accessToken = accessTokenOverride ?? (await getCookies()).get(ACCESS_TOKEN_COOKIE)?.value;
       if (accessToken) requestHeaders.set("Authorization", `Bearer ${accessToken}`);
     }
 
     return requestHeaders;
   }
 
-  private async refreshToken(): Promise<boolean> {
+  // Keyed by the refresh-token value rather than a single field, because
+  // `api` is a module-level singleton shared across every concurrent
+  // request on this server process — not just concurrent requests within
+  // one page render. Two different users refreshing at the same moment must
+  // never share an in-flight promise; two requests from the *same* session
+  // (e.g. a page's Promise.all firing several calls with one stale access
+  // token) should. The backend rotates refresh tokens and enforces
+  // single-use (see recruitment-platform-be's auth module), so without this,
+  // the second concurrent 401 would present an already-rotated refresh
+  // token and get a hard failure instead of sharing the first call's result.
+  private refreshInFlight = new Map<string, Promise<AuthTokens | null>>();
+
+  private async refreshToken(): Promise<AuthTokens | null> {
     const cookieStore = await getCookies();
     const refreshTokenValue = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
-    if (!refreshTokenValue) return false;
+    if (!refreshTokenValue) return null;
 
+    let inFlight = this.refreshInFlight.get(refreshTokenValue);
+    if (!inFlight) {
+      inFlight = this.exchangeRefreshToken(refreshTokenValue).finally(() => {
+        this.refreshInFlight.delete(refreshTokenValue);
+      });
+      this.refreshInFlight.set(refreshTokenValue, inFlight);
+    }
+
+    const tokens = await inFlight;
+    // next/headers' cookies() is request-scoped — even though only the
+    // first caller actually made the network call above, each concurrent
+    // caller still has to persist the (shared) result onto its *own*
+    // request's cookie store for its own response to carry the rotation.
+    if (tokens) await this.persistTokens(tokens);
+    return tokens;
+  }
+
+  private async exchangeRefreshToken(refreshTokenValue: string): Promise<AuthTokens | null> {
     try {
       const wire = await this.post<AuthTokensWire>(
         AUTH_ENDPOINT.REFRESH,
         { refreshToken: refreshTokenValue },
         { skipAuth: true },
       );
-      await this.persistTokens(toAuthTokens(wire));
-      return true;
+      return toAuthTokens(wire);
     } catch {
-      return false;
+      return null;
     }
   }
 

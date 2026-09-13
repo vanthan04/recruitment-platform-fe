@@ -47,9 +47,16 @@ export async function markConversationRead(conversationId: string): Promise<void
 // Same generic upload endpoint avatar/CV upload already use — just a
 // different `folder`. Called directly from the client MessageInput (Next
 // lets a client component invoke a "use server" action as an RPC).
-export async function uploadChatAttachment(formData: FormData): Promise<{ url: string }> {
+//
+// Unlike avatars/CVs, `chat-attachments` is a *private* folder on the
+// backend (it can carry résumés/offer letters) — the endpoint stores the
+// file privately and returns an opaque storage `key`, never a public `url`.
+// That key is only ever exchanged for a short-lived signed URL by the
+// backend when a conversation member reads the message it ends up attached
+// to; never construct a fetchable URL from it here.
+export async function uploadChatAttachment(formData: FormData): Promise<{ key: string }> {
   formData.set("folder", "chat-attachments");
-  return api.postForm<{ url: string }>(FILE_ENDPOINT.UPLOAD, formData);
+  return api.postForm<{ key: string }>(FILE_ENDPOINT.UPLOAD, formData);
 }
 
 // Recruiter-only — creates (or resumes) the conversation for an accepted
