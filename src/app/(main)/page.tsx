@@ -19,7 +19,8 @@ export default async function HomePage() {
   const [{ items: jobs, meta: jobsMeta }, { items: companies, meta: companiesMeta }, categories, user] =
     await Promise.all([getJobs({ limit: 6 }), getCompanies({ limit: 6 }), getCategories(), getCurrentUser()]);
 
-  const bookmarkedJobIds = user ? await getMyBookmarkedJobIds() : undefined;
+  // Bookmarking is candidate-only (GET /bookmarks 403s for other roles).
+  const bookmarkedJobIds = user?.role === "CANDIDATE" ? await getMyBookmarkedJobIds() : undefined;
 
   const stats = [
     { icon: Sparkles, value: jobsMeta?.total ?? jobs.length, label: "Việc làm đang tuyển" },

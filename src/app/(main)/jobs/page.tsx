@@ -55,7 +55,8 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
     getCurrentUser(),
   ]);
 
-  const bookmarkedJobIds = user ? await getMyBookmarkedJobIds() : undefined;
+  // Bookmarking is candidate-only (GET /bookmarks 403s for other roles).
+  const bookmarkedJobIds = user?.role === "CANDIDATE" ? await getMyBookmarkedJobIds() : undefined;
 
   return (
     <div>

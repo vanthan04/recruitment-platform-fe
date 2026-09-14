@@ -16,12 +16,13 @@ export async function getJobDetailProps(jobId: string) {
     return { job, isLoggedIn: false as const };
   }
 
-  // Applying is candidate-only (GET /cvs 403s for other roles) — recruiters
-  // and admins still get bookmarks/applied-state, just no CVs to apply with.
+  // Applying and bookmarking are candidate-only (GET /cvs and /bookmarks
+  // both 403 for other roles) — recruiters and admins still get
+  // applied-state, just no CVs to apply with and no bookmarks.
   const isCandidate = user.role === "CANDIDATE";
 
   const [bookmarkedJobIds, cvs, applications] = await Promise.all([
-    getMyBookmarkedJobIds(),
+    isCandidate ? getMyBookmarkedJobIds() : Promise.resolve(new Set<string>()),
     isCandidate ? getMyCvs() : Promise.resolve([]),
     getMyApplications(),
   ]);

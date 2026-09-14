@@ -11,6 +11,10 @@ import { getMyBookmarkedJobs } from "@/lib/services/bookmark.service";
 export default async function SavedJobsPage() {
   const user = await getCurrentUser();
   if (!user) redirect(PATH.LOGIN);
+  // Bookmarking is candidate-only (GET /bookmarks 403s for other roles) —
+  // recruiters/admins land here only by typing the URL directly, header nav
+  // never links it to them.
+  if (user.role !== "CANDIDATE") redirect(PATH.HOME);
 
   const jobs = await getMyBookmarkedJobs();
   const bookmarkedJobIds = new Set(jobs.map((job) => job.id));

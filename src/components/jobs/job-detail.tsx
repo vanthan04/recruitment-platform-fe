@@ -59,7 +59,7 @@ export function JobDetail({
               {job.location}
             </p>
           </div>
-          {isLoggedIn && <SaveJobButton jobId={job.id} initialBookmarked={isBookmarked} />}
+          {isCandidate && <SaveJobButton jobId={job.id} initialBookmarked={isBookmarked} />}
         </div>
 
         <Separator className="my-4" />
