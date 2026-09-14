@@ -2,7 +2,25 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ACCESS_TOKEN_COOKIE } from "@/lib/constants/auth";
 import { PATH } from "@/lib/constants/path";
 
-const PROTECTED_PREFIXES = [PATH.PROFILE, PATH.ONBOARDING, "/recruiter", "/admin"];
+// Every one of these pages also does its own server-side getCurrentUser()
+// check (see their page.tsx/layout.tsx) — this list is a fast, edge-only
+// redirect for the *unauthenticated* case, not the source of truth for
+// access control. Keeping it exhaustive still matters: without an entry
+// here, a logged-out hit on that page pays a real backend round-trip
+// before being redirected, instead of the cheap cookie-presence check.
+const PROTECTED_PREFIXES = [
+  PATH.PROFILE,
+  PATH.ONBOARDING,
+  PATH.DASHBOARD,
+  PATH.CV_LIST,
+  PATH.APPLICATIONS,
+  PATH.SAVED_JOBS,
+  PATH.MESSAGES,
+  PATH.NOTIFICATIONS,
+  PATH.SAVED_SEARCHES,
+  "/recruiter",
+  "/admin",
+];
 const GUEST_ONLY_PATHS = [
   PATH.LOGIN,
   PATH.REGISTER,

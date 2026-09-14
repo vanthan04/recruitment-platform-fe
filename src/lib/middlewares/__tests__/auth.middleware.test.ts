@@ -29,15 +29,24 @@ describe("withAuth", () => {
     expect(location.searchParams.get("redirect")).toBe(PATH.PROFILE);
   });
 
-  it.each([PATH.ONBOARDING, "/recruiter/jobs", "/admin/users"])(
-    "redirects an unauthenticated request away from protected prefix route %s",
-    (pathname) => {
-      const response = withAuth(makeRequest(pathname), NextResponse.next());
-      const location = new URL(response.headers.get("location")!);
-      expect(location.pathname).toBe(PATH.LOGIN);
-      expect(location.searchParams.get("redirect")).toBe(pathname);
-    },
-  );
+  it.each([
+    PATH.ONBOARDING,
+    "/recruiter/jobs",
+    "/admin/users",
+    PATH.DASHBOARD,
+    PATH.CV_LIST,
+    "/cv/new",
+    PATH.APPLICATIONS,
+    PATH.SAVED_JOBS,
+    PATH.MESSAGES,
+    PATH.NOTIFICATIONS,
+    PATH.SAVED_SEARCHES,
+  ])("redirects an unauthenticated request away from protected prefix route %s", (pathname) => {
+    const response = withAuth(makeRequest(pathname), NextResponse.next());
+    const location = new URL(response.headers.get("location")!);
+    expect(location.pathname).toBe(PATH.LOGIN);
+    expect(location.searchParams.get("redirect")).toBe(pathname);
+  });
 
   it("lets an unauthenticated request through to a public route", () => {
     const response = withAuth(makeRequest(PATH.JOBS), NextResponse.next());
