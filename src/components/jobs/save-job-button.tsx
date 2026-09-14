@@ -41,7 +41,7 @@ export function SaveJobButton({ jobId, initialBookmarked = false, className }: S
       className={cn(className)}
       onClick={handleClick}
     >
-      {isBookmarked ? <BookmarkCheck className="text-primary size-4" /> : <Bookmark className="size-4" />}
+      {isBookmarked ? <BookmarkCheck className="size-4 fill-current" /> : <Bookmark className="size-4" />}
     </Button>
   );
 }
