@@ -157,7 +157,7 @@ export function JobDetail({
       <div className="space-y-4 @3xl:sticky @3xl:top-20 @3xl:h-fit">
         <div className="bg-card ring-foreground/10 rounded-xl p-5 shadow-sm ring-1">
           <p className="text-muted-foreground text-xs">Mức lương</p>
-          <p className="text-primary bg-primary/10 mt-1 inline-block rounded-md px-2 py-1 text-xl font-bold">
+          <p className="text-foreground bg-primary/10 mt-1 inline-block rounded-md px-2 py-1 text-xl font-bold">
             {formatSalaryRange(job.salaryMin, job.salaryMax, job.currency)}
           </p>
           <p className="text-muted-foreground mt-1 text-xs">Đăng {formatRelativeDate(job.createdAt)}</p>

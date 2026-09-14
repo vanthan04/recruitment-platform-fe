@@ -49,7 +49,7 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
           </div>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-x-1.5 gap-y-2">
-          <Badge variant="outline" className="border-primary/25 bg-primary/5 text-primary rounded-full">
+          <Badge variant="outline" className="border-primary/25 bg-primary/5 rounded-full">
             {WORK_MODE_LABEL[job.workMode]}
           </Badge>
           <Badge variant="secondary" className="rounded-full">
@@ -72,7 +72,7 @@ export function JobCard({ job, bookmarkedJobIds }: JobCardProps) {
           )}
         </CardContent>
         <CardContent className="border-border/70 flex items-center justify-between gap-2 border-t pt-3">
-          <span className="text-primary bg-primary/10 inline-flex min-w-0 items-center gap-1.5 rounded-md px-2 py-1 text-sm font-semibold">
+          <span className="text-foreground bg-primary/10 inline-flex min-w-0 items-center gap-1.5 rounded-md px-2 py-1 text-sm font-semibold">
             <Banknote className="size-3.5 shrink-0" />
             <span className="truncate">{formatSalaryRange(job.salaryMin, job.salaryMax, job.currency)}</span>
           </span>
