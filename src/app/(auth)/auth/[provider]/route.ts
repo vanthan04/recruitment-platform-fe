@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { API_PREFIX, BACKEND_URL } from "@/lib/constants/service";
+import { API_PREFIX, BACKEND_URL } from "@/lib/constants/backend-url";
 
 const PROVIDERS = new Set(["google", "facebook"]);
 

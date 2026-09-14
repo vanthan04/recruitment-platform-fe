@@ -7,7 +7,7 @@ import {
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from "@/lib/constants/auth";
 import { AUTH_ENDPOINT } from "@/lib/constants/endpoint";
-import { API_PREFIX, BACKEND_URL } from "@/lib/constants/service";
+import { API_PREFIX, BACKEND_URL } from "@/lib/constants/backend-url";
 import { toAuthTokens, type AuthTokensWire } from "@/lib/types/auth";
 import type { ApiEnvelope } from "@/lib/types/common";
 

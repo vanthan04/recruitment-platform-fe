@@ -18,7 +18,7 @@ describe("BACKEND_URL", () => {
     // the assertion itself — a static import would already have thrown, or
     // not, before this test body ever runs.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    expect(() => require("@/lib/constants/service")).toThrow(/BACKEND_URL is required/);
+    expect(() => require("@/lib/constants/backend-url")).toThrow(/BACKEND_URL is required/);
   });
 
   it("does not throw when set in production", () => {
@@ -29,17 +29,17 @@ describe("BACKEND_URL", () => {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    expect(() => require("@/lib/constants/service")).not.toThrow();
+    expect(() => require("@/lib/constants/backend-url")).not.toThrow();
   });
 
   it("falls back to localhost without throwing outside production", () => {
     process.env = { ...originalEnv, NODE_ENV: "development" };
     delete process.env.BACKEND_URL;
 
-    let mod: typeof import("@/lib/constants/service");
+    let mod: typeof import("@/lib/constants/backend-url");
     expect(() => {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      mod = require("@/lib/constants/service");
+      mod = require("@/lib/constants/backend-url");
     }).not.toThrow();
     expect(mod!.BACKEND_URL).toBe("http://localhost:8080");
   });
