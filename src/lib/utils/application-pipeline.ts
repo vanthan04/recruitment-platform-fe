@@ -62,6 +62,11 @@ export const PIPELINE_COLUMNS: ApplicationStatus[] = [
  */
 export const applicationAnchorId = (applicationId: string) => `application-${applicationId}`;
 
+/** Starred applications first; otherwise the original order is kept (stable). */
+export function starredFirst(applications: JobApplication[]): JobApplication[] {
+  return [...applications.filter((a) => a.isStarred), ...applications.filter((a) => !a.isStarred)];
+}
+
 /** Applications bucketed by status; every column is present, even when empty. */
 export function groupApplicationsByStatus(
   applications: JobApplication[],

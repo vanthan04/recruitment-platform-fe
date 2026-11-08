@@ -69,6 +69,9 @@ export const JOB_APPLICATION_ENDPOINT = {
   STATS: (jobId: string) => `/job-applications/job/${jobId}/stats`,
   STATUS: (id: string) => `/job-applications/${id}/status`,
   HISTORY: (id: string) => `/job-applications/${id}/history`,
+  NOTES: (id: string) => `/job-applications/${id}/notes`,
+  NOTE: (id: string, noteId: string) => `/job-applications/${id}/notes/${noteId}`,
+  STAR: (id: string) => `/job-applications/${id}/star`,
 } as const;
 
 export const BOOKMARK_ENDPOINT = {

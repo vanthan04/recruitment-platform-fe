@@ -4,6 +4,7 @@ import {
   groupApplicationsByStatus,
   isFinalApplicationStatus,
   nextApplicationStatus,
+  starredFirst,
 } from "@/lib/utils/application-pipeline";
 import type { ApplicationStatus, JobApplication } from "@/lib/types/job-application";
 
@@ -139,5 +140,34 @@ describe("groupApplicationsByStatus", () => {
 
     expect(Object.keys(groups)).toEqual(ALL);
     for (const status of ALL) expect(groups[status]).toEqual([]);
+  });
+});
+
+describe("starredFirst", () => {
+  const app = (id: string, isStarred?: boolean): JobApplication => ({
+    id,
+    status: "APPLIED",
+    coverLetter: null,
+    userId: `u-${id}`,
+    jobId: "job-1",
+    cvId: `cv-${id}`,
+    createdAt: "2026-01-01T00:00:00.000Z",
+    updatedAt: "2026-01-01T00:00:00.000Z",
+    isStarred,
+  });
+
+  it("puts starred applications first and otherwise keeps the original order", () => {
+    const result = starredFirst([app("a"), app("b", true), app("c", false), app("d", true), app("e")]);
+    expect(result.map((a) => a.id)).toEqual(["b", "d", "a", "c", "e"]);
+  });
+
+  it("treats a missing isStarred (candidate-facing data) as not starred", () => {
+    expect(starredFirst([app("a"), app("b")]).map((a) => a.id)).toEqual(["a", "b"]);
+  });
+
+  it("does not mutate its input", () => {
+    const input = [app("a"), app("b", true)];
+    starredFirst(input);
+    expect(input.map((a) => a.id)).toEqual(["a", "b"]);
   });
 });

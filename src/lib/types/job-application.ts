@@ -38,7 +38,21 @@ export interface JobApplication {
   updatedAt: string;
   /** Only populated by GET /job-applications/job/:jobId (recruiter view). */
   candidate?: ApplicationCandidateSummary;
+  /** Recruiter-private; only in the recruiter's list for their job (never sent to the candidate). */
+  isStarred?: boolean;
 }
+
+/** An internal note the job's recruiter keeps on an application. Never shown to the candidate. */
+export interface ApplicationNote {
+  id: string;
+  content: string;
+  /** Null once the author's account has been deleted. */
+  authorId: string | null;
+  createdAt: string;
+}
+
+/** Mirrors the backend's APPLICATION_NOTE_MAX_LENGTH. */
+export const APPLICATION_NOTE_MAX_LENGTH = 2000;
 
 export interface CreateApplicationInput {
   jobId: string;

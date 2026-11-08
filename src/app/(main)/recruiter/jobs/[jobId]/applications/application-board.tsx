@@ -21,7 +21,9 @@ import {
   groupApplicationsByStatus,
   isFinalApplicationStatus,
   nextApplicationStatus,
+  starredFirst,
 } from "@/lib/utils/application-pipeline";
+import { StarToggle } from "./star-toggle";
 
 function initials(name: string): string {
   return name
@@ -81,6 +83,11 @@ export function ApplicationBoard({ applications }: { applications: JobApplicatio
 
   function setStatus(id: string, status: ApplicationStatus) {
     setItems((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
+  }
+
+  // Lets a star toggle re-sort its column at once (StarToggle handles the request).
+  function setStarred(id: string, isStarred: boolean) {
+    setItems((prev) => prev.map((a) => (a.id === id ? { ...a, isStarred } : a)));
   }
 
   async function move(application: JobApplication, to: ApplicationStatus) {
@@ -144,7 +151,8 @@ export function ApplicationBoard({ applications }: { applications: JobApplicatio
       </p>
       <div className="flex gap-3 overflow-x-auto pb-4">
         {PIPELINE_COLUMNS.map((status) => {
-          const cards = groups[status];
+          // Starred applicants float to the top of their column.
+          const cards = starredFirst(groups[status]);
           // `dragging` is only set mid-drag; outside one, no column is a "target".
           const dropAllowed = dragging ? canMoveApplication(dragging.status, status) : undefined;
 
@@ -199,12 +207,18 @@ export function ApplicationBoard({ applications }: { applications: JobApplicatio
                           )}
                           <AvatarFallback>{initials(name)}</AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium">{name}</p>
                           <p className="text-muted-foreground text-xs">
                             Ứng tuyển {formatRelativeDate(application.createdAt)}
                           </p>
                         </div>
+                        <StarToggle
+                          applicationId={application.id}
+                          starred={application.isStarred ?? false}
+                          candidateName={name}
+                          onChange={(starred) => setStarred(application.id, starred)}
+                        />
                       </div>
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         {next && (

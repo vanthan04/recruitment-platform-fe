@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { toast } from "sonner";
-import { updateApplicationStatus } from "@/lib/services/job-application.service";
+import { setApplicationStarred, updateApplicationStatus } from "@/lib/services/job-application.service";
 import type { ApplicationStatus, JobApplication } from "@/lib/types/job-application";
 import { ApplicationBoard } from "../application-board";
 
@@ -11,7 +11,10 @@ jest.mock("next/navigation", () => ({
   // The real one only rethrows Next's own control-flow errors; an ordinary failure passes through.
   unstable_rethrow: () => {},
 }));
-jest.mock("@/lib/services/job-application.service", () => ({ updateApplicationStatus: jest.fn() }));
+jest.mock("@/lib/services/job-application.service", () => ({
+  updateApplicationStatus: jest.fn(),
+  setApplicationStarred: jest.fn(),
+}));
 jest.mock("@/lib/services/auth.service", () => ({ logout: jest.fn() }));
 jest.mock("sonner", () => ({ toast: { success: jest.fn(), error: jest.fn() } }));
 
@@ -197,7 +200,13 @@ describe("ApplicationBoard", () => {
       render(<ApplicationBoard applications={APPLICATIONS} />);
 
       expect(card(id)).toHaveAttribute("draggable", "false");
-      expect(within(card(id)).queryByRole("button")).not.toBeInTheDocument();
+      // No way to move it: neither a next-step nor a reject button. (The star
+      // stays — bookmarking a hired or rejected applicant is still useful.)
+      const buttons = within(card(id))
+        .queryAllByRole("button")
+        .map((b) => b.getAttribute("aria-label") ?? "");
+      expect(buttons.filter((label) => /^(Chuyển|Từ chối) /.test(label))).toEqual([]);
+      expect(buttons).toEqual([`Đánh dấu sao ${name}`]);
       expect(screen.queryByRole("button", { name: `Từ chối ${name}` })).not.toBeInTheDocument();
     });
 
@@ -290,5 +299,37 @@ describe("ApplicationBoard", () => {
       expect(within(column("Phỏng vấn")).getByText("Alice")).toBeInTheDocument();
       expect(within(column("Đã ứng tuyển")).getByText("Zed")).toBeInTheDocument();
     });
+  });
+});
+
+describe("ApplicationBoard — stars", () => {
+  const order = (label: string) =>
+    within(column(label))
+      .getAllByTestId(/^card-/)
+      .map((el) => el.getAttribute("data-testid"));
+
+  it("lists starred applicants first in their column, otherwise in their original order", () => {
+    render(
+      <ApplicationBoard
+        applications={[
+          app("a1", "Alice", "APPLIED"),
+          { ...app("a2", "Bob", "APPLIED"), isStarred: true },
+          app("a3", "Carol", "APPLIED"),
+        ]}
+      />,
+    );
+
+    expect(order("Đã ứng tuyển")).toEqual(["card-a2", "card-a1", "card-a3"]);
+  });
+
+  it("moves a card to the top of its column as soon as it is starred", async () => {
+    const user = userEvent.setup();
+    render(<ApplicationBoard applications={[app("a1", "Alice", "APPLIED"), app("a2", "Bob", "APPLIED")]} />);
+    expect(order("Đã ứng tuyển")).toEqual(["card-a1", "card-a2"]);
+
+    await user.click(screen.getByRole("button", { name: "Đánh dấu sao Bob" }));
+
+    expect(order("Đã ứng tuyển")).toEqual(["card-a2", "card-a1"]);
+    await waitFor(() => expect(setApplicationStarred).toHaveBeenCalledWith("a2", true));
   });
 });

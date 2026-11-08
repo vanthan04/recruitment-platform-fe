@@ -24,6 +24,8 @@ import { DownloadCvButton } from "@/app/(main)/cv/cv-actions";
 import { ApplicationHistory } from "@/app/(main)/applications/application-history";
 import { ApplicationActions } from "./application-actions";
 import { ApplicationBoard } from "./application-board";
+import { ApplicationNotes } from "./application-notes";
+import { StarToggle } from "./star-toggle";
 import { InterviewPanel } from "./interview-panel";
 import { JobStatsPanel } from "./job-stats-panel";
 
@@ -177,7 +179,14 @@ export default async function RecruiterJobApplicationsPage({
                       <AvatarFallback>{initials(application.candidate?.fullName ?? "?")}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{application.candidate?.fullName ?? "Ứng viên"}</p>
+                      <div className="flex items-center gap-1">
+                        <p className="font-medium">{application.candidate?.fullName ?? "Ứng viên"}</p>
+                        <StarToggle
+                          applicationId={application.id}
+                          starred={application.isStarred ?? false}
+                          candidateName={application.candidate?.fullName ?? "ứng viên"}
+                        />
+                      </div>
                       <div className="mt-1.5 flex items-center gap-2">
                         <Badge
                           variant={application.status === "APPLIED" ? "secondary" : "outline"}
@@ -201,6 +210,7 @@ export default async function RecruiterJobApplicationsPage({
                   interview={interviewByApplicationId.get(application.id)}
                 />
                 <ApplicationHistory history={historyByApplicationId.get(application.id) ?? []} />
+                <ApplicationNotes applicationId={application.id} />
               </div>
             ))}
           </div>

@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { JOB_APPLICATION_ENDPOINT } from "@/lib/constants/endpoint";
 import { PATH } from "@/lib/constants/path";
 import type {
+  ApplicationNote,
   ApplicationStatus,
   ApplicationStats,
   ApplicationStatusHistoryEntry,
@@ -44,4 +45,22 @@ export async function updateApplicationStatus(
   note?: string,
 ): Promise<void> {
   await api.patch(JOB_APPLICATION_ENDPOINT.STATUS(id), { status, note });
+}
+
+// ── Recruiter-private review data (job owner only; the backend enforces it) ──
+
+export async function getApplicationNotes(id: string): Promise<ApplicationNote[]> {
+  return api.get<ApplicationNote[]>(JOB_APPLICATION_ENDPOINT.NOTES(id));
+}
+
+export async function addApplicationNote(id: string, content: string): Promise<ApplicationNote> {
+  return api.post<ApplicationNote>(JOB_APPLICATION_ENDPOINT.NOTES(id), { content });
+}
+
+export async function deleteApplicationNote(id: string, noteId: string): Promise<void> {
+  await api.delete(JOB_APPLICATION_ENDPOINT.NOTE(id, noteId));
+}
+
+export async function setApplicationStarred(id: string, starred: boolean): Promise<{ isStarred: boolean }> {
+  return api.patch<{ isStarred: boolean }>(JOB_APPLICATION_ENDPOINT.STAR(id), { starred });
 }
