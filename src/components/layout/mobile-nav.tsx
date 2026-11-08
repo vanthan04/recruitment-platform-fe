@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { useSidebar } from "@/contexts/sidebar-context";
 import { cn } from "@/lib/utils";
 
 interface MobileNavProps {
-  links: { href: string; label: string }[];
+  links: { href: string; label: string; badge?: ReactNode }[];
 }
 
 // Slide-in panel driven by SidebarProvider — always mounted so the
@@ -102,6 +102,7 @@ export function MobileNav({ links }: MobileNavProps) {
             activeClassName="bg-muted text-primary"
           >
             {link.label}
+            {link.badge}
           </NavLink>
         ))}
       </div>

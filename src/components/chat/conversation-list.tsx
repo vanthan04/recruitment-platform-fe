@@ -57,9 +57,26 @@ export function ConversationList({
       });
     };
 
+    // An edit/delete never reorders the list or touches unread counts — it
+    // only matters when it's the conversation's current last message, whose
+    // preview is shown here.
+    const onMessageChanged = (message: Message) => {
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === message.conversationId && c.lastMessage?.id === message.id
+            ? { ...c, lastMessage: message }
+            : c,
+        ),
+      );
+    };
+
     socket.on("message:new", onMessageNew);
+    socket.on("message:updated", onMessageChanged);
+    socket.on("message:deleted", onMessageChanged);
     return () => {
       socket.off("message:new", onMessageNew);
+      socket.off("message:updated", onMessageChanged);
+      socket.off("message:deleted", onMessageChanged);
     };
   }, [selectedConversationId]);
 

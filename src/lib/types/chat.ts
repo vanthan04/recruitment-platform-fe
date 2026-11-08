@@ -43,11 +43,15 @@ export interface Conversation {
   jobTitle: string;
   applicationId: string;
   applicationStatus: string;
+  /** The application ended (REJECTED/WITHDRAWN): history is readable, but nothing can be sent or edited. */
+  isReadOnly: boolean;
   candidateId: string;
   recruiterId: string;
   otherParticipant: ConversationParticipant;
   lastMessage: Message | null;
   unreadCount: number;
+  /** When the other participant last read this conversation (ISO) — null if never. */
+  otherLastReadAt: string | null;
   lastMessageAt: string | null;
   createdAt: string;
 }

@@ -15,6 +15,18 @@ export async function getMyConversations(
   return api.getPaginated<Conversation[]>(CHAT_ENDPOINT.CONVERSATIONS, { searchParams: { page, limit } });
 }
 
+// Total unread messages across all conversations, for the header badge.
+// Fail-soft like getUnreadNotificationCount: it's called from the shared
+// layout and on every refetch of the badge, and must never break the page.
+export async function getUnreadMessageCount(): Promise<number> {
+  try {
+    const { count } = await api.get<{ count: number }>(CHAT_ENDPOINT.UNREAD_COUNT);
+    return count;
+  } catch {
+    return 0;
+  }
+}
+
 export async function getConversation(id: string): Promise<Conversation> {
   return api.get<Conversation>(CHAT_ENDPOINT.CONVERSATION_DETAIL(id));
 }
@@ -37,6 +49,19 @@ export async function sendMessageFallback(
   input: CreateMessageInput,
 ): Promise<Message> {
   return api.post<Message>(CHAT_ENDPOINT.MESSAGES(conversationId), input);
+}
+
+// Sender-only. The backend also broadcasts `message:updated` over the socket,
+// so other tabs/participants update live; the returned message lets this
+// tab update immediately even if the socket is down.
+export async function editMessage(id: string, content: string): Promise<Message> {
+  return api.patch<Message>(CHAT_ENDPOINT.MESSAGE_DETAIL(id), { content });
+}
+
+// Sender-only soft delete — returns the masked message (placeholder content,
+// `isDeleted: true`), same as the `message:deleted` broadcast.
+export async function deleteMessage(id: string): Promise<Message> {
+  return api.delete<Message>(CHAT_ENDPOINT.MESSAGE_DETAIL(id));
 }
 
 export async function markConversationRead(conversationId: string): Promise<void> {

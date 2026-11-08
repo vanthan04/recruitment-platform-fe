@@ -98,6 +98,7 @@ export const INTERVIEW_ENDPOINT = {
 
 export const CHAT_ENDPOINT = {
   CONVERSATIONS: "/conversations",
+  UNREAD_COUNT: "/conversations/unread-count",
   CONVERSATION_DETAIL: (id: string) => `/conversations/${id}`,
   MESSAGES: (conversationId: string) => `/conversations/${conversationId}/messages`,
   READ: (conversationId: string) => `/conversations/${conversationId}/read`,

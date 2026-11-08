@@ -9,6 +9,18 @@ export const NON_TERMINAL_APPLICATION_STATUSES: ApplicationStatus[] = [
   "OFFER",
 ];
 
+// Mirrors the backend's CHAT_ELIGIBLE_APPLICATION_STATUSES
+// (chat-eligible-application-status.vo.ts): a recruiter can open a
+// conversation from the moment an application is shortlisted until it ends
+// in a hire. The backend enforces this; the list only decides whether to
+// show the "Nhắn tin" button.
+export const CHAT_ELIGIBLE_APPLICATION_STATUSES: ApplicationStatus[] = [
+  "SHORTLISTED",
+  "INTERVIEW",
+  "OFFER",
+  "HIRED",
+];
+
 export interface ApplicationCandidateSummary {
   id: string;
   fullName: string;

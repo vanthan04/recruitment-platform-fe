@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { Briefcase, ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,15 +13,22 @@ import { MobileMenuToggle } from "@/components/layout/mobile-menu-toggle";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { NavLink } from "@/components/layout/nav-link";
 import { NotificationBell } from "@/components/layout/notification-bell";
+import { UnreadMessagesBadge, UnreadMessagesSync } from "@/components/layout/unread-messages-badge";
 import { PATH } from "@/lib/constants/path";
 import { logout } from "@/lib/services/auth.service";
 import type { AuthUser } from "@/lib/types/auth";
 
-type NavItem = { href: string; label: string };
+type NavItem = { href: string; label: string; badge?: ReactNode };
 
 // Candidates have the most nav destinations of any role, enough to overflow the
 // header at common desktop widths — the least-used two are tucked into a "Thêm" menu.
-function getNavLinks(user: AuthUser | null): { primary: NavItem[]; more: NavItem[] } {
+function getNavLinks(
+  user: AuthUser | null,
+  unreadMessageCount?: number,
+): { primary: NavItem[]; more: NavItem[] } {
+  // Only roles that have a "Tin nhắn" link are given a count (see MainLayout).
+  const messagesBadge =
+    unreadMessageCount === undefined ? undefined : <UnreadMessagesBadge initialCount={unreadMessageCount} />;
   const primary: NavItem[] = [
     { href: PATH.JOBS, label: "Việc làm" },
     { href: PATH.COMPANIES, label: "Công ty" },
@@ -32,7 +40,7 @@ function getNavLinks(user: AuthUser | null): { primary: NavItem[]; more: NavItem
       { href: PATH.DASHBOARD, label: "Tổng quan" },
       { href: PATH.CV_LIST, label: "CV của tôi" },
       { href: PATH.APPLICATIONS, label: "Đơn ứng tuyển" },
-      { href: PATH.MESSAGES, label: "Tin nhắn" },
+      { href: PATH.MESSAGES, label: "Tin nhắn", badge: messagesBadge },
     );
     more.push(
       { href: PATH.SAVED_JOBS, label: "Việc đã lưu" },
@@ -42,7 +50,7 @@ function getNavLinks(user: AuthUser | null): { primary: NavItem[]; more: NavItem
     primary.push(
       { href: PATH.RECRUITER_JOBS, label: "Tin tuyển dụng của tôi" },
       { href: PATH.RECRUITER_COMPANY, label: "Công ty của tôi" },
-      { href: PATH.MESSAGES, label: "Tin nhắn" },
+      { href: PATH.MESSAGES, label: "Tin nhắn", badge: messagesBadge },
     );
   } else if (user?.role === "ADMIN") {
     primary.push(
@@ -54,8 +62,17 @@ function getNavLinks(user: AuthUser | null): { primary: NavItem[]; more: NavItem
   return { primary, more };
 }
 
-export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unreadCount?: number }) {
-  const { primary, more } = getNavLinks(user);
+export function Header({
+  user,
+  unreadCount = 0,
+  unreadMessageCount,
+}: {
+  user: AuthUser | null;
+  unreadCount?: number;
+  /** Omit for roles without a messages link — no badge (or sync) is rendered. */
+  unreadMessageCount?: number;
+}) {
+  const { primary, more } = getNavLinks(user, unreadMessageCount);
   const allLinks = [...primary, ...more];
 
   return (
@@ -79,6 +96,7 @@ export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unrea
               activeClassName="bg-muted text-foreground"
             >
               {link.label}
+              {link.badge}
             </NavLink>
           ))}
           {more.length > 0 && (
@@ -101,6 +119,7 @@ export function Header({ user, unreadCount = 0 }: { user: AuthUser | null; unrea
         <div className="flex shrink-0 items-center gap-2">
           {user ? (
             <>
+              {unreadMessageCount !== undefined && <UnreadMessagesSync initialCount={unreadMessageCount} />}
               <NotificationBell unreadCount={unreadCount} />
               <Link
                 href={PATH.PROFILE}

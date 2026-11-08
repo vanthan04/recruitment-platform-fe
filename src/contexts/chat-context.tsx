@@ -11,9 +11,12 @@ import {
   type ReactNode,
 } from "react";
 import { getChatSocket } from "@/lib/realtime/socket";
+import { notifyUnreadMessagesChanged } from "@/lib/realtime/unread-messages";
 import {
   sendMessageFallback,
   markConversationRead as markConversationReadAction,
+  editMessage as editMessageAction,
+  deleteMessage as deleteMessageAction,
 } from "@/lib/services/chat.service";
 import type { CreateMessageInput, Message, MessageType, OptimisticMessage } from "@/lib/types/chat";
 
@@ -24,6 +27,8 @@ interface ChatState {
   messagesByConversation: Record<string, OptimisticMessage[]>;
   typingByConversation: Record<string, Set<string>>;
   onlineUserIds: Set<string>;
+  /** Latest time (ISO) the other participant read each conversation, as told live over the socket. */
+  otherReadAtByConversation: Record<string, string>;
 }
 
 type Action =
@@ -33,6 +38,8 @@ type Action =
   | { type: "reconcile"; conversationId: string; clientMessageId: string; message: Message }
   | { type: "failed"; clientMessageId: string }
   | { type: "incoming"; conversationId: string; message: Message }
+  | { type: "replace"; conversationId: string; message: Message }
+  | { type: "otherRead"; conversationId: string; readAt: string }
   | { type: "typingStart"; conversationId: string; userId: string }
   | { type: "typingStop"; conversationId: string; userId: string }
   | { type: "presenceOnline"; userId: string }
@@ -43,6 +50,7 @@ const initialState: ChatState = {
   messagesByConversation: {},
   typingByConversation: {},
   onlineUserIds: new Set(),
+  otherReadAtByConversation: {},
 };
 
 function upsertByClientId(list: OptimisticMessage[], message: OptimisticMessage): OptimisticMessage[] {
@@ -134,6 +142,34 @@ function reducer(state: ChatState, action: Action): ChatState {
       };
     }
 
+    case "replace": {
+      // An edit/delete only ever updates a message this client already has
+      // loaded — unlike "incoming", it must never append: a conversation
+      // that was never opened here has no list to add a stray message to.
+      const existing = state.messagesByConversation[action.conversationId];
+      if (!existing?.some((m) => m.clientMessageId === action.message.clientMessageId)) return state;
+      return {
+        ...state,
+        messagesByConversation: {
+          ...state.messagesByConversation,
+          [action.conversationId]: upsertByClientId(existing, { ...action.message, sendStatus: "sent" }),
+        },
+      };
+    }
+
+    case "otherRead": {
+      // Only ever moves forward — a late/out-of-order event must not un-see a message.
+      const previous = state.otherReadAtByConversation[action.conversationId];
+      if (previous && new Date(previous).getTime() >= new Date(action.readAt).getTime()) return state;
+      return {
+        ...state,
+        otherReadAtByConversation: {
+          ...state.otherReadAtByConversation,
+          [action.conversationId]: action.readAt,
+        },
+      };
+    }
+
     case "typingStart": {
       const set = new Set(state.typingByConversation[action.conversationId] ?? []);
       set.add(action.userId);
@@ -177,6 +213,10 @@ interface ChatContextValue extends Omit<ChatState, "onlineUserIds"> {
   retryMessage: (conversationId: string, message: OptimisticMessage) => void;
   markRead: (conversationId: string) => void;
   setTyping: (conversationId: string, isTyping: boolean) => void;
+  /** Rejects on failure so the caller can surface it (e.g. a toast). */
+  editMessage: (message: OptimisticMessage, content: string) => Promise<void>;
+  /** Rejects on failure so the caller can surface it (e.g. a toast). */
+  deleteMessage: (message: OptimisticMessage) => Promise<void>;
 }
 
 interface ChatPresenceContextValue {
@@ -201,6 +241,10 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
   // without re-emitting these on "connect", the UI shows "connected" while
   // new messages for the still-open conversation stop arriving.
   const subscribedConversationIdsRef = useRef<Set<string>>(new Set());
+  // The socket effect below runs once; it reads the current user through
+  // this ref instead of re-subscribing everything if the prop ever changed.
+  const currentUserIdRef = useRef(currentUserId);
+  currentUserIdRef.current = currentUserId;
 
   useEffect(() => {
     const socket = getChatSocket();
@@ -214,8 +258,33 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
       }
     };
     const onDisconnect = () => dispatch({ type: "status", status: "disconnected" });
-    const onMessageNew = (message: Message) =>
+    const onMessageNew = (message: Message) => {
       dispatch({ type: "incoming", conversationId: message.conversationId, message });
+      // A message from someone else raises the header's unread badge — unless
+      // that conversation is open right now, where it is marked read at once
+      // (see ChatWindow) and the badge should never flicker up for it.
+      if (
+        message.senderId !== currentUserIdRef.current &&
+        !subscribedConversationIdsRef.current.has(message.conversationId)
+      ) {
+        notifyUnreadMessagesChanged();
+      }
+    };
+    const onMessageRead = ({
+      conversationId,
+      userId,
+      readAt,
+    }: {
+      conversationId: string;
+      userId: string;
+      readAt: string;
+    }) => {
+      // The broadcast also echoes back this user's own reads — only the
+      // *other* participant reading drives the "seen" receipt.
+      if (userId !== currentUserIdRef.current) dispatch({ type: "otherRead", conversationId, readAt });
+    };
+    const onMessageChanged = (message: Message) =>
+      dispatch({ type: "replace", conversationId: message.conversationId, message });
     const onMessageAck = ({ message }: { clientMessageId: string; message: Message }) =>
       dispatch({
         type: "reconcile",
@@ -235,6 +304,9 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("message:new", onMessageNew);
+    socket.on("message:read", onMessageRead);
+    socket.on("message:updated", onMessageChanged);
+    socket.on("message:deleted", onMessageChanged);
     socket.on("message:ack", onMessageAck);
     socket.on("message:error", onMessageError);
     socket.on("typing:start", onTypingStart);
@@ -246,6 +318,9 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("message:new", onMessageNew);
+      socket.off("message:read", onMessageRead);
+      socket.off("message:updated", onMessageChanged);
+      socket.off("message:deleted", onMessageChanged);
       socket.off("message:ack", onMessageAck);
       socket.off("message:error", onMessageError);
       socket.off("typing:start", onTypingStart);
@@ -356,7 +431,16 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
 
   const markRead = useCallback((conversationId: string) => {
     getChatSocket().emit("message:read", { conversationId });
-    void markConversationReadAction(conversationId);
+    void (async () => {
+      try {
+        await markConversationReadAction(conversationId);
+      } catch {
+        // Best-effort, as before — the next open/incoming message retries it.
+      } finally {
+        // Reading changes the header's unread total either way.
+        notifyUnreadMessagesChanged();
+      }
+    })();
   }, []);
 
   const setTyping = useCallback((conversationId: string, isTyping: boolean) => {
@@ -379,11 +463,25 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
     }
   }, []);
 
+  const editMessage = useCallback(async (message: OptimisticMessage, content: string) => {
+    const updated = await editMessageAction(message.id, content);
+    // The socket broadcast reaches this tab too, but apply the REST result
+    // directly so the edit shows even if the socket is down. Both carry the
+    // same message, so applying it twice is harmless.
+    dispatch({ type: "replace", conversationId: updated.conversationId, message: updated });
+  }, []);
+
+  const deleteMessage = useCallback(async (message: OptimisticMessage) => {
+    const deleted = await deleteMessageAction(message.id);
+    dispatch({ type: "replace", conversationId: deleted.conversationId, message: deleted });
+  }, []);
+
   const value: ChatContextValue = useMemo(
     () => ({
       connectionStatus: state.connectionStatus,
       messagesByConversation: state.messagesByConversation,
       typingByConversation: state.typingByConversation,
+      otherReadAtByConversation: state.otherReadAtByConversation,
       hydrateMessages,
       subscribeToConversation,
       unsubscribeFromConversation,
@@ -391,11 +489,14 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
       retryMessage,
       markRead,
       setTyping,
+      editMessage,
+      deleteMessage,
     }),
     [
       state.connectionStatus,
       state.messagesByConversation,
       state.typingByConversation,
+      state.otherReadAtByConversation,
       hydrateMessages,
       subscribeToConversation,
       unsubscribeFromConversation,
@@ -403,6 +504,8 @@ export function ChatProvider({ currentUserId, children }: { currentUserId: strin
       retryMessage,
       markRead,
       setTyping,
+      editMessage,
+      deleteMessage,
     ],
   );
 

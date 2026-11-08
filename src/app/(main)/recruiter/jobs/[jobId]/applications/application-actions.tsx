@@ -7,6 +7,7 @@ import { APPLICATION_STATUS_LABEL } from "@/lib/constants/enum-label";
 import { startConversationAndRedirect } from "@/lib/services/chat.service";
 import { updateApplicationStatus } from "@/lib/services/job-application.service";
 import {
+  CHAT_ELIGIBLE_APPLICATION_STATUSES,
   NON_TERMINAL_APPLICATION_STATUSES,
   type ApplicationStatus,
   type JobApplication,
@@ -33,10 +34,24 @@ export function ApplicationActions({ application }: { application: JobApplicatio
     });
   }
 
+  // Opens (or resumes) the conversation for this application — the backend
+  // only allows it from SHORTLISTED through HIRED, so the button follows suit.
+  const messageButton = CHAT_ELIGIBLE_APPLICATION_STATUSES.includes(application.status) ? (
+    <Button
+      size="sm"
+      variant="outline"
+      disabled={isPending}
+      onClick={() => run(() => startConversationAndRedirect(application.id))}
+    >
+      Nhắn tin
+    </Button>
+  ) : null;
+
   if (NON_TERMINAL_APPLICATION_STATUSES.includes(application.status)) {
     const nextStatus = NEXT_STATUS[application.status];
     return (
       <div className="flex shrink-0 flex-wrap gap-2">
+        {messageButton}
         {nextStatus && (
           <Button
             size="sm"
@@ -58,18 +73,6 @@ export function ApplicationActions({ application }: { application: JobApplicatio
     );
   }
 
-  if (application.status === "HIRED") {
-    return (
-      <Button
-        size="sm"
-        variant="outline"
-        disabled={isPending}
-        onClick={() => run(() => startConversationAndRedirect(application.id))}
-      >
-        Nhắn tin
-      </Button>
-    );
-  }
-
-  return null;
+  // Terminal statuses: only HIRED keeps a chat button (REJECTED/WITHDRAWN → null).
+  return messageButton;
 }
