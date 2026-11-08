@@ -29,7 +29,7 @@ export function ApplyDialog({ jobId, cvs }: ApplyDialogProps) {
       successMessage: "Nộp đơn ứng tuyển thành công!",
       onSuccess: () => {
         setOpen(false);
-        // The job detail page's `hasApplied` prop is computed server-side —
+        // The job detail page's `applicationStatus` prop is computed server-side —
         // without this it stays stale and "Ứng tuyển ngay" keeps showing
         // after a successful apply, until an unrelated navigation/reload.
         router.refresh();

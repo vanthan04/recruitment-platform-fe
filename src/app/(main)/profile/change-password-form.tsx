@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { changePassword } from "@/lib/services/auth.service";
+import { newPasswordSchema } from "@/lib/validation/rules";
 
 const changePasswordSchema = z
   .object({
     oldPassword: z.string().min(1, "Vui lòng nhập mật khẩu hiện tại"),
-    newPassword: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+    newPassword: newPasswordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {

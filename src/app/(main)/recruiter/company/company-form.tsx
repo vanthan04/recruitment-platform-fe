@@ -15,14 +15,22 @@ import { COMPANY_SIZE_LABEL, COMPANY_TYPE_LABEL } from "@/lib/constants/enum-lab
 import type { LocationOption } from "@/lib/services/location.service";
 import { createCompany, updateCompany } from "@/lib/services/company.service";
 import type { Company, CompanySize, CompanyType } from "@/lib/types/company";
+import { MAX_LENGTH, maxLengthMessage } from "@/lib/validation/rules";
 
 const companySchema = z.object({
-  name: z.string().min(2, "Vui lòng nhập tên công ty"),
+  name: z
+    .string()
+    .min(2, "Vui lòng nhập tên công ty")
+    .max(MAX_LENGTH.companyName, maxLengthMessage(MAX_LENGTH.companyName)),
   description: z.string().optional().or(z.literal("")),
   website: z.string().url("Website không hợp lệ").optional().or(z.literal("")),
   size: z.enum(["SIZE_1_10", "SIZE_11_50", "SIZE_51_200", "SIZE_201_500", "SIZE_500_PLUS"]).optional(),
   companyType: z.enum(["PRODUCT", "OUTSOURCING", "STARTUP", "CONSULTING"]).optional(),
-  address: z.string().optional().or(z.literal("")),
+  address: z
+    .string()
+    .max(MAX_LENGTH.address, maxLengthMessage(MAX_LENGTH.address))
+    .optional()
+    .or(z.literal("")),
   province: z.string().optional().or(z.literal("")),
   ward: z.string().optional().or(z.literal("")),
 });

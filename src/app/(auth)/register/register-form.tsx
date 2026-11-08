@@ -12,12 +12,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SocialLoginButtons } from "@/components/shared/social-login-buttons";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { register as registerUser } from "@/lib/services/auth.service";
+import { newPasswordSchema } from "@/lib/validation/rules";
 
 const registerSchema = z
   .object({
     fullName: z.string().min(2, "Vui lòng nhập họ tên"),
     email: z.string().email("Email không hợp lệ"),
-    password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+    password: newPasswordSchema,
     confirmPassword: z.string(),
     role: z.enum(["CANDIDATE", "RECRUITER"]),
   })

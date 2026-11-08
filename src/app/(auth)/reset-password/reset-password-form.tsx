@@ -9,11 +9,12 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { resetPassword } from "@/lib/services/auth.service";
+import { newPasswordSchema } from "@/lib/validation/rules";
 
 const resetPasswordSchema = z
   .object({
     code: z.string().length(6, "Mã xác thực gồm 6 ký tự"),
-    newPassword: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+    newPassword: newPasswordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {

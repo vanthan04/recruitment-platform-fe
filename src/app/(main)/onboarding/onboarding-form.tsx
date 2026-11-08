@@ -14,12 +14,16 @@ import { GENDER_LABEL } from "@/lib/constants/enum-label";
 import { completeRecruiterOnboarding } from "@/lib/services/onboarding.service";
 import type { AuthUser, Gender } from "@/lib/types/auth";
 import type { LocationOption } from "@/lib/services/location.service";
+import { MAX_LENGTH, maxLengthMessage, requiredPhoneNumberSchema } from "@/lib/validation/rules";
 
 const onboardingSchema = z.object({
   fullName: z.string().min(2, "Vui lòng nhập họ tên"),
-  phoneNumber: z.string().min(8, "Số điện thoại không hợp lệ"),
+  phoneNumber: requiredPhoneNumberSchema,
   gender: z.enum(["MALE", "FEMALE", "OTHER"]),
-  companyName: z.string().min(2, "Vui lòng nhập tên công ty"),
+  companyName: z
+    .string()
+    .min(2, "Vui lòng nhập tên công ty")
+    .max(MAX_LENGTH.companyName, maxLengthMessage(MAX_LENGTH.companyName)),
   province: z.string().min(1, "Vui lòng chọn tỉnh/thành phố"),
   ward: z.string().optional(),
 });

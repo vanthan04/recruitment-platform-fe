@@ -15,6 +15,7 @@ import { createJob, updateJob } from "@/lib/services/job.service";
 import type { Category } from "@/lib/types/category";
 import type { CreateJobInput, EmploymentType, Job, JobLevel, WorkMode } from "@/lib/types/job";
 import type { Skill } from "@/lib/types/skill";
+import { MAX_LENGTH, maxLengthMessage } from "@/lib/validation/rules";
 
 const EMPLOYMENT_TYPES = Object.keys(EMPLOYMENT_TYPE_LABEL) as EmploymentType[];
 const WORK_MODES = Object.keys(WORK_MODE_LABEL) as WorkMode[];
@@ -33,10 +34,16 @@ function linesToArray(text: string | undefined): string[] {
 
 const jobSchema = z
   .object({
-    title: z.string().min(2, "Vui lòng nhập tiêu đề tin tuyển dụng"),
+    title: z
+      .string()
+      .min(2, "Vui lòng nhập tiêu đề tin tuyển dụng")
+      .max(MAX_LENGTH.title, maxLengthMessage(MAX_LENGTH.title)),
     description: z.string().min(1, "Vui lòng nhập mô tả công việc"),
-    location: z.string().min(1, "Vui lòng nhập địa điểm làm việc"),
-    address: z.string().optional(),
+    location: z
+      .string()
+      .min(1, "Vui lòng nhập địa điểm làm việc")
+      .max(MAX_LENGTH.jobLocation, maxLengthMessage(MAX_LENGTH.jobLocation)),
+    address: z.string().max(MAX_LENGTH.address, maxLengthMessage(MAX_LENGTH.address)).optional(),
     employmentType: z.string().min(1),
     workMode: z.string().min(1),
     level: z.string().optional(),
@@ -146,6 +153,7 @@ export function JobForm({ mode, job, categories, skills }: JobFormProps) {
       <div className="space-y-1.5">
         <Label htmlFor="address">Địa chỉ cụ thể (không bắt buộc)</Label>
         <Input id="address" placeholder="Số 520 đường CMT8, Phường Nhiêu Lộc" {...register("address")} />
+        {errors.address && <p className="text-destructive text-sm">{errors.address.message}</p>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">

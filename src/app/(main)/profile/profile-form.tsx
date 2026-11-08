@@ -11,10 +11,11 @@ import { useApiToast } from "@/hooks/use-api-toast";
 import { GENDER_LABEL } from "@/lib/constants/enum-label";
 import { updateProfile } from "@/lib/services/auth.service";
 import type { AuthUser, Gender } from "@/lib/types/auth";
+import { optionalPhoneNumberSchema } from "@/lib/validation/rules";
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Vui lòng nhập họ tên"),
-  phoneNumber: z.string().optional().or(z.literal("")),
+  phoneNumber: optionalPhoneNumberSchema,
   gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
   birthDate: z.string().optional().or(z.literal("")),
 });

@@ -9,11 +9,15 @@ import { Label } from "@/components/ui/label";
 import { useApiToast } from "@/hooks/use-api-toast";
 import { createCv, updateCvTitle } from "@/lib/services/cv.service";
 import type { Cv } from "@/lib/types/cv";
+import { MAX_LENGTH, maxLengthMessage } from "@/lib/validation/rules";
 
 const ACCEPTED_EXTENSIONS = ".pdf,.doc,.docx";
 
 const baseCvSchema = z.object({
-  title: z.string().min(1, "Vui lòng nhập tiêu đề CV"),
+  title: z
+    .string()
+    .min(1, "Vui lòng nhập tiêu đề CV")
+    .max(MAX_LENGTH.cvTitle, maxLengthMessage(MAX_LENGTH.cvTitle)),
   file: z.custom<FileList>().optional(),
 });
 

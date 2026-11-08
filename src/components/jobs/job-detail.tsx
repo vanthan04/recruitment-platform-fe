@@ -11,6 +11,7 @@ import { EMPLOYMENT_TYPE_LABEL, JOB_LEVEL_LABEL, WORK_MODE_LABEL } from "@/lib/c
 import { PATH } from "@/lib/constants/path";
 import type { Cv } from "@/lib/types/cv";
 import type { Job } from "@/lib/types/job";
+import type { ApplicationStatus } from "@/lib/types/job-application";
 import { formatDate, formatRelativeDate, formatSalaryRange } from "@/lib/utils";
 
 interface JobDetailProps {
@@ -19,7 +20,8 @@ interface JobDetailProps {
   isCandidate?: boolean;
   isBookmarked?: boolean;
   publishedCvs?: Cv[];
-  hasApplied?: boolean;
+  /** Status of this candidate's existing application for the job; undefined if they never applied. */
+  applicationStatus?: ApplicationStatus;
 }
 
 export function JobDetail({
@@ -28,7 +30,7 @@ export function JobDetail({
   isCandidate,
   isBookmarked,
   publishedCvs,
-  hasApplied,
+  applicationStatus,
 }: JobDetailProps) {
   return (
     // Container query, not a viewport breakpoint — this component also
@@ -169,7 +171,7 @@ export function JobDetail({
               isLoggedIn={isLoggedIn}
               isCandidate={isCandidate}
               publishedCvs={publishedCvs}
-              hasApplied={hasApplied}
+              applicationStatus={applicationStatus}
               jobId={job.id}
             />
           </div>
@@ -210,17 +212,17 @@ export function JobDetail({
   );
 }
 
-function ApplyCta({
+export function ApplyCta({
   isLoggedIn,
   isCandidate,
   publishedCvs,
-  hasApplied,
+  applicationStatus,
   jobId,
 }: {
   isLoggedIn: boolean;
   isCandidate?: boolean;
   publishedCvs?: Cv[];
-  hasApplied?: boolean;
+  applicationStatus?: ApplicationStatus;
   jobId: string;
 }) {
   if (!isLoggedIn) {
@@ -237,7 +239,24 @@ function ApplyCta({
     return null;
   }
 
-  if (hasApplied) {
+  // The backend allows exactly one application per candidate per job, for good:
+  // it refuses a new one even when the old one was withdrawn. So a withdrawn
+  // application must NOT bring the apply button back — the candidate would fill
+  // in the form only to be rejected. Say what happened instead.
+  if (applicationStatus === "WITHDRAWN") {
+    return (
+      <div className="space-y-1.5">
+        <Button className="w-full" disabled>
+          Bạn đã rút đơn
+        </Button>
+        <p className="text-muted-foreground text-xs">
+          Mỗi việc làm chỉ được ứng tuyển một lần, nên không thể nộp lại đơn đã rút.
+        </p>
+      </div>
+    );
+  }
+
+  if (applicationStatus) {
     return (
       <Button className="w-full" disabled>
         Đã ứng tuyển

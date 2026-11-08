@@ -33,9 +33,10 @@ export async function getJobDetailProps(jobId: string) {
     isCandidate,
     isBookmarked: bookmarkedJobIds.has(jobId),
     publishedCvs: cvs.filter((cv) => cv.status === "PUBLISHED"),
-    hasApplied: applications.some(
-      (application) => application.jobId === jobId && application.status !== "WITHDRAWN",
-    ),
+    // The candidate's one application for this job (the backend allows only
+    // one per candidate per job), whatever its status — including WITHDRAWN,
+    // which still blocks applying again.
+    applicationStatus: applications.find((application) => application.jobId === jobId)?.status,
   };
 }
 
