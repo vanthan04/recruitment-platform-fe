@@ -12,16 +12,7 @@ import {
   type ApplicationStatus,
   type JobApplication,
 } from "@/lib/types/job-application";
-
-// Mirrors the backend's forward transition map (application-status.vo.ts) —
-// REJECTED is always offered separately, this only lists the "advance" step.
-const NEXT_STATUS: Partial<Record<ApplicationStatus, ApplicationStatus>> = {
-  APPLIED: "SCREENING",
-  SCREENING: "SHORTLISTED",
-  SHORTLISTED: "INTERVIEW",
-  INTERVIEW: "OFFER",
-  OFFER: "HIRED",
-};
+import { nextApplicationStatus } from "@/lib/utils/application-pipeline";
 
 export function ApplicationActions({ application }: { application: JobApplication }) {
   const { run, isPending } = useApiToast();
@@ -48,7 +39,8 @@ export function ApplicationActions({ application }: { application: JobApplicatio
   ) : null;
 
   if (NON_TERMINAL_APPLICATION_STATUSES.includes(application.status)) {
-    const nextStatus = NEXT_STATUS[application.status];
+    // REJECTED is offered separately below; this is only the "advance" step.
+    const nextStatus = nextApplicationStatus(application.status);
     return (
       <div className="flex shrink-0 flex-wrap gap-2">
         {messageButton}
