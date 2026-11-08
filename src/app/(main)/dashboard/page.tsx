@@ -43,7 +43,7 @@ export default async function DashboardPage() {
     { icon: Bookmark, label: "Việc làm đã lưu", href: PATH.SAVED_JOBS, count: savedJobs.length },
     { icon: Send, label: "Việc làm đã ứng tuyển", href: PATH.APPLICATIONS, count: applications.length },
     { icon: Search, label: "Tìm kiếm đã lưu", href: PATH.SAVED_SEARCHES, count: savedSearches.length },
-    { icon: Sparkles, label: "Việc làm phù hợp với bạn" },
+    { icon: Sparkles, label: "Việc làm phù hợp với bạn", href: PATH.RECOMMENDED_JOBS },
     { icon: Bell, label: "Cài đặt gợi ý việc làm" },
   ];
 

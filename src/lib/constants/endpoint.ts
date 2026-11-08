@@ -107,3 +107,7 @@ export const CHAT_ENDPOINT = {
   READ: (conversationId: string) => `/conversations/${conversationId}/read`,
   MESSAGE_DETAIL: (id: string) => `/messages/${id}`,
 } as const;
+
+export const JOB_RECOMMENDATION_ENDPOINT = {
+  LIST: "/job-recommendations",
+} as const;
