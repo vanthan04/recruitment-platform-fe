@@ -16,16 +16,39 @@ import { getInterviewsForApplication } from "@/lib/services/interview.service";
 import type { Interview } from "@/lib/types/interview";
 import type { ApplicationStatusHistoryEntry, JobApplication } from "@/lib/types/job-application";
 import { formatRelativeDate } from "@/lib/utils";
+import { canScheduleInterview, mayHaveInterview } from "@/lib/utils/application-interview";
+import { InterviewInfo } from "@/components/shared/interview-info";
 import { DownloadCvButton } from "@/app/(main)/cv/cv-actions";
 import { ApplicationHistory } from "@/app/(main)/applications/application-history";
 import { ApplicationActions } from "./application-actions";
 import { InterviewPanel } from "./interview-panel";
 import { JobStatsPanel } from "./job-stats-panel";
 
+// The interview panel (with its buttons) while an interview can still be
+// scheduled; once hired the backend refuses every interview action, so an
+// existing interview is shown as history only — no buttons that would just fail.
+function InterviewSection({
+  application,
+  interview,
+}: {
+  application: JobApplication;
+  interview?: Interview;
+}) {
+  if (canScheduleInterview(application.status)) {
+    return <InterviewPanel applicationId={application.id} interview={interview} />;
+  }
+  if (application.status === "HIRED" && interview) {
+    return <InterviewInfo interview={interview} />;
+  }
+  return null;
+}
+
 async function resolveInterviews(applications: JobApplication[]): Promise<Map<string, Interview>> {
-  const hiredIds = applications.filter((a) => a.status === "HIRED").map((a) => a.id);
-  const lists = await Promise.all(hiredIds.map((id) => getInterviewsOrEmpty(id)));
-  const entries = hiredIds
+  // Only the stages where an interview is scheduled (plus HIRED, for history)
+  // can have one — no need to ask about the rest.
+  const candidateIds = applications.filter((a) => mayHaveInterview(a.status)).map((a) => a.id);
+  const lists = await Promise.all(candidateIds.map((id) => getInterviewsOrEmpty(id)));
+  const entries = candidateIds
     .map((id, index) => [id, lists[index].find((interview) => interview.status !== "CANCELLED")] as const)
     .filter((entry): entry is [string, Interview] => Boolean(entry[1]));
   return new Map(entries);
@@ -123,12 +146,10 @@ export default async function RecruiterJobApplicationsPage({
                   <ApplicationActions application={application} />
                 </div>
               </div>
-              {application.status === "HIRED" && (
-                <InterviewPanel
-                  applicationId={application.id}
-                  interview={interviewByApplicationId.get(application.id)}
-                />
-              )}
+              <InterviewSection
+                application={application}
+                interview={interviewByApplicationId.get(application.id)}
+              />
               <ApplicationHistory history={historyByApplicationId.get(application.id) ?? []} />
             </div>
           ))}

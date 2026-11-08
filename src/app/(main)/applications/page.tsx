@@ -21,6 +21,7 @@ import {
   type JobApplication,
 } from "@/lib/types/job-application";
 import { formatRelativeDate } from "@/lib/utils";
+import { mayHaveInterview } from "@/lib/utils/application-interview";
 import { DownloadCvButton } from "@/app/(main)/cv/cv-actions";
 import { ApplicationHistory } from "./application-history";
 import { WithdrawButton } from "./withdraw-button";
@@ -139,11 +140,13 @@ async function getInterviewsOrEmpty(applicationId: string): Promise<Interview[]>
   }
 }
 
-// Interviews only ever exist for HIRED applications — skip the rest.
+// An interview can only exist while the application is at a stage where one is
+// scheduled (see mayHaveInterview), or afterwards once hired — skip the other
+// applications rather than make a request for each.
 async function resolveInterviews(applications: JobApplication[]): Promise<Map<string, Interview>> {
-  const hiredIds = applications.filter((a) => a.status === "HIRED").map((a) => a.id);
-  const lists = await Promise.all(hiredIds.map((id) => getInterviewsOrEmpty(id)));
-  const entries = hiredIds
+  const candidateIds = applications.filter((a) => mayHaveInterview(a.status)).map((a) => a.id);
+  const lists = await Promise.all(candidateIds.map((id) => getInterviewsOrEmpty(id)));
+  const entries = candidateIds
     .map((id, index) => [id, lists[index].find((interview) => interview.status !== "CANCELLED")] as const)
     .filter((entry): entry is [string, Interview] => Boolean(entry[1]));
   return new Map(entries);
