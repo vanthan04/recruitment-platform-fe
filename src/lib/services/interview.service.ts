@@ -2,7 +2,15 @@
 
 import { api } from "@/lib/api";
 import { INTERVIEW_ENDPOINT } from "@/lib/constants/endpoint";
-import type { Interview, RescheduleInterviewInput, ScheduleInterviewInput } from "@/lib/types/interview";
+import type { ListMeta } from "@/lib/types/common";
+import type {
+  Interview,
+  InterviewDetail,
+  InterviewListParams,
+  InterviewSession,
+  RescheduleInterviewInput,
+  ScheduleInterviewInput,
+} from "@/lib/types/interview";
 
 // Callers (recruiter + candidate applications pages) use router.refresh()
 // after mutations instead of revalidatePath — same convention already used
@@ -10,6 +18,32 @@ import type { Interview, RescheduleInterviewInput, ScheduleInterviewInput } from
 
 export async function getInterviewsForApplication(applicationId: string): Promise<Interview[]> {
   return api.get<Interview[]>(INTERVIEW_ENDPOINT.FOR_APPLICATION(applicationId));
+}
+
+// Interviews the signed-in user takes part in (as candidate or as the job's recruiter).
+export async function getMyInterviews(
+  params: InterviewListParams = {},
+): Promise<{ items: InterviewDetail[]; meta?: ListMeta }> {
+  const { items, metadata } = await api.getPaginated<InterviewDetail[]>(INTERVIEW_ENDPOINT.LIST, {
+    searchParams: params,
+  });
+  return { items, meta: metadata };
+}
+
+export async function getInterview(id: string): Promise<InterviewDetail> {
+  return api.get<InterviewDetail>(INTERVIEW_ENDPOINT.DETAIL(id));
+}
+
+export async function getInterviewSessions(id: string): Promise<InterviewSession[]> {
+  return api.get<InterviewSession[]>(INTERVIEW_ENDPOINT.SESSIONS(id));
+}
+
+export async function startInterviewSession(id: string): Promise<InterviewSession> {
+  return api.post<InterviewSession>(INTERVIEW_ENDPOINT.SESSIONS(id));
+}
+
+export async function endInterviewSession(id: string, sessionId: string): Promise<InterviewSession> {
+  return api.patch<InterviewSession>(INTERVIEW_ENDPOINT.END_SESSION(id, sessionId));
 }
 
 export async function scheduleInterview(input: ScheduleInterviewInput): Promise<void> {

@@ -32,3 +32,32 @@ export interface RescheduleInterviewInput {
   note?: string;
   durationMinutes?: number;
 }
+
+export type InterviewViewerRole = "CANDIDATE" | "RECRUITER";
+
+/** An interview plus the context a list/detail screen needs (GET /interviews, GET /interviews/:id). */
+export interface InterviewDetail extends Interview {
+  jobId: string;
+  jobTitle: string;
+  candidateId: string;
+  candidateName: string | null;
+  /** The signed-in user's role in this interview. */
+  viewerRole: InterviewViewerRole;
+}
+
+export interface InterviewSession {
+  id: string;
+  interviewId: string;
+  startedAt: string;
+  endedAt: string | null;
+  startedById: string | null;
+  status: "IN_PROGRESS" | "ENDED";
+}
+
+export interface InterviewListParams {
+  page?: number;
+  limit?: number;
+  status?: InterviewStatus;
+  /** Only pending interviews that have not started yet, soonest first. */
+  upcoming?: boolean;
+}

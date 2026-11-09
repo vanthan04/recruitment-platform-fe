@@ -97,6 +97,8 @@ export const INTERVIEW_ENDPOINT = {
   COMPLETE: (id: string) => `/interviews/${id}/complete`,
   NO_SHOW: (id: string) => `/interviews/${id}/no-show`,
   FOR_APPLICATION: (applicationId: string) => `/interviews/application/${applicationId}`,
+  SESSIONS: (id: string) => `/interviews/${id}/sessions`,
+  END_SESSION: (id: string, sessionId: string) => `/interviews/${id}/sessions/${sessionId}/end`,
 } as const;
 
 export const CHAT_ENDPOINT = {

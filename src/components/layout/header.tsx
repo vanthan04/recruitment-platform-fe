@@ -43,6 +43,7 @@ function getNavLinks(
       { href: PATH.MESSAGES, label: "Tin nhắn", badge: messagesBadge },
     );
     more.push(
+      { href: PATH.INTERVIEWS, label: "Lịch phỏng vấn" },
       { href: PATH.SAVED_JOBS, label: "Việc đã lưu" },
       { href: PATH.SAVED_SEARCHES, label: "Tìm kiếm đã lưu" },
     );
@@ -50,6 +51,7 @@ function getNavLinks(
     primary.push(
       { href: PATH.RECRUITER_JOBS, label: "Tin tuyển dụng của tôi" },
       { href: PATH.RECRUITER_COMPANY, label: "Công ty của tôi" },
+      { href: PATH.INTERVIEWS, label: "Lịch phỏng vấn" },
       { href: PATH.MESSAGES, label: "Tin nhắn", badge: messagesBadge },
     );
   } else if (user?.role === "ADMIN") {
