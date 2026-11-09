@@ -19,6 +19,7 @@ export const PATH = {
   APPLICATIONS: "/applications",
   INTERVIEWS: "/interviews",
   INTERVIEW_DETAIL: (id: string) => `/interviews/${id}`,
+  INTERVIEW_ROOM: (id: string) => `/interviews/${id}/room`,
   SAVED_JOBS: "/saved-jobs",
   RECOMMENDED_JOBS: "/recommended-jobs",
   MESSAGES: "/messages",

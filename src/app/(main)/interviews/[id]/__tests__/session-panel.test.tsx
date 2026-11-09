@@ -29,6 +29,7 @@ function makeInterview(status: InterviewStatus = "SCHEDULED"): InterviewDetail {
     durationMinutes: 45,
     location: "Office",
     meetingLink: null,
+    useRoom: false,
     note: null,
     status,
     createdById: "recruiter-1",

@@ -19,10 +19,11 @@ const interviewSchema = z
     scheduledAt: z.string().min(1, "Vui lòng chọn thời gian phỏng vấn"),
     location: z.string().optional(),
     meetingLink: z.string().optional(),
+    useRoom: z.boolean(),
     note: z.string().optional(),
   })
-  .refine((values) => Boolean(values.location) || Boolean(values.meetingLink), {
-    message: "Cần nhập địa điểm hoặc link phỏng vấn (ít nhất một trong hai)",
+  .refine((values) => Boolean(values.location) || Boolean(values.meetingLink) || values.useRoom, {
+    message: "Cần nhập địa điểm, link phỏng vấn hoặc chọn phòng video của nền tảng (ít nhất một)",
     path: ["location"],
   });
 
@@ -53,6 +54,7 @@ export function InterviewDialog({ applicationId, interview }: InterviewDialogPro
       scheduledAt: interview ? toDatetimeLocal(interview.scheduledAt) : "",
       location: interview?.location ?? "",
       meetingLink: interview?.meetingLink ?? "",
+      useRoom: interview?.useRoom ?? false,
       note: interview?.note ?? "",
     },
   });
@@ -62,6 +64,7 @@ export function InterviewDialog({ applicationId, interview }: InterviewDialogPro
       scheduledAt: new Date(values.scheduledAt).toISOString(),
       location: values.location || undefined,
       meetingLink: values.meetingLink || undefined,
+      useRoom: values.useRoom,
       note: values.note || undefined,
     };
 
@@ -101,6 +104,15 @@ export function InterviewDialog({ applicationId, interview }: InterviewDialogPro
           <div className="space-y-1.5">
             <Label htmlFor="meetingLink">Link phỏng vấn online</Label>
             <Input id="meetingLink" placeholder="https://meet.google.com/..." {...register("meetingLink")} />
+          </div>
+          <div className="flex items-start gap-2">
+            <input id="useRoom" type="checkbox" className="mt-1 size-4" {...register("useRoom")} />
+            <Label htmlFor="useRoom" className="flex-col items-start gap-0.5 font-normal">
+              <span className="font-medium">Dùng phòng video của nền tảng</span>
+              <span className="text-muted-foreground text-xs">
+                Ứng viên và bạn vào phòng ngay trên trang Lịch phỏng vấn, không cần Google Meet hay Zoom.
+              </span>
+            </Label>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="note">Ghi chú</Label>

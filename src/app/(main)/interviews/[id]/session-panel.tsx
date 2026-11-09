@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useApiToast } from "@/hooks/use-api-toast";
+import { PATH } from "@/lib/constants/path";
 import { endInterviewSession, startInterviewSession } from "@/lib/services/interview.service";
 import {
   NON_TERMINAL_INTERVIEW_STATUSES,
@@ -33,6 +35,18 @@ export function SessionPanel({
       <h2 id="interview-sessions-heading" className="text-lg font-semibold">
         Phiên phỏng vấn
       </h2>
+
+      {interview.useRoom && NON_TERMINAL_INTERVIEW_STATUSES.includes(interview.status) && (
+        <div className="space-y-2 rounded-xl border p-4">
+          <p className="text-muted-foreground text-sm">
+            Buổi phỏng vấn này diễn ra trong phòng video của nền tảng. Vào phòng sẽ tự bắt đầu phiên nếu chưa
+            có.
+          </p>
+          <Button asChild>
+            <Link href={PATH.INTERVIEW_ROOM(interview.id)}>Vào phòng video</Link>
+          </Button>
+        </div>
+      )}
 
       {openSession ? (
         <div className="space-y-3 rounded-xl border p-4" role="status">

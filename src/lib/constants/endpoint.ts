@@ -98,6 +98,7 @@ export const INTERVIEW_ENDPOINT = {
   NO_SHOW: (id: string) => `/interviews/${id}/no-show`,
   FOR_APPLICATION: (applicationId: string) => `/interviews/application/${applicationId}`,
   SESSIONS: (id: string) => `/interviews/${id}/sessions`,
+  ROOM_JOIN: (id: string) => `/interviews/${id}/room/join`,
   END_SESSION: (id: string, sessionId: string) => `/interviews/${id}/sessions/${sessionId}/end`,
 } as const;
 

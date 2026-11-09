@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { INTERVIEW_STATUS_LABEL } from "@/lib/constants/enum-label";
 import { PATH } from "@/lib/constants/path";
-import type { Interview } from "@/lib/types/interview";
+import { NON_TERMINAL_INTERVIEW_STATUSES, type Interview } from "@/lib/types/interview";
 
 export function InterviewInfo({
   interview,
@@ -25,6 +25,16 @@ export function InterviewInfo({
           <a href={interview.meetingLink} target="_blank" rel="noreferrer" className="text-primary underline">
             {interview.meetingLink}
           </a>
+        </p>
+      )}
+      {interview.useRoom && (
+        <p className="text-muted-foreground">
+          Phòng video trên nền tảng.{" "}
+          {NON_TERMINAL_INTERVIEW_STATUSES.includes(interview.status) && (
+            <Link href={PATH.INTERVIEW_ROOM(interview.id)} className="text-primary underline">
+              Vào phòng
+            </Link>
+          )}
         </p>
       )}
       {interview.note && <p className="text-muted-foreground">Ghi chú: {interview.note}</p>}

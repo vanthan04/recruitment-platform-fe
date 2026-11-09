@@ -9,6 +9,7 @@ import type {
   InterviewListParams,
   InterviewSession,
   RescheduleInterviewInput,
+  RoomJoinResult,
   ScheduleInterviewInput,
 } from "@/lib/types/interview";
 
@@ -36,6 +37,11 @@ export async function getInterview(id: string): Promise<InterviewDetail> {
 
 export async function getInterviewSessions(id: string): Promise<InterviewSession[]> {
   return api.get<InterviewSession[]>(INTERVIEW_ENDPOINT.SESSIONS(id));
+}
+
+// Credentials for the video room — only while a session is open.
+export async function getRoomJoinInfo(id: string): Promise<RoomJoinResult> {
+  return api.post<RoomJoinResult>(INTERVIEW_ENDPOINT.ROOM_JOIN(id));
 }
 
 export async function startInterviewSession(id: string): Promise<InterviewSession> {

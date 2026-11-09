@@ -9,6 +9,8 @@ export interface Interview {
   durationMinutes: number | null;
   location: string | null;
   meetingLink: string | null;
+  /** Held in the platform's own video room (/interviews/:id/room). */
+  useRoom: boolean;
   note: string | null;
   status: InterviewStatus;
   createdById: string;
@@ -21,6 +23,7 @@ export interface ScheduleInterviewInput {
   scheduledAt: string;
   location?: string;
   meetingLink?: string;
+  useRoom?: boolean;
   note?: string;
   durationMinutes?: number;
 }
@@ -29,6 +32,7 @@ export interface RescheduleInterviewInput {
   scheduledAt?: string;
   location?: string;
   meetingLink?: string;
+  useRoom?: boolean;
   note?: string;
   durationMinutes?: number;
 }
@@ -60,4 +64,22 @@ export interface InterviewListParams {
   status?: InterviewStatus;
   /** Only pending interviews that have not started yet, soonest first. */
   upcoming?: boolean;
+}
+
+export interface IceServer {
+  urls: string[];
+  username?: string;
+  credential?: string;
+}
+
+/**
+ * What the backend hands out to enter the video room. A discriminated union on
+ * `provider`: createRoomClient() picks the matching RoomClient. A hosted
+ * provider (LiveKit, ...) adds a member here and a client in lib/rtc.
+ */
+export type RoomJoinInfo = { provider: "p2p"; iceServers: IceServer[] };
+
+export interface RoomJoinResult {
+  sessionId: string;
+  join: RoomJoinInfo;
 }
