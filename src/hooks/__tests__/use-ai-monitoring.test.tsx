@@ -73,7 +73,7 @@ describe("useAiMonitoring", () => {
   it("starts with the current notice version and sends one frame per second", async () => {
     const hook = await started();
 
-    expect(MonitorClient).toHaveBeenCalledWith("interview-1", "2026-11-09.v1", expect.any(Object));
+    expect(MonitorClient).toHaveBeenCalledWith("interview-1", "2026-11-09.v2", expect.any(Object));
     expect(hook.result.current.status).toBe("on");
 
     await advance(1000);

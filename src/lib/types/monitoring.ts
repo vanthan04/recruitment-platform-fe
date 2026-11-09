@@ -44,6 +44,10 @@ export type MonitorFrameAck =
 /**
  * Version of the monitoring notice the candidate agrees to. Recorded with the
  * consent on the backend — bump it whenever the notice text or what happens to
- * the data changes (e.g. when Phase 4 starts storing detection events).
+ * the data changes. Must match CURRENT_MONITORING_NOTICE_VERSION in the backend,
+ * which refuses to start monitoring for any other version.
+ *
+ * - v1: results shown to the candidate only, nothing stored.
+ * - v2: observation events are stored and visible to the recruiter and the candidate.
  */
-export const MONITORING_NOTICE_VERSION = "2026-11-09.v1";
+export const MONITORING_NOTICE_VERSION = "2026-11-09.v2";

@@ -35,7 +35,8 @@ const ACTIVE: MonitoringStatus[] = ["on", "degraded", "reconnecting"];
 const NOTICE: string[] = [
   "Khoảng 1 lần mỗi giây, trình duyệt chụp một khung hình từ camera của bạn và gửi tới máy chủ của nền tảng để AI nhận diện vật thể: người, điện thoại, laptop, sách.",
   "Khung hình chỉ được phân tích rồi bỏ đi, không được lưu lại.",
-  "Kết quả nhận diện hiện chỉ hiển thị cho bạn trên màn hình này.",
+  "Hệ thống lưu lại các sự kiện quan sát (ví dụ: không thấy người trong khung hình, thấy điện thoại) gồm loại sự kiện, thời điểm và độ tin cậy — không lưu hình ảnh. Nhà tuyển dụng của tin này và bạn đều xem được các sự kiện đó.",
+  "Sự kiện chỉ là quan sát để nhà tuyển dụng tham khảo, không phải kết luận về bạn, và được tự động xoá sau 180 ngày.",
   "AI chỉ ghi nhận những gì nhìn thấy và có thể sai. AI không đánh giá bạn và không quyết định kết quả phỏng vấn.",
   "Khi bạn tắt camera, không có khung hình nào được gửi. Bạn có thể tắt giám sát bất cứ lúc nào; cuộc gọi vẫn tiếp tục bình thường.",
   "Hệ thống lưu thời điểm bạn đồng ý và phiên bản thông báo này.",

@@ -35,6 +35,7 @@ const START_ERROR_MESSAGE: Record<string, string> = {
   INTERVIEW_MONITORING_NOT_ALLOWED: "Chỉ ứng viên mới bật được giám sát AI cho camera của mình.",
   INTERVIEW_SESSION_NOT_OPEN: "Phiên phỏng vấn chưa bắt đầu hoặc đã kết thúc.",
   INTERVIEW_ROOM_NOT_ENABLED: "Buổi phỏng vấn này không diễn ra trong phòng của nền tảng.",
+  NOTICE_OUTDATED: "Thông báo giám sát đã được cập nhật. Hãy tải lại trang để đọc bản mới.",
   CONNECTION_FAILED: "Không kết nối được tới máy chủ giám sát.",
   TIMEOUT: "Máy chủ giám sát không phản hồi.",
 };

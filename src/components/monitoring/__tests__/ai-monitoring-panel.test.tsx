@@ -38,7 +38,10 @@ describe("AiMonitoringPanel", () => {
     fireEvent.click(screen.getByRole("button", { name: "Bật giám sát AI" }));
     const dialog = screen.getByRole("dialog");
     expect(within(dialog).getByText(/không được lưu lại/)).toBeInTheDocument();
-    expect(within(dialog).getByText(/2026-11-09\.v1/)).toBeInTheDocument();
+    // v2: says plainly that events are stored and who can see them.
+    expect(within(dialog).getByText(/Nhà tuyển dụng của tin này và bạn đều xem được/)).toBeInTheDocument();
+    expect(within(dialog).getByText(/xoá sau 180 ngày/)).toBeInTheDocument();
+    expect(within(dialog).getByText(/2026-11-09\.v2/)).toBeInTheDocument();
 
     const confirm = within(dialog).getByRole("button", { name: "Đồng ý và bật" });
     expect(confirm).toBeDisabled();
