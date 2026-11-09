@@ -47,6 +47,8 @@ export interface InterviewDetail extends Interview {
   candidateName: string | null;
   /** The signed-in user's role in this interview. */
   viewerRole: InterviewViewerRole;
+  /** A session is open right now. */
+  inProgress: boolean;
 }
 
 export interface InterviewSession {
@@ -66,6 +68,8 @@ export interface InterviewListParams {
   status?: InterviewStatus;
   /** Only pending interviews that have not started yet, soonest first. */
   upcoming?: boolean;
+  /** Only interviews with a session open right now. */
+  inProgress?: boolean;
 }
 
 export interface IceServer {

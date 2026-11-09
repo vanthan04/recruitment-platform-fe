@@ -5,6 +5,8 @@ import { ApiError } from "@/lib/api/error";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getInterview, getInterviewSessions } from "@/lib/services/interview.service";
+import { getDetectionSummary } from "@/lib/services/monitoring.service";
+import { MonitoringCard } from "./monitoring-card";
 import { SessionPanel } from "./session-panel";
 
 export default async function InterviewDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -13,7 +15,12 @@ export default async function InterviewDetailPage({ params }: { params: Promise<
 
   const { id } = await params;
   try {
-    const [interview, sessions] = await Promise.all([getInterview(id), getInterviewSessions(id)]);
+    const [interview, sessions, summary] = await Promise.all([
+      getInterview(id),
+      getInterviewSessions(id),
+      // Optional extra: a monitoring hiccup must not take the interview page down.
+      getDetectionSummary(id).catch(() => null),
+    ]);
 
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
@@ -26,6 +33,7 @@ export default async function InterviewDetailPage({ params }: { params: Promise<
         )}
         <InterviewInfo interview={interview} showDetailLink={false} />
         <SessionPanel interview={interview} sessions={sessions} />
+        <MonitoringCard interview={interview} summary={summary} />
       </div>
     );
   } catch (error) {

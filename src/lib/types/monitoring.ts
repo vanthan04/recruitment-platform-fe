@@ -51,3 +51,66 @@ export type MonitorFrameAck =
  * - v2: observation events are stored and visible to the recruiter and the candidate.
  */
 export const MONITORING_NOTICE_VERSION = "2026-11-09.v2";
+
+// ── Stored monitoring events (Phase 4/5) ────────────────────────────────────
+
+/** Observational labels — never findings about the candidate. */
+export type MonitoringEventType = "PERSON_ABSENT" | "MULTIPLE_PERSONS" | "PHONE_DETECTED" | "LAPTOP_DETECTED";
+
+export const MONITORING_EVENT_TYPES: MonitoringEventType[] = [
+  "PERSON_ABSENT",
+  "MULTIPLE_PERSONS",
+  "PHONE_DETECTED",
+  "LAPTOP_DETECTED",
+];
+
+export type MonitoringEventEndReason =
+  "condition-cleared" | "monitoring-stopped" | "session-ended" | "stale" | "server-shutdown";
+
+export interface DetectionEvent {
+  id: string;
+  sessionId: string;
+  eventType: MonitoringEventType;
+  objectClass: string;
+  /** Highest confidence of the AI while the event was open, 0..1. */
+  confidence: number;
+  detectedAt: string;
+  /** Null while still open. */
+  endedAt: string | null;
+  durationMs: number | null;
+  frameCount: number;
+  metadata: { personCount?: number; endReason?: MonitoringEventEndReason } | null;
+  reviewedAt: string | null;
+  /** Recruiter only — not sent to the candidate. */
+  reviewedById?: string | null;
+  reviewNote?: string | null;
+}
+
+export type CountsByEventType = Record<MonitoringEventType, number>;
+
+export interface DetectionSessionSummary {
+  sessionId: string;
+  startedAt: string;
+  endedAt: string | null;
+  /** Null = the candidate did not turn monitoring on in this session. */
+  monitoringConsentAt: string | null;
+  monitoringNoticeVersion: string | null;
+  totalEvents: number;
+  byType: CountsByEventType;
+}
+
+export interface DetectionSummary {
+  totalEvents: number;
+  unreviewedEvents: number;
+  byType: CountsByEventType;
+  /** Newest session first. */
+  sessions: DetectionSessionSummary[];
+}
+
+export interface DetectionEventListParams {
+  page?: number;
+  limit?: number;
+  eventType?: MonitoringEventType;
+  sessionId?: string;
+  reviewed?: boolean;
+}

@@ -48,3 +48,42 @@ export function formatMessageTime(iso: string): string {
   if (diffHours < 24) return date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
   return formatRelativeDate(iso);
 }
+
+// Interview times are shown in Vietnam time explicitly: these pages render on
+// the server (Vercel runs in UTC), so relying on the runtime's own time zone
+// would shift every timestamp by 7 hours.
+const VN_TIME_ZONE = "Asia/Ho_Chi_Minh";
+
+/** "09/11/2026 17:05:12" in Vietnam time. */
+export function formatDateTimeVN(iso: string): string {
+  return new Date(iso).toLocaleString("vi-VN", {
+    timeZone: VN_TIME_ZONE,
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+}
+
+/** "17:05:12" in Vietnam time. */
+export function formatTimeVN(iso: string): string {
+  return new Date(iso).toLocaleTimeString("vi-VN", {
+    timeZone: VN_TIME_ZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+}
+
+/** 12_000 -> "12 giây", 95_000 -> "1 phút 35 giây". */
+export function formatDurationVi(ms: number): string {
+  const totalSeconds = Math.max(0, Math.round(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes === 0) return `${seconds} giây`;
+  return seconds === 0 ? `${minutes} phút` : `${minutes} phút ${seconds} giây`;
+}

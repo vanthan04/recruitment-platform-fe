@@ -1,6 +1,7 @@
 import type { CompanySize, CompanyType } from "@/lib/types/company";
 import type { Gender, UserRole, UserStatus } from "@/lib/types/auth";
 import type { InterviewStatus } from "@/lib/types/interview";
+import type { MonitoringEventEndReason, MonitoringEventType } from "@/lib/types/monitoring";
 import type { ApplicationStatus } from "@/lib/types/job-application";
 import type { EmploymentType, JobLevel, JobSortOption, JobStatus, WorkMode } from "@/lib/types/job";
 import type { NotificationType } from "@/lib/types/notification";
@@ -95,4 +96,20 @@ export const INTERVIEW_STATUS_LABEL: Record<InterviewStatus, string> = {
   COMPLETED: "Đã hoàn thành",
   CANCELLED: "Đã huỷ",
   NO_SHOW: "Không đến phỏng vấn",
+};
+
+/** Neutral wording on purpose: these are what the AI observed, not conclusions. */
+export const MONITORING_EVENT_LABEL: Record<MonitoringEventType, string> = {
+  PERSON_ABSENT: "Không thấy người trong khung hình",
+  MULTIPLE_PERSONS: "Có từ 2 người trở lên",
+  PHONE_DETECTED: "Thấy điện thoại",
+  LAPTOP_DETECTED: "Thấy laptop",
+};
+
+export const MONITORING_END_REASON_LABEL: Record<MonitoringEventEndReason, string> = {
+  "condition-cleared": "không còn quan sát thấy",
+  "monitoring-stopped": "ứng viên tắt giám sát",
+  "session-ended": "phiên phỏng vấn kết thúc",
+  stale: "không nhận được khung hình",
+  "server-shutdown": "máy chủ khởi động lại",
 };

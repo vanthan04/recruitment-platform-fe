@@ -7,14 +7,24 @@ import { cn } from "@/lib/utils";
 import { PATH } from "@/lib/constants/path";
 import { getCurrentUser } from "@/lib/services/auth.service";
 import { getMyInterviews } from "@/lib/services/interview.service";
+import type { InterviewListParams } from "@/lib/types/interview";
 import { InterviewList } from "./interview-list";
 
-type Tab = "upcoming" | "all";
+type Tab = "upcoming" | "in-progress" | "completed" | "all";
 
-const TABS: { value: Tab; label: string }[] = [
-  { value: "upcoming", label: "Sắp tới" },
-  { value: "all", label: "Tất cả" },
+const TABS: { value: Tab; label: string; empty: string }[] = [
+  { value: "upcoming", label: "Sắp tới", empty: "Chưa có buổi phỏng vấn sắp tới" },
+  { value: "in-progress", label: "Đang diễn ra", empty: "Không có buổi phỏng vấn nào đang diễn ra" },
+  { value: "completed", label: "Đã hoàn thành", empty: "Chưa có buổi phỏng vấn nào hoàn thành" },
+  { value: "all", label: "Tất cả", empty: "Chưa có buổi phỏng vấn nào" },
 ];
+
+const TAB_FILTER: Record<Tab, InterviewListParams> = {
+  upcoming: { upcoming: true },
+  "in-progress": { inProgress: true },
+  completed: { status: "COMPLETED" },
+  all: {},
+};
 
 export default async function InterviewsPage({
   searchParams,
@@ -27,24 +37,24 @@ export default async function InterviewsPage({
   if (user.role !== "CANDIDATE" && user.role !== "RECRUITER") redirect(PATH.HOME);
 
   const sp = await searchParams;
-  const tab: Tab = sp.tab === "all" ? "all" : "upcoming";
+  const tab: Tab = TABS.some((t) => t.value === sp.tab) ? (sp.tab as Tab) : "upcoming";
   const page = Math.max(1, Number(sp.page) || 1);
 
-  const { items, meta } = await getMyInterviews({ page, upcoming: tab === "upcoming" ? true : undefined });
+  const { items, meta } = await getMyInterviews({ page, ...TAB_FILTER[tab] });
   const totalPages = meta ? Math.max(1, Math.ceil(meta.total / meta.limit)) : 1;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="mb-6 text-2xl font-semibold">Lịch phỏng vấn</h1>
 
-      <nav className="mb-6 flex gap-1 border-b" aria-label="Bộ lọc lịch phỏng vấn">
+      <nav className="mb-6 flex gap-1 overflow-x-auto border-b" aria-label="Bộ lọc lịch phỏng vấn">
         {TABS.map(({ value, label }) => (
           <Link
             key={value}
             href={`${PATH.INTERVIEWS}?tab=${value}`}
             aria-current={tab === value ? "page" : undefined}
             className={cn(
-              "-mb-px border-b-2 px-3 py-2 text-sm font-medium",
+              "-mb-px border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap",
               tab === value
                 ? "border-primary text-foreground"
                 : "text-muted-foreground hover:text-foreground border-transparent",
@@ -58,7 +68,7 @@ export default async function InterviewsPage({
       {items.length === 0 ? (
         <EmptyState
           icon={CalendarClock}
-          title={tab === "upcoming" ? "Chưa có buổi phỏng vấn sắp tới" : "Chưa có buổi phỏng vấn nào"}
+          title={TABS.find((t) => t.value === tab)!.empty}
           description={
             user.role === "RECRUITER"
               ? "Đặt lịch phỏng vấn từ danh sách ứng viên của một tin tuyển dụng."

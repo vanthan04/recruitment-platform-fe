@@ -90,6 +90,12 @@ export const SAVED_SEARCH_ENDPOINT = {
   DETAIL: (id: string) => `/saved-searches/${id}`,
 } as const;
 
+export const MONITORING_ENDPOINT = {
+  EVENTS: (interviewId: string) => `/interviews/${interviewId}/detection-events`,
+  SUMMARY: (interviewId: string) => `/interviews/${interviewId}/detection-summary`,
+  REVIEW: (eventId: string) => `/monitoring/events/${eventId}/review`,
+} as const;
+
 export const INTERVIEW_ENDPOINT = {
   LIST: "/interviews",
   DETAIL: (id: string) => `/interviews/${id}`,

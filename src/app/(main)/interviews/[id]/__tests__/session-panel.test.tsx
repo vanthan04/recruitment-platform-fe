@@ -40,6 +40,7 @@ function makeInterview(status: InterviewStatus = "SCHEDULED"): InterviewDetail {
     candidateId: "candidate-1",
     candidateName: "Cand Idate",
     viewerRole: "CANDIDATE",
+    inProgress: false,
   };
 }
 

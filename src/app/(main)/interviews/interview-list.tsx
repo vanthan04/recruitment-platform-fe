@@ -15,7 +15,10 @@ export function InterviewList({ items }: { items: InterviewDetail[] }) {
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="font-medium">{interview.jobTitle}</p>
-              <Badge variant="outline">{INTERVIEW_STATUS_LABEL[interview.status]}</Badge>
+              <span className="flex gap-1.5">
+                {interview.inProgress && <Badge>Đang diễn ra</Badge>}
+                <Badge variant="outline">{INTERVIEW_STATUS_LABEL[interview.status]}</Badge>
+              </span>
             </div>
             <p className="text-muted-foreground mt-1 text-sm">
               {new Date(interview.scheduledAt).toLocaleString("vi-VN")}

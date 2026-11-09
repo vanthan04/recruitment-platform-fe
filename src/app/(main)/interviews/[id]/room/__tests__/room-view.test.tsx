@@ -36,6 +36,7 @@ const interview: InterviewDetail = {
   candidateId: "candidate-1",
   candidateName: "Cand Idate",
   viewerRole: "CANDIDATE",
+  inProgress: false,
 };
 
 const openSession: InterviewSession = {
