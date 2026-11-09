@@ -3,7 +3,10 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Mic, MicOff, PhoneOff, Video, VideoOff } from "lucide-react";
+import { AiMonitoringPanel } from "@/components/monitoring/ai-monitoring-panel";
+import { DetectionOverlay } from "@/components/monitoring/detection-overlay";
 import { Button } from "@/components/ui/button";
+import { useAiMonitoring, type MonitoringStatus } from "@/hooks/use-ai-monitoring";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useInterviewRoom, type RoomPhase } from "@/hooks/use-interview-room";
 import { PATH } from "@/lib/constants/path";
@@ -37,6 +40,7 @@ const CAN_ENTER: RoomPhase[] = [
   "media-error",
 ];
 const IN_ROOM: RoomPhase[] = ["connecting", "waiting", "connected", "reconnecting"];
+const MONITORING_ACTIVE: MonitoringStatus[] = ["on", "degraded", "reconnecting"];
 
 function VideoSurface({
   stream,
@@ -85,6 +89,13 @@ export function RoomView({ interview }: { interview: InterviewDetail }) {
   const { confirm, ConfirmDialog } = useConfirm();
 
   const inRoom = IN_ROOM.includes(phase);
+  const isCandidate = interview.viewerRole === "CANDIDATE";
+  // Only the candidate's own camera, only while in the room; leaving stops it.
+  const monitoring = useAiMonitoring({
+    interviewId: interview.id,
+    stream: isCandidate && inRoom ? localStream : null,
+  });
+  const monitoringActive = MONITORING_ACTIVE.includes(monitoring.status);
   const message = (phase === "failed" || phase === "error") && detail ? detail : PHASE_MESSAGE[phase];
   const otherParty =
     interview.viewerRole === "RECRUITER" ? (interview.candidateName ?? "Ứng viên") : "Nhà tuyển dụng";
@@ -100,13 +111,15 @@ export function RoomView({ interview }: { interview: InterviewDetail }) {
           </div>
         )}
         {localStream && (
-          <VideoSurface
-            stream={localStream}
-            muted
-            mirrored
-            label="Bạn"
-            className="absolute right-3 bottom-3 aspect-video w-28 rounded-lg border border-white/30 sm:w-44"
-          />
+          // Self-view. Larger while AI monitoring is on, so the boxes are readable.
+          <div
+            className={`absolute right-3 bottom-3 aspect-video overflow-hidden rounded-lg border border-white/30 ${
+              monitoringActive ? "w-40 sm:w-72" : "w-28 sm:w-44"
+            }`}
+          >
+            <VideoSurface stream={localStream} muted mirrored label="Bạn" className="size-full" />
+            {monitoringActive && <DetectionOverlay result={monitoring.result} mirrored />}
+          </div>
         )}
       </div>
 
@@ -176,6 +189,7 @@ export function RoomView({ interview }: { interview: InterviewDetail }) {
           </Button>
         )}
       </div>
+      {isCandidate && inRoom && <AiMonitoringPanel monitoring={monitoring} />}
       {ConfirmDialog}
     </div>
   );

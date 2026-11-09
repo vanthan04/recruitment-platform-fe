@@ -50,6 +50,7 @@ function makeSession(overrides: Partial<InterviewSession> = {}): InterviewSessio
     startedAt: new Date().toISOString(),
     endedAt: null,
     startedById: "candidate-1",
+    monitoringConsentAt: null,
     status: "IN_PROGRESS",
     ...overrides,
   };

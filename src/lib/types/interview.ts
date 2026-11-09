@@ -55,6 +55,8 @@ export interface InterviewSession {
   startedAt: string;
   endedAt: string | null;
   startedById: string | null;
+  /** When the candidate opted in to AI monitoring in this session; null = not monitored. */
+  monitoringConsentAt: string | null;
   status: "IN_PROGRESS" | "ENDED";
 }
 

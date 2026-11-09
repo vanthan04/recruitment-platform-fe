@@ -44,6 +44,7 @@ const openSession: InterviewSession = {
   startedAt: new Date().toISOString(),
   endedAt: null,
   startedById: "recruiter-1",
+  monitoringConsentAt: null,
   status: "IN_PROGRESS",
 };
 
